@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       name,
       email,
       phone: phone || null,
-      service: service || "Autre",
+      service_interest: service || "Autre",
       message,
     })
 
