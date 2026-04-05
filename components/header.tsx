@@ -22,7 +22,7 @@ export function Header() {
       {/* Top bar with contact info */}
       <div className="hidden bg-primary text-primary-foreground md:block">
         <div className="container mx-auto flex items-center justify-end gap-6 px-4 py-1.5 text-sm">
-          <a href="tel:+59669661715100" className="flex items-center gap-2 hover:opacity-80">
+          <a href="tel:+596696617151" className="flex items-center gap-2 hover:opacity-80">
             <Phone className="h-3.5 w-3.5" />
             +596 696 617 151
           </a>
