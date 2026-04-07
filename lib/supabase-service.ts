@@ -8,188 +8,117 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Client for public operations
-export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-
-// Admin client for server operations
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
+// Admin client for server-side operations (bypasses RLS)
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  supabaseServiceKey || supabaseAnonKey
+);
 
 /**
- * Create or update email verification record
+ * Store verification token in verification_tokens table.
+ * Schema: token, email, name, service, message, phone, expires_at, used
  */
 export async function storeVerificationToken(
-  email: string,
   token: string,
-  contactData: any
-) {
-  try {
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-    // Try to insert verification record
-    const { data, error } = await supabaseAdmin
-      .from('email_verifications')
-      .insert({
-        email,
-        token,
-        contact_data: contactData,
-        expires_at: expiresAt.toISOString(),
-      })
-      .select();
-
-    if (error) {
-      // If table doesn't exist, try to create it
-      if (error.message.includes('relation "public.email_verifications" does not exist')) {
-        await createEmailVerificationsTable();
-        // Retry insert
-        return supabaseAdmin
-          .from('email_verifications')
-          .insert({
-            email,
-            token,
-            contact_data: contactData,
-            expires_at: expiresAt.toISOString(),
-          })
-          .select();
-      }
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error('[v0] Error storing verification token:', error);
-    throw error;
+  contactData: {
+    name: string;
+    email: string;
+    phone?: string;
+    service: string;
+    message: string;
   }
+) {
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+  const { error } = await supabaseAdmin
+    .from('verification_tokens')
+    .insert({
+      token,
+      email: contactData.email,
+      name: contactData.name,
+      service: contactData.service,
+      message: contactData.message,
+      phone: contactData.phone || null,
+      expires_at: expiresAt.toISOString(),
+      used: false,
+    });
+
+  if (error) {
+    console.error('[supabase] Error storing verification token:', error);
+    throw new Error('Failed to store verification token');
+  }
+
+  return { success: true };
 }
 
 /**
- * Get verification record by token
+ * Get a verification token record by token string.
  */
 export async function getVerificationToken(token: string) {
-  try {
-    const { data, error } = await supabaseClient
-      .from('email_verifications')
-      .select()
-      .eq('token', token)
-      .single();
+  const { data, error } = await supabaseAdmin
+    .from('verification_tokens')
+    .select('*')
+    .eq('token', token)
+    .single();
 
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('[v0] Error getting verification token:', error);
+  if (error) {
+    if (error.code === 'PGRST116') return null; // not found
+    console.error('[supabase] Error fetching verification token:', error);
     return null;
   }
+
+  return data;
 }
 
 /**
- * Mark verification as complete
+ * Mark a verification token as used.
  */
 export async function markVerificationComplete(token: string) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('email_verifications')
-      .update({
-        is_verified: true,
-        verified_at: new Date().toISOString(),
-      })
-      .eq('token', token)
-      .select();
+  const { error } = await supabaseAdmin
+    .from('verification_tokens')
+    .update({ used: true })
+    .eq('token', token);
 
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('[v0] Error marking verification complete:', error);
-    throw error;
+  if (error) {
+    console.error('[supabase] Error marking token as used:', error);
+    throw new Error('Failed to mark token as used');
   }
+
+  return { success: true };
 }
 
 /**
- * Store contact message in Supabase
+ * Store verified contact in contacts table.
+ * Schema: name, email, phone, service, message, verified, verified_at
  */
 export async function storeContactMessage(
-  name: string,
-  email: string,
-  message: string,
-  service?: string
+  data: {
+    name: string;
+    email: string;
+    phone?: string;
+    service: string;
+    message: string;
+  },
+  verified = false
 ) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('contacts')
-      .insert({
-        name,
-        email,
-        message,
-        service,
-        is_verified: false,
-        sent_to_admin: false,
-        sent_to_user: false,
-      })
-      .select();
+  const { data: inserted, error } = await supabaseAdmin
+    .from('contacts')
+    .insert({
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      service: data.service,
+      message: data.message,
+      verified,
+      verified_at: verified ? new Date().toISOString() : null,
+    })
+    .select('id')
+    .single();
 
-    if (error) {
-      throw error;
-    }
-
-    return { success: true, contactId: data?.[0]?.id };
-  } catch (error) {
-    console.error('[v0] Error storing contact message:', error);
-    throw error;
+  if (error) {
+    console.error('[supabase] Error storing contact message:', error);
+    throw new Error('Failed to store contact message');
   }
-}
 
-/**
- * Update contact message status
- */
-export async function updateContactStatus(
-  contactId: string,
-  updates: {
-    is_verified?: boolean;
-    sent_to_admin?: boolean;
-    sent_to_user?: boolean;
-  }
-) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('contacts')
-      .update(updates)
-      .eq('id', contactId)
-      .select();
-
-    if (error) {
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error('[v0] Error updating contact status:', error);
-    throw error;
-  }
-}
-
-/**
- * Create email_verifications table if it doesn't exist
- * This uses raw SQL via Supabase admin API
- */
-async function createEmailVerificationsTable() {
-  try {
-    // Use the admin client to execute raw SQL
-    const { error } = await supabaseAdmin
-      .from('email_verifications')
-      .select()
-      .limit(0);
-
-    // If we can select, table exists
-    if (!error || error.code !== 'PGRST116') {
-      return;
-    }
-
-    console.log('[v0] Table email_verifications does not exist, will be created on first use');
-  } catch (error) {
-    console.log('[v0] Could not verify email_verifications table:', error);
-  }
+  return { success: true, contactId: inserted?.id };
 }

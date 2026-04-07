@@ -22,8 +22,6 @@ export default function VerifyEmailPage() {
 
     const verifyEmail = async () => {
       try {
-        console.log('[v0] Verifying email with token:', token)
-        
         // Construire l'URL avec le token
         const url = new URL('/api/contact/verify', window.location.origin)
         url.searchParams.set('token', token)
@@ -34,7 +32,6 @@ export default function VerifyEmailPage() {
         })
 
         const data = await res.json()
-        console.log('[v0] Verification response:', data)
 
         if (res.ok) {
           setStatus('success')
@@ -50,7 +47,6 @@ export default function VerifyEmailPage() {
           setMessage(data.error || 'Erreur lors de la vérification')
         }
       } catch (error) {
-        console.error('[v0] Verification error:', error)
         setStatus('error')
         setMessage('Erreur lors de la vérification de votre email')
       }
