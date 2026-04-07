@@ -1,6 +1,15 @@
 /**
  * Web3Forms client-side email utility.
- * Must be called from the browser — Web3Forms blocks server-side requests via Cloudflare.
+ * Must be called from the browser — Web3Forms blocks server-side requests (Cloudflare 403).
+ *
+ * How Web3Forms routing works:
+ *  - The key owner (manuel.harpon@teknopy.com) ALWAYS receives every submission.
+ *  - `cc`  adds extra recipients on every email.
+ *  - For the magic-link email we want ONLY the user to receive it — we use a
+ *    dedicated second access key bound to a noreply/forwarding address, OR we
+ *    accept that the key owner receives a copy and focus on making sure the
+ *    user also gets theirs via `cc`.
+ *  - For the admin summary we send normally (key owner = admin) and CC the user.
  */
 
 const ACCESS_KEY = "dd2f81b5-56ac-4e05-8320-ae65fddec383"
@@ -8,42 +17,64 @@ const ADMIN_EMAIL = "manuel.harpon@teknopy.com"
 
 async function submitToWeb3Forms(payload: Record<string, string>): Promise<boolean> {
   try {
+    const body = JSON.stringify({ access_key: ACCESS_KEY, ...payload })
+    console.log("[v0] Web3Forms submit payload keys:", Object.keys({ access_key: ACCESS_KEY, ...payload }))
+
     const response = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_key: ACCESS_KEY, ...payload }),
+      body,
     })
+
     const text = await response.text()
+    console.log("[v0] Web3Forms status:", response.status, "body:", text.slice(0, 300))
+
     let data: { success?: boolean; message?: string } = {}
     try {
       data = JSON.parse(text)
     } catch {
-      console.error("Web3Forms non-JSON response:", text.slice(0, 200))
+      console.error("[v0] Web3Forms non-JSON response:", text.slice(0, 200))
       return false
     }
-    return !!(response.ok && data.success)
+    if (!response.ok || !data.success) {
+      console.error("[v0] Web3Forms error response:", data)
+      return false
+    }
+    return true
   } catch (error) {
-    console.error("Web3Forms fetch error:", error)
+    console.error("[v0] Web3Forms fetch error:", error)
     return false
   }
 }
 
-/** Send the magic link verification email to the user */
+/**
+ * Send the magic-link verification email.
+ * Web3Forms always delivers to the key owner; we CC the user so they receive it too.
+ * Subject and body make clear it is intended for the user.
+ */
 export async function sendVerificationEmail(
   userEmail: string,
   userName: string,
   magicLink: string
 ): Promise<boolean> {
   return submitToWeb3Forms({
-    subject: "Vérifiez votre adresse email - Teknopy",
+    subject: `Vérifiez votre adresse email - Teknopy`,
     from_name: "Teknopy",
+    // `email` field in Web3Forms = the reply-to AND the displayed sender context.
+    // We put the user email here so replies go to them.
+    email: userEmail,
+    // CC the user explicitly so they receive this email in their inbox.
     cc: userEmail,
-    replyto: userEmail,
+    // botcheck must be empty (honeypot)
+    botcheck: "",
     message: `Bonjour ${userName},\n\nMerci de votre intérêt pour Teknopy.\nPour confirmer votre demande de contact, cliquez sur le lien ci-dessous :\n\n${magicLink}\n\nCe lien expire dans 24 heures.\n\nL'équipe Teknopy`,
   })
 }
 
-/** Send the admin summary email after verification */
+/**
+ * Send the admin summary email after the user clicks the magic link.
+ * Key owner (admin) receives it by default; user gets a CC copy.
+ */
 export async function sendAdminEmail(contactData: {
   name: string
   email: string
@@ -52,26 +83,23 @@ export async function sendAdminEmail(contactData: {
   createdAt: string
 }): Promise<boolean> {
   return submitToWeb3Forms({
-    subject: `Nouveau message de contact - ${contactData.name}`,
+    subject: `Nouveau message de contact vérifié - ${contactData.name}`,
     from_name: "Teknopy Contact Form",
-    cc: ADMIN_EMAIL,
-    replyto: contactData.email,
-    message: `Nouveau message de contact vérifié\n\nNom : ${contactData.name}\nEmail : ${contactData.email}\nService : ${contactData.service || "Non précisé"}\nDate : ${contactData.createdAt}\n\nMessage :\n${contactData.message}`,
-  })
-}
-
-/** Send the confirmation recap email to the user */
-export async function sendUserConfirmationEmail(contactData: {
-  name: string
-  email: string
-  message: string
-  service?: string
-}): Promise<boolean> {
-  return submitToWeb3Forms({
-    subject: "Confirmation de votre message - Teknopy",
-    from_name: "Teknopy",
+    // reply-to = user so admin can reply directly to them
+    email: contactData.email,
+    // CC the user so they get their confirmation copy in the same send
     cc: contactData.email,
-    replyto: ADMIN_EMAIL,
-    message: `Bonjour ${contactData.name},\n\nNous avons bien reçu votre message et notre équipe vous répondra dans les plus brefs délais.\n\nRécapitulatif de votre demande :\n- Service : ${contactData.service || "Non précisé"}\n- Email : ${contactData.email}\n\nVotre message :\n${contactData.message}\n\nMerci de votre confiance.\nL'équipe Teknopy`,
+    botcheck: "",
+    message: [
+      `Nouveau message de contact vérifié`,
+      ``,
+      `Nom    : ${contactData.name}`,
+      `Email  : ${contactData.email}`,
+      `Service: ${contactData.service || "Non précisé"}`,
+      `Date   : ${contactData.createdAt}`,
+      ``,
+      `Message :`,
+      contactData.message,
+    ].join("\n"),
   })
 }
