@@ -3,9 +3,8 @@ import { Resend } from 'resend';
 // Initialize Resend with API key from environment
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Note: Without a verified domain, Resend only allows sending from onboarding@resend.dev
-// Once you verify your domain (e.g., teknopy.com) in Resend dashboard, update DEFAULT_FROM_EMAIL
-const FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'Teknopy <onboarding@resend.dev>';
+// Domain plistech.com is verified in Resend (via Cloudflare DNS)
+const FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'Teknopy <noreply@plistech.com>';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'manuel.harpon@teknopy.com';
 
 interface EmailResult {
