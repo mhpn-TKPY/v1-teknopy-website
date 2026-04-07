@@ -1,4 +1,4 @@
-// v3 — pure Supabase, no email dependencies
+// CACHE_BUSTER_2026_04_07_v2 — pure Supabase, no email dependencies
 import { createClient } from '@supabase/supabase-js';
 
 // Lazy-initialized admin client to avoid module-level crashes

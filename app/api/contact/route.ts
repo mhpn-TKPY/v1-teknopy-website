@@ -1,9 +1,10 @@
+// CACHE_BUSTER_2026_04_07_v2 — force recompilation
 import { NextResponse } from "next/server"
 import { generateVerificationToken, generateMagicLink } from "@/lib/token"
 import { storeVerificationToken } from "@/lib/supabase-service"
 
-// This route ONLY interacts with Supabase.
-// Email sending is handled client-side via /api/send-email proxy.
+// This route ONLY interacts with Supabase. NO Web3Forms calls here.
+// Email sending is handled entirely client-side via /api/send-email proxy.
 export async function POST(request: Request) {
   try {
     const body = await request.json()

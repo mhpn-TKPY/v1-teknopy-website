@@ -1,6 +1,7 @@
+// CACHE_BUSTER_2026_04_07_v2 — force recompilation
 /**
  * Web3Forms client-side email utility.
- * MUST be called from the browser — Web3Forms blocks server-side (Cloudflare 403).
+ * Uses /api/send-email proxy to bypass sandbox restrictions.
  *
  * Key behaviour of Web3Forms:
  *  - Every submission is delivered to the key owner (manuel.harpon@teknopy.com).
