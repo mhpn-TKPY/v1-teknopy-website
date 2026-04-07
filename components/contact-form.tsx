@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Send, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { Send, Phone, Mail, MapPin, CheckCircle, RefreshCw, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,27 +22,44 @@ const services = [
   "Autre",
 ]
 
+const RESEND_DELAY_SECONDS = 120 // 2 minutes before allowing resend
+
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const [selectedService, setSelectedService] = useState("")
+  const [selectedService, setSelectedService] = useState<string>("")
+  // Saved form data for resend
+  const savedDataRef = useRef<Record<string, unknown> | null>(null)
+  // Countdown: seconds remaining before resend is allowed
+  const [countdown, setCountdown] = useState(0)
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const startCountdown = useCallback(() => {
+    setCountdown(RESEND_DELAY_SECONDS)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownRef.current!)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }, [])
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      service: selectedService || formData.get("service"),
-      message: formData.get("message"),
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current)
     }
+  }, [])
+
+  const submitForm = useCallback(async (data: Record<string, unknown>, isResend = false) => {
+    if (isResend) setIsResending(true)
+    else setIsSubmitting(true)
 
     try {
-      // Step 1: Store token in Supabase via server route
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,17 +73,41 @@ export function ContactForm() {
       }
 
       const result = await response.json()
+      await sendVerificationEmail(result.email as string, result.name as string, result.magicLink as string)
 
-      // Step 2: Send verification email from the browser (bypasses Cloudflare)
-      await sendVerificationEmail(result.email, result.name, result.magicLink)
-
-      setSuccessMessage("Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande.")
+      savedDataRef.current = data
       setIsSuccess(true)
+      startCountdown()
     } catch (error) {
       console.error("Error submitting form:", error)
     } finally {
-      setIsSubmitting(false)
+      if (isResend) setIsResending(false)
+      else setIsSubmitting(false)
     }
+  }, [startCountdown])
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      service: selectedService || formData.get("service"),
+      message: formData.get("message"),
+    }
+    await submitForm(data)
+  }
+
+  async function handleResend() {
+    if (!savedDataRef.current || countdown > 0) return
+    await submitForm(savedDataRef.current, true)
+  }
+
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, "0")
+    const s = (secs % 60).toString().padStart(2, "0")
+    return `${m}:${s}`
   }
 
   return (
@@ -155,10 +196,11 @@ export function ContactForm() {
                       <CheckCircle className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="mb-2 text-xl font-semibold">Vérification nécessaire</h3>
-                    <p className="text-muted-foreground">
-                      {successMessage}
+                    <p className="text-sm text-muted-foreground">
+                      Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande.
                     </p>
                   </div>
+
                   <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
                     <p className="font-semibold mb-2">Comment ça fonctionne ?</p>
                     <ul className="list-inside list-disc space-y-1 text-xs">
@@ -167,6 +209,40 @@ export function ContactForm() {
                       <li>Votre message et un récapitulatif seront alors envoyés</li>
                       <li>L&apos;équipe Teknopy recevra également votre message</li>
                     </ul>
+                  </div>
+
+                  {/* Resend section */}
+                  <div className="rounded-lg border border-border p-4 text-center space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Le lien expire dans <strong>10 minutes</strong>. Si vous ne l&apos;avez pas reçu ou s&apos;il a expiré, vous pouvez en demander un nouveau.
+                    </p>
+                    {countdown > 0 ? (
+                      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>Renvoi disponible dans <strong className="font-mono tabular-nums">{formatCountdown(countdown)}</strong></span>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleResend}
+                        disabled={isResending}
+                      >
+                        {isResending ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Renvoi en cours...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-4 w-4" />
+                            Renvoyer un nouveau lien
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
