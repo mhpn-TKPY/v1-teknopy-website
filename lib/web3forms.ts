@@ -109,8 +109,10 @@ export async function sendAdminSummaryEmail(
     createdAt: string;
   }
 ): Promise<boolean> {
+  const adminEmail = process.env.ADMIN_EMAIL || 'manuel.harpon@teknopy.com';
+  
   const result = await sendEmailViaWeb3Forms(
-    'manuel.harpon@teknopy.com',
+    adminEmail,
     `Nouveau message de contact - ${contactData.name}`,
     `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

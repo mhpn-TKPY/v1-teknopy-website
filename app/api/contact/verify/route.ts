@@ -94,6 +94,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Merci ! Votre email a été vérifié et nous vous avons envoyé une copie de votre message.",
+      email: email,
     })
   } catch (error) {
     console.error("[v0] Error in verification:", error)

@@ -18,5 +18,5 @@ export function isTokenExpired(expiresAt: Date): boolean {
  * Generate magic link URL
  */
 export function generateMagicLink(token: string, baseUrl: string): string {
-  return `${baseUrl}/api/contact/verify?token=${token}`;
+  return `${baseUrl}/verify-email?token=${token}`;
 }

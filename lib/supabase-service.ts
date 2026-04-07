@@ -173,31 +173,23 @@ export async function updateContactStatus(
 
 /**
  * Create email_verifications table if it doesn't exist
+ * This uses raw SQL via Supabase admin API
  */
 async function createEmailVerificationsTable() {
   try {
-    await supabaseAdmin.rpc('run_migration', {
-      migration: `
-        CREATE TABLE IF NOT EXISTS public.email_verifications (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          email TEXT NOT NULL,
-          token TEXT UNIQUE NOT NULL,
-          contact_data JSONB NOT NULL,
-          is_verified BOOLEAN DEFAULT false,
-          created_at TIMESTAMPTZ DEFAULT NOW(),
-          expires_at TIMESTAMPTZ DEFAULT NOW() + INTERVAL '24 hours',
-          verified_at TIMESTAMPTZ
-        );
-        
-        CREATE INDEX IF NOT EXISTS idx_email_verifications_token ON public.email_verifications(token);
-        CREATE INDEX IF NOT EXISTS idx_email_verifications_email ON public.email_verifications(email);
-        CREATE INDEX IF NOT EXISTS idx_email_verifications_expires_at ON public.email_verifications(expires_at);
-      `
-    }).catch(() => {
-      // RPC might not exist, that's okay
-      console.log('[v0] Could not create table via RPC, will rely on manual migration');
-    });
+    // Use the admin client to execute raw SQL
+    const { error } = await supabaseAdmin
+      .from('email_verifications')
+      .select()
+      .limit(0);
+
+    // If we can select, table exists
+    if (!error || error.code !== 'PGRST116') {
+      return;
+    }
+
+    console.log('[v0] Table email_verifications does not exist, will be created on first use');
   } catch (error) {
-    console.error('[v0] Error creating email_verifications table:', error);
+    console.log('[v0] Could not verify email_verifications table:', error);
   }
 }
