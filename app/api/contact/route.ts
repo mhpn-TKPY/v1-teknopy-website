@@ -19,23 +19,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email invalide" }, { status: 400 })
     }
 
-    // Generate magic link token
+    // Generate token and magic link (server-only)
     const token = generateVerificationToken()
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.plistech.com"
     const magicLink = generateMagicLink(token, baseUrl)
 
-    // Store token + contact data in Supabase (server-only operation)
+    // Store token + contact data in Supabase only — NO email calls here
     await storeVerificationToken(token, { name, email, phone, service, message })
 
-    // Return the magic link to the client — the browser will call Web3Forms directly
-    return NextResponse.json({
-      success: true,
-      magicLink,
-      email,
-      name,
-    })
+    // Return magic link + user info to the browser
+    // The browser (contact-form.tsx) will call Web3Forms directly
+    return NextResponse.json({ success: true, magicLink, email, name })
   } catch (error) {
-    console.error("Error in contact POST:", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Erreur serveur" },
       { status: 500 }
