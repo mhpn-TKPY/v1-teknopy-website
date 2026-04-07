@@ -45,6 +45,7 @@ async function submitToWeb3Forms(payload: Record<string, string>): Promise<boole
 
 /**
  * Send the magic-link verification email to the user.
+ * Uses ccemail to send to the user (Web3Forms always delivers to key owner first).
  */
 export async function sendVerificationEmail(
   userEmail: string,
@@ -55,7 +56,8 @@ export async function sendVerificationEmail(
     subject: "Vérifiez votre adresse email - Teknopy",
     from_name: "Teknopy",
     email: userEmail,
-    replyto: ADMIN_EMAIL,
+    replyto: userEmail,
+    ccemail: userEmail, // Send copy to the user who filled out the form
     botcheck: "",
     message: [
       `Bonjour ${userName},`,
@@ -105,6 +107,7 @@ export async function sendAdminRecap(contactData: {
 
 /**
  * Send the user confirmation recap.
+ * Uses ccemail to ensure the user receives their copy.
  */
 export async function sendUserRecap(contactData: {
   name: string
@@ -118,6 +121,7 @@ export async function sendUserRecap(contactData: {
     from_name: "Teknopy",
     email: contactData.email,
     replyto: ADMIN_EMAIL,
+    ccemail: contactData.email, // Send copy to the user
     botcheck: "",
     message: [
       `Bonjour ${contactData.name},`,
