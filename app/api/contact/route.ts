@@ -3,7 +3,7 @@ import { generateVerificationToken, generateMagicLink } from "@/lib/token"
 import { storeVerificationToken } from "@/lib/supabase-service"
 
 // This route ONLY interacts with Supabase. NO Web3Forms calls here.
-// Email sending is handled entirely client-side via /api/send-email proxy.
+// Email sending is handled entirely client-side (browser → Web3Forms directly).
 export async function POST(request: Request) {
   try {
     const body = await request.json()
