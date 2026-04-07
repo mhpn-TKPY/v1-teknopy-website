@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
-import { sendVerificationEmail } from "@/lib/web3forms-client"
+import { sendVerificationEmail } from "@/lib/email-client"
 
 const services = [
   "Site Web Vitrine",

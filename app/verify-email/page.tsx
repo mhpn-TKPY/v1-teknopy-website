@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-import { sendAdminRecap, sendUserRecap } from '@/lib/web3forms-client'
+import { sendRecapEmails } from '@/lib/email-client'
 
 function VerifyEmailContent() {
   const router = useRouter()
@@ -43,10 +43,7 @@ function VerifyEmailContent() {
         }
 
         const { contactData, createdAt } = data
-        await Promise.all([
-          sendAdminRecap({ ...contactData, createdAt }),
-          sendUserRecap({ ...contactData, createdAt }),
-        ])
+        await sendRecapEmails({ ...contactData, createdAt })
 
         setStatus('success')
         setMessage('Merci ! Votre email a été vérifié. Un récapitulatif vous a été envoyé et notre équipe a été notifiée.')
