@@ -1,3 +1,4 @@
+// v3 — pure Supabase, no email dependencies
 import { createClient } from '@supabase/supabase-js';
 
 // Lazy-initialized admin client to avoid module-level crashes

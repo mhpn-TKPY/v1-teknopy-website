@@ -14,13 +14,21 @@ export async function POST(request: Request) {
   try {
     const hdrs = await headers()
     const host = hdrs.get("host") ?? ""
-    const isSandbox = host.includes("vusercontent.net")
+    const referer = hdrs.get("referer") ?? ""
+
+    // Detect the v0 preview sandbox.
+    // V0_CODE_SERVER_CALLBACK_URL is injected only inside the v0 sandbox environment.
+    // In that environment, outbound HTTP to external domains is blocked by Cloudflare.
+    // We return a simulated success so the full Supabase flow can be tested end-to-end.
+    const isSandbox =
+      !!process.env.V0_CODE_SERVER_CALLBACK_URL ||
+      host.includes("vusercontent.net") ||
+      referer.includes("vusercontent.net")
 
     const body = await request.json()
 
-    // Skip the real HTTP call in the v0 preview sandbox — external fetch is blocked.
     if (isSandbox) {
-      console.log("[send-email] sandbox detected — skipping Web3Forms call for:", body.subject)
+      console.log("[send-email] sandbox — skipping Web3Forms for:", body.subject ?? "(no subject)")
       return NextResponse.json({ success: true, sandboxSkipped: true })
     }
 

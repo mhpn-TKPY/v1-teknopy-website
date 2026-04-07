@@ -1,3 +1,4 @@
+// v5 — no Web3Forms calls here, Supabase-only
 import { NextResponse } from "next/server"
 import { generateVerificationToken, generateMagicLink } from "@/lib/token"
 import { storeVerificationToken } from "@/lib/supabase-service"
