@@ -2,23 +2,15 @@
  * Web3Forms email service
  */
 
-interface Web3FormsPayload {
-  access_key: string;
-  subject: string;
-  from_name: string;
-  from_email: string;
-  to_email: string;
-  html: string;
-}
-
 /**
  * Send email via Web3Forms API
+ * Web3Forms always delivers to the key owner; extra recipients use `cc` or `replyto`.
  */
 export async function sendEmailViaWeb3Forms(
   toEmail: string,
   subject: string,
   html: string,
-  fromName: string = 'Teknopy'
+  replyTo?: string
 ): Promise<{ success: boolean; error?: string }> {
   const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
 
@@ -28,20 +20,24 @@ export async function sendEmailViaWeb3Forms(
   }
 
   try {
-    const payload: Web3FormsPayload = {
+    // Web3Forms standard fields: access_key, subject, message, email (reply-to), cc
+    const payload: Record<string, string> = {
       access_key: accessKey,
       subject,
-      from_name: fromName,
-      from_email: 'noreply@teknopy.com',
-      to_email: toEmail,
-      html,
+      // `message` is required by Web3Forms even when using `html`
+      message: html,
+      from_name: 'Teknopy Contact',
+      // send a CC copy to the intended recipient when it differs from the key owner
+      cc: toEmail,
     };
+
+    if (replyTo) {
+      payload.replyto = replyTo;
+    }
 
     const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
@@ -65,7 +61,7 @@ export async function sendEmailViaWeb3Forms(
 export async function sendVerificationEmail(email: string, magicLink: string): Promise<boolean> {
   const result = await sendEmailViaWeb3Forms(
     email,
-    'Vérifiez votre adresse email - Teknopy',
+    `Vérifiez votre adresse email - Teknopy`,
     `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #333;">Vérification de votre adresse email</h2>
@@ -91,7 +87,8 @@ export async function sendVerificationEmail(email: string, magicLink: string): P
           Ce lien expire dans 24 heures.
         </p>
       </div>
-    `
+    `,
+    email // replyTo so the reply goes back to the user
   );
   return result.success;
 }
@@ -125,7 +122,8 @@ export async function sendAdminSummaryEmail(
         <h3 style="color: #333;">Message :</h3>
         <p style="color: #666; white-space: pre-wrap; line-height: 1.6;">${contactData.message}</p>
       </div>
-    `
+    `,
+    contactData.email // replyTo: clicking reply goes directly to the user
   );
   return result.success;
 }
@@ -164,7 +162,8 @@ export async function sendUserConfirmationEmail(
           Merci de votre confiance. À bientôt !
         </p>
       </div>
-    `
+    `,
+    toEmail // replyTo: replies go back to the user
   );
   return result.success;
 }

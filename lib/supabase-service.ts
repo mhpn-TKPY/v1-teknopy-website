@@ -1,18 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Lazy-initialized admin client to avoid module-level crashes
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  if (!url || (!serviceKey && !anonKey)) {
+    throw new Error('Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required');
+  }
+
+  return createClient(url, serviceKey || anonKey!);
 }
-
-// Admin client for server-side operations (bypasses RLS)
-export const supabaseAdmin = createClient(
-  supabaseUrl,
-  supabaseServiceKey || supabaseAnonKey
-);
 
 /**
  * Store verification token in verification_tokens table.
@@ -30,7 +29,7 @@ export async function storeVerificationToken(
 ) {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('verification_tokens')
     .insert({
       token,
@@ -55,7 +54,7 @@ export async function storeVerificationToken(
  * Get a verification token record by token string.
  */
 export async function getVerificationToken(token: string) {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('verification_tokens')
     .select('*')
     .eq('token', token)
@@ -74,7 +73,7 @@ export async function getVerificationToken(token: string) {
  * Mark a verification token as used.
  */
 export async function markVerificationComplete(token: string) {
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('verification_tokens')
     .update({ used: true })
     .eq('token', token);
@@ -101,7 +100,7 @@ export async function storeContactMessage(
   },
   verified = false
 ) {
-  const { data: inserted, error } = await supabaseAdmin
+  const { data: inserted, error } = await getSupabaseAdmin()
     .from('contacts')
     .insert({
       name: data.name,
