@@ -28,6 +28,7 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
   const [selectedService, setSelectedService] = useState<string>("")
   // Saved form data for resend
   const savedDataRef = useRef<Record<string, unknown> | null>(null)
@@ -73,9 +74,22 @@ export function ContactForm() {
       }
 
       const result = await response.json()
-      await sendVerificationEmail(result.email as string, result.name as string, result.magicLink as string)
+
+      // Attempt to send verification email — non-blocking.
+      // Token is already stored in Supabase; email is best-effort.
+      let sent = false
+      try {
+        sent = await sendVerificationEmail(
+          result.email as string,
+          result.name as string,
+          result.magicLink as string
+        )
+      } catch {
+        sent = false
+      }
 
       savedDataRef.current = data
+      setEmailSent(sent)
       setIsSuccess(true)
       startCountdown()
     } catch (error) {
@@ -107,6 +121,7 @@ export function ContactForm() {
   function handleNewRequest() {
     // Reset all states to show the blank form again without page reload
     setIsSuccess(false)
+    setEmailSent(false)
     setIsSubmitting(false)
     setIsResending(false)
     setSelectedService("")
@@ -206,16 +221,20 @@ export function ContactForm() {
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                       <CheckCircle className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="mb-2 text-xl font-semibold">Vérification nécessaire</h3>
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {emailSent ? "Vérification nécessaire" : "Demande enregistrée"}
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande.
+                      {emailSent
+                        ? "Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande."
+                        : "Votre demande a bien été enregistrée. Utilisez le bouton ci-dessous pour renvoyer le lien de vérification."}
                     </p>
                   </div>
 
                   <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
                     <p className="font-semibold mb-2">Comment ça fonctionne ?</p>
                     <ul className="list-inside list-disc space-y-1 text-xs">
-                      <li>Un email de vérification a été envoyé à votre adresse</li>
+                      <li>Un email de vérification est envoyé à votre adresse</li>
                       <li>Cliquez sur le lien de vérification dans l&apos;email</li>
                       <li>Votre message et un récapitulatif seront alors envoyés</li>
                       <li>L&apos;équipe Teknopy recevra également votre message</li>
