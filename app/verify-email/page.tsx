@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { sendAdminEmail, sendUserConfirmationEmail } from '@/lib/web3forms-client'
 
 export default function VerifyEmailPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
-  
+
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
   const [email, setEmail] = useState('')
@@ -20,39 +21,47 @@ export default function VerifyEmailPage() {
       return
     }
 
-    const verifyEmail = async () => {
+    const verify = async () => {
       try {
-        // Construire l'URL avec le token
+        // Step 1: Verify token + store contact in Supabase (server-side)
         const url = new URL('/api/contact/verify', window.location.origin)
         url.searchParams.set('token', token)
-        
-        const res = await fetch(url.toString(), {
-          method: 'GET',
-          cache: 'no-store'
-        })
-
+        const res = await fetch(url.toString(), { method: 'GET', cache: 'no-store' })
         const data = await res.json()
 
-        if (res.ok) {
-          setStatus('success')
-          setMessage(data.message || 'Votre email a été vérifié avec succès!')
-          setEmail(data.email || '')
-          
-          // Redirection après 3 secondes
-          setTimeout(() => {
-            router.push('/')
-          }, 3000)
-        } else {
+        if (!res.ok) {
           setStatus('error')
           setMessage(data.error || 'Erreur lors de la vérification')
+          return
         }
-      } catch (error) {
+
+        // Already verified — just show success
+        if (data.alreadyVerified) {
+          setStatus('success')
+          setMessage(data.message)
+          setEmail(data.email || '')
+          setTimeout(() => router.push('/'), 4000)
+          return
+        }
+
+        // Step 2: Send admin + user emails from the browser (bypasses Cloudflare)
+        const { contactData, createdAt } = data
+        await Promise.all([
+          sendAdminEmail({ ...contactData, createdAt }),
+          sendUserConfirmationEmail(contactData),
+        ])
+
+        setStatus('success')
+        setMessage('Merci ! Votre email a été vérifié. Un récapitulatif vous a été envoyé et notre équipe a été notifiée.')
+        setEmail(data.email || '')
+        setTimeout(() => router.push('/'), 4000)
+      } catch {
         setStatus('error')
         setMessage('Erreur lors de la vérification de votre email')
       }
     }
 
-    verifyEmail()
+    verify()
   }, [token, router])
 
   return (
@@ -75,17 +84,13 @@ export default function VerifyEmailPage() {
                 <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h1 className="mb-2 text-xl font-semibold">Email vérifié !</h1>
-              <p className="mb-4 text-sm text-muted-foreground">
-                {message}
-              </p>
+              <p className="mb-4 text-sm text-muted-foreground">{message}</p>
               {email && (
                 <p className="mb-4 text-xs text-muted-foreground">
-                  Email confirmé: <span className="font-semibold">{email}</span>
+                  Email confirmé : <span className="font-semibold">{email}</span>
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Redirection en cours...
-              </p>
+              <p className="text-xs text-muted-foreground">Redirection en cours...</p>
             </div>
           )}
 
@@ -95,9 +100,7 @@ export default function VerifyEmailPage() {
                 <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
               <h1 className="mb-2 text-xl font-semibold">Erreur de vérification</h1>
-              <p className="mb-4 text-sm text-muted-foreground">
-                {message}
-              </p>
+              <p className="mb-4 text-sm text-muted-foreground">{message}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push('/')}
@@ -105,21 +108,15 @@ export default function VerifyEmailPage() {
                 >
                   Retour à l&apos;accueil
                 </button>
-                <button
-                  onClick={() => router.push('/contact')}
-                  className="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent"
-                >
-                  Contacter à nouveau
-                </button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="mt-8 rounded-lg bg-blue-50 p-4 text-xs text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
-          <p className="font-semibold mb-2">À propos de cette vérification</p>
+        <div className="mt-6 rounded-lg bg-blue-50 p-4 text-xs text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
+          <p className="font-semibold mb-1">À propos de cette vérification</p>
           <p>
-            Cette étape de vérification par email magic link confirme que votre adresse email est valide et non éphémère, et nous permet de vous envoyer un récapitulatif de votre demande en toute sécurité.
+            Cette étape confirme que votre adresse email est valide et nous permet de vous envoyer un récapitulatif de votre demande.
           </p>
         </div>
       </div>

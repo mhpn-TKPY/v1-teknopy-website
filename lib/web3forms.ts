@@ -35,13 +35,24 @@ export async function sendEmailViaWeb3Forms(
       payload.replyto = replyTo;
     }
 
+    console.log("[v0] Web3Forms payload keys:", Object.keys(payload), "access_key present:", !!payload.access_key, "key value:", payload.access_key?.slice(0, 8))
+
     const response = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    // Safely parse response — Web3Forms can return HTML on certain errors
+    const text = await response.text();
+    console.log("[v0] Web3Forms response status:", response.status, "body:", text.slice(0, 300))
+    let data: { success?: boolean; message?: string } = {};
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error('Web3Forms non-JSON response (status', response.status, '):', text.slice(0, 200));
+      return { success: false, error: `Web3Forms HTTP ${response.status}` };
+    }
 
     if (!response.ok || !data.success) {
       console.error('Web3Forms error:', data);

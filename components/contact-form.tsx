@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
+import { sendVerificationEmail } from "@/lib/web3forms-client"
 
 const services = [
   "Site Web Vitrine",
@@ -41,20 +42,26 @@ export function ContactForm() {
     }
 
     try {
+      // Step 1: Store token in Supabase via server route
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setSuccessMessage(data.message || "Email de vérification envoyé. Veuillez vérifier votre inbox.")
-        setIsSuccess(true)
-      } else {
-        const error = await response.json()
-        console.error("Error:", error)
+      if (!response.ok) {
+        const err = await response.json()
+        console.error("Contact API error:", err)
+        return
       }
+
+      const result = await response.json()
+
+      // Step 2: Send verification email from the browser (bypasses Cloudflare)
+      await sendVerificationEmail(result.email, result.name, result.magicLink)
+
+      setSuccessMessage("Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande.")
+      setIsSuccess(true)
     } catch (error) {
       console.error("Error submitting form:", error)
     } finally {
