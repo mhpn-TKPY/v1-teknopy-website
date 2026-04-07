@@ -11,34 +11,31 @@
  *    so each person receives a clean, personal email with no CC/BCC mention.
  */
 
-const ACCESS_KEY = "dd2f81b5-56ac-4e05-8320-ae65fddec383"
 const ADMIN_EMAIL = "manuel.harpon@teknopy.com"
 
+/**
+ * Calls the internal proxy route /api/send-email instead of Web3Forms directly.
+ * This avoids the vusercontent sandbox blocking external fetch calls,
+ * and works identically in production on Vercel.
+ */
 async function submitToWeb3Forms(payload: Record<string, string>): Promise<boolean> {
   try {
-    const response = await fetch("https://api.web3forms.com/submit", {
+    const response = await fetch("/api/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_key: ACCESS_KEY, ...payload }),
+      body: JSON.stringify(payload),
     })
 
-    const text = await response.text()
-    let data: { success?: boolean; message?: string } = {}
-    try {
-      data = JSON.parse(text)
-    } catch {
-      console.error("[v0] Web3Forms non-JSON response (status", response.status, "):", text.slice(0, 200))
-      return false
-    }
+    const data: { success?: boolean; error?: string } = await response.json()
 
     if (!response.ok || !data.success) {
-      console.error("[v0] Web3Forms error:", data)
+      console.error("Email proxy error:", data.error)
       return false
     }
 
     return true
   } catch (err) {
-    console.error("[v0] Web3Forms fetch error:", err)
+    console.error("Email proxy fetch error:", err)
     return false
   }
 }
