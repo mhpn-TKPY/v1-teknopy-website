@@ -1,0 +1,21 @@
+feat: Add email verification system with magic links
+
+Implemented complete contact form workflow with email verification:
+- Magic link verification with 24-hour token expiration
+- Two-stage email process (verification + summary)
+- Web3Forms integration for email delivery
+- Admin summary email to manuel.harpon@teknopy.com
+- User confirmation email with message recap
+- Supabase database integration for verification tracking
+- Secure token generation and validation
+- Production-ready error handling and logging
+
+Files added:
+- API routes: /api/contact and /api/contact/verify
+- Verification page: /verify-email
+- Services: token, email-templates, web3forms, supabase-service
+- Database migration: email_verifications table
+- Documentation: Setup guides and deployment checklist
+- Configuration: Environment variables (.env.local)
+
+Co-authored-by: v0[bot] <v0[bot]@users.noreply.github.com>
