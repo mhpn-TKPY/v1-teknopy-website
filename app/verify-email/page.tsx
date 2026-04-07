@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { sendAdminRecap, sendUserRecap } from '@/lib/web3forms-client'
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -23,7 +23,6 @@ export default function VerifyEmailPage() {
 
     const verify = async () => {
       try {
-        // Step 1: Verify token + store contact in Supabase (server-side)
         const url = new URL('/api/contact/verify', window.location.origin)
         url.searchParams.set('token', token)
         const res = await fetch(url.toString(), { method: 'GET', cache: 'no-store' })
@@ -35,7 +34,6 @@ export default function VerifyEmailPage() {
           return
         }
 
-        // Already verified — just show success
         if (data.alreadyVerified) {
           setStatus('success')
           setMessage(data.message)
@@ -44,8 +42,6 @@ export default function VerifyEmailPage() {
           return
         }
 
-        // Step 2: Two SEPARATE submissions — admin gets their own email, user gets theirs.
-        // No CC/BCC: each recipient sees a clean, personal email.
         const { contactData, createdAt } = data
         await Promise.all([
           sendAdminRecap({ ...contactData, createdAt }),
@@ -102,14 +98,12 @@ export default function VerifyEmailPage() {
               </div>
               <h1 className="mb-2 text-xl font-semibold">Erreur de vérification</h1>
               <p className="mb-4 text-sm text-muted-foreground">{message}</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => router.push('/')}
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-                >
-                  Retour à l&apos;accueil
-                </button>
-              </div>
+              <button
+                onClick={() => router.push('/')}
+                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Retour à l&apos;accueil
+              </button>
             </div>
           )}
         </div>
@@ -122,5 +116,20 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// useSearchParams() requires a Suspense boundary — Next.js build will fail without it.
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
