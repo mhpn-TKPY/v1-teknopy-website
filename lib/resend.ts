@@ -4,11 +4,10 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Domain plistech.com is verified in Resend (via Cloudflare DNS)
-const FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'Teknopy <noreply@plistech.com>';
-// Note: ADMIN_EMAIL is used for receiving notifications and display only, NOT for sending
-// Resend only allows sending from verified domains, so we use plistech.com for from/replyTo
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contact@plistech.com';
-const REPLY_TO_EMAIL = process.env.REPLY_TO_EMAIL || 'contact@plistech.com';
+// IMPORTANT: Do NOT use env vars for FROM/REPLY emails - they must be from verified domain plistech.com
+const FROM_EMAIL = 'Teknopy <noreply@plistech.com>';
+const ADMIN_EMAIL = 'contact@plistech.com';
+const REPLY_TO_EMAIL = 'contact@plistech.com';
 
 // Logo URL for emails (must be publicly accessible)
 const LOGO_URL = process.env.NEXT_PUBLIC_SITE_URL 
