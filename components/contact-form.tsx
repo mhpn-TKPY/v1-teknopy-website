@@ -24,6 +24,7 @@ const services = [
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -46,7 +47,12 @@ export function ContactForm() {
       })
 
       if (response.ok) {
+        const data = await response.json()
+        setSuccessMessage(data.message || "Email de vérification envoyé. Veuillez vérifier votre inbox.")
         setIsSuccess(true)
+      } else {
+        const error = await response.json()
+        console.error("Error:", error)
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -135,14 +141,25 @@ export function ContactForm() {
             </CardHeader>
             <CardContent>
               {isSuccess ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                    <CheckCircle className="h-8 w-8 text-primary" />
+                <div className="space-y-4">
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                      <CheckCircle className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="mb-2 text-xl font-semibold">Vérification nécessaire</h3>
+                    <p className="text-muted-foreground">
+                      {successMessage}
+                    </p>
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">Message envoyé!</h3>
-                  <p className="text-muted-foreground">
-                    Merci pour votre message. Nous vous répondrons sous 24 heures.
-                  </p>
+                  <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
+                    <p className="font-semibold mb-2">Comment ça fonctionne ?</p>
+                    <ul className="list-inside list-disc space-y-1 text-xs">
+                      <li>Un email de vérification a été envoyé à votre adresse</li>
+                      <li>Cliquez sur le lien de vérification dans l&apos;email</li>
+                      <li>Votre message et un récapitulatif seront alors envoyés</li>
+                      <li>L&apos;équipe Teknopy recevra également votre message</li>
+                    </ul>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
