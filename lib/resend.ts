@@ -5,7 +5,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Domain plistech.com is verified in Resend (via Cloudflare DNS)
 const FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'Teknopy <noreply@plistech.com>';
+// Note: ADMIN_EMAIL is used for receiving notifications and display only, NOT for sending
+// Resend only allows sending from verified domains, so we use plistech.com for from/replyTo
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'manuel.harpon@teknopy.com';
+const REPLY_TO_EMAIL = process.env.REPLY_TO_EMAIL || 'contact@plistech.com';
 
 interface EmailResult {
   success: boolean;
@@ -119,7 +122,7 @@ export async function sendUserConfirmation(contactData: {
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: contactData.email,
-      replyTo: ADMIN_EMAIL,
+      replyTo: REPLY_TO_EMAIL,
       subject: 'Confirmation de votre demande - Teknopy',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -136,7 +139,7 @@ export async function sendUserConfirmation(contactData: {
           </div>
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           <p>Nous vous répondrons dans les 24 heures ouvrées.</p>
-          <p style="color: #999; font-size: 12px;">L'équipe Teknopy<br>${ADMIN_EMAIL}</p>
+          <p style="color: #999; font-size: 12px;">L'équipe Teknopy<br>${REPLY_TO_EMAIL}</p>
         </div>
       `,
     });
