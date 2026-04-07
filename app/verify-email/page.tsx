@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-import { sendAdminEmail } from '@/lib/web3forms-client'
+import { sendAdminRecap, sendUserRecap } from '@/lib/web3forms-client'
 
 export default function VerifyEmailPage() {
   const router = useRouter()
@@ -44,10 +44,13 @@ export default function VerifyEmailPage() {
           return
         }
 
-        // Step 2: Send admin summary + user CC copy from the browser (bypasses Cloudflare)
-        // sendAdminEmail: delivers to admin (key owner) and CC's the user in one call
+        // Step 2: Two SEPARATE submissions — admin gets their own email, user gets theirs.
+        // No CC/BCC: each recipient sees a clean, personal email.
         const { contactData, createdAt } = data
-        await sendAdminEmail({ ...contactData, createdAt })
+        await Promise.all([
+          sendAdminRecap({ ...contactData, createdAt }),
+          sendUserRecap({ ...contactData, createdAt }),
+        ])
 
         setStatus('success')
         setMessage('Merci ! Votre email a été vérifié. Un récapitulatif vous a été envoyé et notre équipe a été notifiée.')
