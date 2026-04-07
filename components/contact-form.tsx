@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Send, Phone, Mail, MapPin, CheckCircle, RefreshCw, Clock } from "lucide-react"
+import { Send, Phone, Mail, MapPin, CheckCircle, RefreshCw, Clock, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -102,6 +102,17 @@ export function ContactForm() {
   async function handleResend() {
     if (!savedDataRef.current || countdown > 0) return
     await submitForm(savedDataRef.current, true)
+  }
+
+  function handleNewRequest() {
+    // Reset all states to show the blank form again without page reload
+    setIsSuccess(false)
+    setIsSubmitting(false)
+    setIsResending(false)
+    setSelectedService("")
+    setCountdown(0)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    savedDataRef.current = null
   }
 
   const formatCountdown = (secs: number) => {
@@ -243,6 +254,23 @@ export function ContactForm() {
                         )}
                       </Button>
                     )}
+                  </div>
+
+                  {/* New request — resets the form without page reload */}
+                  <div className="border-t border-border pt-4 text-center">
+                    <p className="mb-3 text-xs text-muted-foreground">
+                      Vous souhaitez soumettre une autre demande ?
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-2 text-muted-foreground hover:text-foreground"
+                      onClick={handleNewRequest}
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Nouvelle demande
+                    </Button>
                   </div>
                 </div>
               ) : (
