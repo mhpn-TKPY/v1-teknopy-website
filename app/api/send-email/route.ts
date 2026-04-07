@@ -1,4 +1,3 @@
-// CACHE_BUSTER_2026_04_07_v2 — force recompilation
 import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 

@@ -1,4 +1,3 @@
-// CACHE_BUSTER_2026_04_07_v2 — force recompilation
 /**
  * Web3Forms client-side email utility.
  * Uses /api/send-email proxy to bypass sandbox restrictions.

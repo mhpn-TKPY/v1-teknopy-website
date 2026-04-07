@@ -1,4 +1,3 @@
-// CACHE_BUSTER_2026_04_07_v2
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
@@ -29,6 +28,8 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
   const [emailSent, setEmailSent] = useState(false)
   const [selectedService, setSelectedService] = useState<string>("")
   // Saved form data for resend
@@ -60,6 +61,10 @@ export function ContactForm() {
   const submitForm = useCallback(async (data: Record<string, unknown>, isResend = false) => {
     if (isResend) setIsResending(true)
     else setIsSubmitting(true)
+    
+    // Clear previous errors
+    setIsError(false)
+    setErrorMessage("")
 
     try {
       const response = await fetch("/api/contact", {
@@ -69,8 +74,9 @@ export function ContactForm() {
       })
 
       if (!response.ok) {
-        const err = await response.json()
-        console.error("Contact API error:", err)
+        const err = await response.json().catch(() => ({ error: "Erreur serveur" }))
+        setIsError(true)
+        setErrorMessage(err.error || "Une erreur est survenue. Veuillez réessayer.")
         return
       }
 
@@ -93,8 +99,9 @@ export function ContactForm() {
       setEmailSent(sent)
       setIsSuccess(true)
       startCountdown()
-    } catch (error) {
-      console.error("Error submitting form:", error)
+    } catch {
+      setIsError(true)
+      setErrorMessage("Impossible de contacter le serveur. Vérifiez votre connexion.")
     } finally {
       if (isResend) setIsResending(false)
       else setIsSubmitting(false)
@@ -122,6 +129,8 @@ export function ContactForm() {
   function handleNewRequest() {
     // Reset all states to show the blank form again without page reload
     setIsSuccess(false)
+    setIsError(false)
+    setErrorMessage("")
     setEmailSent(false)
     setIsSubmitting(false)
     setIsResending(false)
@@ -216,6 +225,21 @@ export function ContactForm() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {isError && (
+                <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-900 dark:bg-red-900/20 dark:text-red-300">
+                  <p className="font-semibold mb-1">Erreur</p>
+                  <p>{errorMessage}</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setIsError(false)}
+                  >
+                    Réessayer
+                  </Button>
+                </div>
+              )}
               {isSuccess ? (
                 <div className="space-y-4">
                   <div className="flex flex-col items-center justify-center py-8 text-center">
