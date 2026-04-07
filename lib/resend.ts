@@ -10,6 +10,28 @@ const FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'Teknopy <noreply@plistech.
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contact@plistech.com';
 const REPLY_TO_EMAIL = process.env.REPLY_TO_EMAIL || 'contact@plistech.com';
 
+// Logo URL for emails (must be publicly accessible)
+const LOGO_URL = process.env.NEXT_PUBLIC_SITE_URL 
+  ? `${process.env.NEXT_PUBLIC_SITE_URL}/images/logo-teknopy.png`
+  : 'https://www.plistech.com/images/logo-teknopy.png';
+
+// Reusable email header with Teknopy logo
+const EMAIL_HEADER = `
+  <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+    <img src="${LOGO_URL}" alt="Teknopy Création" style="max-width: 150px; height: auto;" />
+  </div>
+`;
+
+// Reusable email footer
+const EMAIL_FOOTER = `
+  <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+  <div style="text-align: center; color: #999; font-size: 12px;">
+    <p>L'équipe Teknopy<br>
+    <a href="mailto:${REPLY_TO_EMAIL}" style="color: #16a34a;">${REPLY_TO_EMAIL}</a><br>
+    <a href="https://www.plistech.com" style="color: #16a34a;">www.plistech.com</a></p>
+  </div>
+`;
+
 interface EmailResult {
   success: boolean;
   error?: string;
@@ -30,6 +52,7 @@ export async function sendVerificationEmail(
       subject: 'Vérifiez votre adresse email - Teknopy',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          ${EMAIL_HEADER}
           <h2 style="color: #16a34a;">Vérification de votre email</h2>
           <p>Bonjour ${userName},</p>
           <p>Merci de votre intérêt pour Teknopy.</p>
@@ -42,9 +65,8 @@ export async function sendVerificationEmail(
           </div>
           <p style="color: #666; font-size: 14px;">Ou copiez ce lien dans votre navigateur :</p>
           <p style="color: #16a34a; font-size: 12px; word-break: break-all;">${magicLink}</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-          <p style="color: #999; font-size: 12px;">Ce lien expire dans 24 heures.</p>
-          <p style="color: #999; font-size: 12px;">L'équipe Teknopy</p>
+          <p style="color: #999; font-size: 12px; margin-top: 20px;">Ce lien expire dans 24 heures.</p>
+          ${EMAIL_FOOTER}
         </div>
       `,
     });
@@ -80,6 +102,7 @@ export async function sendAdminNotification(contactData: {
       subject: `Nouveau message de contact - ${contactData.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          ${EMAIL_HEADER}
           <h2 style="color: #16a34a;">Nouveau message de contact vérifié</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Nom :</strong> ${contactData.name}</p>
@@ -92,6 +115,7 @@ export async function sendAdminNotification(contactData: {
           <div style="background-color: #fafafa; padding: 15px; border-left: 4px solid #16a34a; margin: 10px 0;">
             <p style="white-space: pre-wrap; margin: 0;">${contactData.message}</p>
           </div>
+          ${EMAIL_FOOTER}
         </div>
       `,
     });
@@ -126,6 +150,7 @@ export async function sendUserConfirmation(contactData: {
       subject: 'Confirmation de votre demande - Teknopy',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          ${EMAIL_HEADER}
           <h2 style="color: #16a34a;">Confirmation de votre demande</h2>
           <p>Bonjour ${contactData.name},</p>
           <p>Nous avons bien reçu votre demande. Voici le récapitulatif :</p>
@@ -137,9 +162,8 @@ export async function sendUserConfirmation(contactData: {
           <div style="background-color: #fafafa; padding: 15px; border-left: 4px solid #16a34a; margin: 10px 0;">
             <p style="white-space: pre-wrap; margin: 0;">${contactData.message}</p>
           </div>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-          <p>Nous vous répondrons dans les 24 heures ouvrées.</p>
-          <p style="color: #999; font-size: 12px;">L'équipe Teknopy<br>${REPLY_TO_EMAIL}</p>
+          <p style="margin-top: 20px;">Nous vous répondrons dans les 24 heures ouvrées.</p>
+          ${EMAIL_FOOTER}
         </div>
       `,
     });
