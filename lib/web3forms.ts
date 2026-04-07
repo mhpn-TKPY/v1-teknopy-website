@@ -23,7 +23,7 @@ export async function sendEmailViaWeb3Forms(
   const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
 
   if (!accessKey) {
-    console.error('[v0] WEB3FORMS_ACCESS_KEY is not set');
+    console.error('WEB3FORMS_ACCESS_KEY is not set');
     return { success: false, error: 'Email service not configured' };
   }
 
@@ -48,14 +48,13 @@ export async function sendEmailViaWeb3Forms(
     const data = await response.json();
 
     if (!response.ok || !data.success) {
-      console.error('[v0] Web3Forms error:', data);
+      console.error('Web3Forms error:', data);
       return { success: false, error: data.message || 'Failed to send email' };
     }
 
-    console.log('[v0] Email sent successfully to:', toEmail);
     return { success: true };
   } catch (error) {
-    console.error('[v0] Error sending email:', error);
+    console.error('Error sending email:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

@@ -25,6 +25,7 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
+  const [selectedService, setSelectedService] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -35,7 +36,7 @@ export function ContactForm() {
       name: formData.get("name"),
       email: formData.get("email"),
       phone: formData.get("phone"),
-      service: formData.get("service"),
+      service: selectedService || formData.get("service"),
       message: formData.get("message"),
     }
 
@@ -198,7 +199,7 @@ export function ContactForm() {
 
                     <Field>
                       <FieldLabel htmlFor="service">Service souhaité *</FieldLabel>
-                      <Select name="service" required>
+                      <Select name="service" required onValueChange={setSelectedService}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionnez un service" />
                         </SelectTrigger>
