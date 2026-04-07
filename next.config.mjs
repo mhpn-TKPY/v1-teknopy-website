@@ -6,6 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // generateBuildId forces cache invalidation on every restart
+  generateBuildId: async () => `build-${Date.now()}`,
 }
 
 export default nextConfig

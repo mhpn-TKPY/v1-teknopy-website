@@ -22,7 +22,9 @@ export async function POST(request: Request) {
     // We return a simulated success so the full Supabase flow can be tested end-to-end.
     const isSandbox =
       !!process.env.V0_CODE_SERVER_CALLBACK_URL ||
+      process.env.SKIP_EXTERNAL_EMAIL === "true" ||
       host.includes("vusercontent.net") ||
+      host.includes("localhost") ||
       referer.includes("vusercontent.net")
 
     const body = await request.json()
