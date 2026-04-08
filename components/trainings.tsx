@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { Clock, Users, MapPin, Euro } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -44,13 +43,12 @@ export function Trainings() {
         <div className="grid gap-8 lg:grid-cols-2">
           {trainings.map((training) => (
             <Card key={training.title} className="overflow-hidden">
-              <div className="relative h-64 w-full">
-                <Image
+              <div className="relative h-64 w-full bg-secondary/20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={training.image}
                   alt={training.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain bg-secondary/20"
+                  className="h-full w-full object-contain"
                 />
               </div>
               <CardHeader>
