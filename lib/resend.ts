@@ -4,9 +4,10 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Domain plistech.com is verified in Resend (via Cloudflare DNS)
-// IMPORTANT: Do NOT use env vars for FROM/REPLY emails - they must be from verified domain plistech.com
+// IMPORTANT: FROM/REPLY emails must be from verified domain plistech.com
+// ADMIN_EMAIL is where notifications are RECEIVED - must be a real mailbox
 const FROM_EMAIL = 'Teknopy <noreply@plistech.com>';
-const ADMIN_EMAIL = 'contact@plistech.com';
+const ADMIN_EMAIL = process.env.ADMIN_RECEIVE_EMAIL || 'manuel.harpon@gmail.com';
 const REPLY_TO_EMAIL = 'contact@plistech.com';
 
 // Logo URL for emails (must be publicly accessible)
@@ -137,6 +138,7 @@ export async function sendAdminNotification(contactData: {
 export async function sendUserConfirmation(contactData: {
   name: string;
   email: string;
+  phone?: string;
   service?: string;
   message: string;
   createdAt: string;
@@ -152,10 +154,13 @@ export async function sendUserConfirmation(contactData: {
           ${EMAIL_HEADER}
           <h2 style="color: #16a34a;">Confirmation de votre demande</h2>
           <p>Bonjour ${contactData.name},</p>
-          <p>Nous avons bien reçu votre demande. Voici le récapitulatif :</p>
+          <p>Nous avons bien reçu votre demande. Voici le récapitulatif complet :</p>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Service :</strong> ${contactData.service || 'Non précisé'}</p>
-            <p><strong>Date :</strong> ${contactData.createdAt}</p>
+            <p><strong>Nom complet :</strong> ${contactData.name}</p>
+            <p><strong>Email :</strong> ${contactData.email}</p>
+            ${contactData.phone ? `<p><strong>Téléphone :</strong> ${contactData.phone}</p>` : ''}
+            <p><strong>Service souhaité :</strong> ${contactData.service || 'Non précisé'}</p>
+            <p><strong>Date de la demande :</strong> ${contactData.createdAt}</p>
           </div>
           <h3 style="color: #333;">Votre message :</h3>
           <div style="background-color: #fafafa; padding: 15px; border-left: 4px solid #16a34a; margin: 10px 0;">
