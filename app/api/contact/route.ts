@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@supabase/supabase-js"
 import { sendVerificationEmail } from "@/lib/email"
 import crypto from "crypto"
+
+// Use service role client to bypass RLS
+function createServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export async function POST(request: Request) {
   try {
@@ -27,33 +35,29 @@ export async function POST(request: Request) {
 
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString("hex")
+    
+    // Token expires in 24 hours
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 24)
 
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
-    const { data: contact, error } = await supabase
-      .from("contacts")
+    // Store verification token in verification_tokens table
+    const { error: tokenError } = await supabase
+      .from("verification_tokens")
       .insert({
-        name,
+        token: verificationToken,
         email,
+        name,
         phone: phone || null,
-        service_interest: service,
+        service,
         message,
-        verification_token: verificationToken,
-        email_verified: false,
+        expires_at: expiresAt.toISOString(),
+        used: false,
       })
-      .select()
-      .single()
 
-    if (error) {
-      console.error("Supabase error:", error)
-      // If the table doesn't exist yet, still return success
-      if (error.code === "42P01") {
-        return NextResponse.json({ 
-          success: true, 
-          message: "Message reçu (mode démo)",
-          requiresVerification: false 
-        })
-      }
+    if (tokenError) {
+      console.error("Supabase error:", tokenError)
       return NextResponse.json(
         { error: "Erreur lors de l'envoi du message" },
         { status: 500 }
@@ -74,7 +78,7 @@ export async function POST(request: Request) {
       )
     } catch (emailError) {
       console.error("Email sending error:", emailError)
-      // Don't fail the request if email fails, contact is still saved
+      // Don't fail the request if email fails, token is still saved
     }
 
     return NextResponse.json({ 

@@ -24,41 +24,65 @@ export async function GET(request: Request) {
 
     const supabase = createServiceClient()
 
-    // Find the contact with this verification token
-    const { data: contact, error: findError } = await supabase
-      .from("contacts")
+    // Find the verification token
+    const { data: tokenData, error: findError } = await supabase
+      .from("verification_tokens")
       .select("*")
-      .eq("verification_token", token)
+      .eq("token", token)
       .single()
 
-    if (findError || !contact) {
+    if (findError || !tokenData) {
       return new NextResponse(renderErrorPage("Token de vérification invalide ou expiré"), {
         status: 400,
         headers: { "Content-Type": "text/html" },
       })
     }
 
-    // Check if already verified
-    if (contact.email_verified) {
-      return new NextResponse(renderAlreadyVerifiedPage(contact.name), {
+    // Check if token is already used
+    if (tokenData.used) {
+      return new NextResponse(renderAlreadyVerifiedPage(tokenData.name), {
         status: 200,
         headers: { "Content-Type": "text/html" },
       })
     }
 
-    // Mark email as verified
-    const verifiedAt = new Date().toISOString()
-    const { error: updateError } = await supabase
-      .from("contacts")
-      .update({
-        email_verified: true,
-        verified_at: verifiedAt,
-        verification_token: null, // Clear the token after use
+    // Check if token has expired
+    if (new Date(tokenData.expires_at) < new Date()) {
+      return new NextResponse(renderErrorPage("Le lien de vérification a expiré. Veuillez soumettre une nouvelle demande."), {
+        status: 400,
+        headers: { "Content-Type": "text/html" },
       })
-      .eq("id", contact.id)
+    }
 
-    if (updateError) {
-      console.error("Error updating contact:", updateError)
+    const verifiedAt = new Date().toISOString()
+
+    // Mark token as used
+    const { error: updateTokenError } = await supabase
+      .from("verification_tokens")
+      .update({ used: true })
+      .eq("id", tokenData.id)
+
+    if (updateTokenError) {
+      console.error("Error updating token:", updateTokenError)
+    }
+
+    // Create the contact entry with verified status
+    const { data: contact, error: insertError } = await supabase
+      .from("contacts")
+      .insert({
+        name: tokenData.name,
+        email: tokenData.email,
+        phone: tokenData.phone,
+        service: tokenData.service,
+        message: tokenData.message,
+        verified: true,
+        verified_at: verifiedAt,
+      })
+      .select()
+      .single()
+
+    if (insertError) {
+      console.error("Error creating contact:", insertError)
       return new NextResponse(renderErrorPage("Erreur lors de la vérification"), {
         status: 500,
         headers: { "Content-Type": "text/html" },
@@ -72,7 +96,7 @@ export async function GET(request: Request) {
         name: contact.name,
         email: contact.email,
         phone: contact.phone,
-        service: contact.service_interest || "Non spécifié",
+        service: contact.service || "Non spécifié",
         message: contact.message,
         verified_at: verifiedAt,
       })
@@ -87,7 +111,7 @@ export async function GET(request: Request) {
         name: contact.name,
         email: contact.email,
         phone: contact.phone,
-        service: contact.service_interest || "Non spécifié",
+        service: contact.service || "Non spécifié",
         message: contact.message,
       })
     } catch (emailError) {
