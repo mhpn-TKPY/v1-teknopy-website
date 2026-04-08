@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     // Get the base URL for the verification link
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
       request.headers.get("origin") || 
-      "https://teknopy.com"
+      "https://plistech.com"
 
     // Send verification email to user
     try {

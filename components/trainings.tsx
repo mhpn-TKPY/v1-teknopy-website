@@ -49,6 +49,7 @@ export function Trainings() {
                   src={training.image}
                   alt={training.title}
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-contain bg-secondary/20"
                 />
               </div>

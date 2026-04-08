@@ -3,7 +3,7 @@ import { Resend } from "resend"
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ADMIN_EMAIL = "contact@plistech.com"
-const FROM_EMAIL = "Teknopy <noreply@teknopy.com>"
+const FROM_EMAIL = "Plistech <noreply@plistech.com>"
 
 interface ContactData {
   name: string
@@ -270,7 +270,7 @@ export async function sendUserConfirmationEmail(contactData: ContactData) {
             <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
             
             <p style="color: #999; font-size: 12px; text-align: center;">
-              Des questions? Contactez-nous à manuel.harpon@teknopy.com<br>
+              Des questions? Contactez-nous à contact@plistech.com<br>
               © ${new Date().getFullYear()} Teknopy - Fort-de-France, Martinique
             </p>
           </div>
