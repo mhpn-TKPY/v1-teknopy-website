@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Send, Phone, Mail, MapPin, CheckCircle, MailCheck, Monitor, Globe, GraduationCap, Wrench } from "lucide-react"
+import { Send, Phone, Mail, MapPin, CheckCircle, Globe, GraduationCap, Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -63,7 +63,6 @@ const serviceCategories = [
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [requiresVerification, setRequiresVerification] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedService, setSelectedService] = useState<string>("")
 
@@ -90,9 +89,7 @@ export function ContactForm() {
       })
 
       if (response.ok) {
-        const result = await response.json()
         setIsSuccess(true)
-        setRequiresVerification(result.requiresVerification ?? false)
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -182,27 +179,16 @@ export function ContactForm() {
             <CardContent>
               {isSuccess ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                    {requiresVerification ? (
-                      <MailCheck className="h-8 w-8 text-primary" />
-                    ) : (
-                      <CheckCircle className="h-8 w-8 text-primary" />
-                    )}
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">
-                    {requiresVerification ? "Vérifiez votre email!" : "Message envoyé!"}
+                  <h3 className="mb-2 text-xl font-semibold text-green-700">
+                    Message envoyé avec succès!
                   </h3>
                   <p className="text-muted-foreground">
-                    {requiresVerification 
-                      ? "Un email de vérification a été envoyé à votre adresse. Cliquez sur le lien pour confirmer votre demande."
-                      : "Merci pour votre message. Nous vous répondrons sous 24 heures."
-                    }
+                    Merci pour votre demande. Un récapitulatif a été envoyé à votre adresse email.
+                    Notre équipe vous répondra sous 24 heures.
                   </p>
-                  {requiresVerification && (
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      Pensez à vérifier vos spams si vous ne recevez pas l&apos;email.
-                    </p>
-                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>

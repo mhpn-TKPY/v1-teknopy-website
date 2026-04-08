@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { sendVerificationEmail } from "@/lib/email"
-import crypto from "crypto"
+
+// Admin email
+const ADMIN_EMAIL = "contact@plistech.com"
+
+// Web3Forms API (service gratuit pour envoyer des emails)
+const WEB3FORMS_API_KEY = process.env.WEB3FORMS_API_KEY || "YOUR_WEB3FORMS_KEY"
 
 // Use service role client to bypass RLS
 function createServiceClient() {
@@ -33,63 +37,109 @@ export async function POST(request: Request) {
       )
     }
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString("hex")
-    
-    // Token expires in 24 hours
-    const expiresAt = new Date()
-    expiresAt.setHours(expiresAt.getHours() + 24)
-
     const supabase = createServiceClient()
 
-    // Store verification token in verification_tokens table
-    const { error: tokenError } = await supabase
-      .from("verification_tokens")
+    // Save contact directly to contacts table (verified = true by default)
+    const { data: contact, error: contactError } = await supabase
+      .from("contacts")
       .insert({
-        token: verificationToken,
-        email,
         name,
+        email,
         phone: phone || null,
         service,
         message,
-        expires_at: expiresAt.toISOString(),
-        used: false,
+        verified: true,
+        verified_at: new Date().toISOString(),
       })
+      .select()
+      .single()
 
-    if (tokenError) {
-      console.error("Supabase error:", tokenError)
+    if (contactError) {
+      console.error("Supabase error:", contactError)
       return NextResponse.json(
         { error: "Erreur lors de l'envoi du message" },
         { status: 500 }
       )
     }
 
-    // Get the base URL for the verification link
-    // Use VERCEL_PROJECT_PRODUCTION_URL or fallback to known production URL
-    const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL 
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : null
-    const vercelUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : null
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || productionUrl || vercelUrl || "https://v1-teknopy-website.vercel.app"
+    // Send emails using Web3Forms (gratuit et simple)
+    const emailPromises = []
 
-    // Send verification email to user
-    try {
-      await sendVerificationEmail(
-        { name, email, phone, service, message },
-        verificationToken,
-        baseUrl
-      )
-    } catch (emailError) {
-      console.error("Email sending error:", emailError)
-      // Don't fail the request if email fails, token is still saved
-    }
+    // 1. Email to admin with full recap
+    emailPromises.push(
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_API_KEY,
+          to: ADMIN_EMAIL,
+          from_name: "TEKNOPY Création",
+          subject: `Nouvelle demande de contact - ${service}`,
+          message: `
+NOUVELLE DEMANDE DE CONTACT
+============================
+
+Nom: ${name}
+Email: ${email}
+Téléphone: ${phone || "Non renseigné"}
+Service: ${service}
+
+Message:
+${message}
+
+---
+Date: ${new Date().toLocaleString("fr-FR", { timeZone: "America/Martinique" })}
+ID Contact: ${contact?.id || "N/A"}
+          `.trim(),
+          replyto: email,
+        }),
+      }).catch(err => console.error("Admin email error:", err))
+    )
+
+    // 2. Confirmation email to user
+    emailPromises.push(
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_API_KEY,
+          to: email,
+          from_name: "TEKNOPY Création",
+          subject: "Confirmation de votre demande - TEKNOPY",
+          message: `
+Bonjour ${name},
+
+Merci pour votre demande de contact!
+
+Récapitulatif de votre demande:
+- Service: ${service}
+- Message: ${message}
+${phone ? `- Téléphone: ${phone}` : ""}
+
+Notre équipe vous répondra sous 24 heures.
+
+Cordialement,
+L'équipe TEKNOPY Création
+
+---
+TEKNOPY Création
+Le web au service de l'innovation
+Tél: +596 696 617 151
+Email: contact@plistech.com
+          `.trim(),
+        }),
+      }).catch(err => console.error("User email error:", err))
+    )
+
+    // Send emails in parallel (don't wait for them to complete)
+    Promise.all(emailPromises).catch(err => 
+      console.error("Email sending failed:", err)
+    )
 
     return NextResponse.json({ 
       success: true, 
-      message: "Un email de vérification a été envoyé à votre adresse email. Veuillez cliquer sur le lien pour confirmer votre demande.",
-      requiresVerification: true
+      message: "Votre message a été envoyé avec succès! Nous vous répondrons sous 24 heures.",
+      requiresVerification: false
     })
   } catch (error) {
     console.error("Error:", error)
