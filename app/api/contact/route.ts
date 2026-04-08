@@ -65,9 +65,12 @@ export async function POST(request: Request) {
     }
 
     // Get the base URL for the verification link
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+    // Priority: 1. Env var, 2. Vercel URL, 3. Origin header, 4. Fallback
+    const baseUrl = 
+      process.env.NEXT_PUBLIC_APP_URL || 
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
       request.headers.get("origin") || 
-      "https://plistech.com"
+      "https://v1-teknopy-website.vercel.app"
 
     // Send verification email to user
     try {

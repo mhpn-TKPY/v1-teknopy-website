@@ -13,6 +13,9 @@ interface ContactData {
   message: string
 }
 
+// Logo URL hébergé publiquement
+const LOGO_URL = "https://v1-teknopy-website.vercel.app/images/logo-teknopy.png"
+
 /**
  * Send verification email to the user
  */
@@ -21,7 +24,8 @@ export async function sendVerificationEmail(
   verificationToken: string,
   baseUrl: string
 ) {
-  const verificationLink = `${baseUrl}/api/verify-email?token=${verificationToken}`
+  // Utiliser une page de vérification au lieu de l'API directement (plus sécurisé)
+  const verificationLink = `${baseUrl}/verify?token=${verificationToken}`
 
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
@@ -36,8 +40,8 @@ export async function sendVerificationEmail(
           <title>Confirmation de votre demande</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Teknopy</h1>
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <img src="${LOGO_URL}" alt="Teknopy" style="max-width: 180px; height: auto;" />
           </div>
           
           <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
@@ -134,7 +138,8 @@ export async function sendAdminNotificationEmail(contactData: ContactData & {
           <title>Nouvelle demande de contact</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px 10px 0 0;">
+          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <img src="${LOGO_URL}" alt="Teknopy" style="max-width: 150px; height: auto; margin-bottom: 15px;" />
             <h1 style="color: white; margin: 0; font-size: 24px;">Nouvelle demande de contact</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Email vérifié avec succès</p>
           </div>
@@ -239,6 +244,7 @@ export async function sendUserConfirmationEmail(contactData: ContactData) {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <img src="${LOGO_URL}" alt="Teknopy" style="max-width: 150px; height: auto; margin-bottom: 15px;" />
             <div style="background: white; width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
               <span style="font-size: 30px;">✓</span>
             </div>
