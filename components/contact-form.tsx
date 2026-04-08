@@ -18,6 +18,13 @@ const services = [
   "Consulting IT",
   "Formation Informatique",
   "Formation Mathématiques",
+  "Réparation PC / Laptop Windows",
+  "Dépannage Logiciel Windows",
+  "Récupération de Données",
+  "Nettoyage / Optimisation PC",
+  "Installation Windows / Drivers",
+  "Remplacement Composants (RAM, SSD, Écran)",
+  "Diagnostic Matériel",
   "Autre",
 ]
 

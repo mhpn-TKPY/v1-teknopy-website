@@ -13,11 +13,11 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <ContactForm />
         <Services />
         <Projects />
         <Skills />
         <Trainings />
-        <ContactForm />
       </main>
       <Footer />
     </div>
