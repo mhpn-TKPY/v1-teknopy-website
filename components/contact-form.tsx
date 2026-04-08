@@ -1,37 +1,73 @@
 "use client"
 
 import { useState } from "react"
-import { Send, Phone, Mail, MapPin, CheckCircle, MailCheck } from "lucide-react"
+import { Send, Phone, Mail, MapPin, CheckCircle, MailCheck, Monitor, Globe, GraduationCap, Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { cn } from "@/lib/utils"
 
-const services = [
-  "Site Web Vitrine",
-  "Application Web",
-  "Application Mobile",
-  "E-commerce",
-  "Consulting IT",
-  "Formation Informatique",
-  "Formation Mathématiques",
-  "Réparation PC / Laptop Windows",
-  "Dépannage Logiciel Windows",
-  "Récupération de Données",
-  "Nettoyage / Optimisation PC",
-  "Installation Windows / Drivers",
-  "Remplacement Composants (RAM, SSD, Écran)",
-  "Diagnostic Matériel",
-  "Autre",
+// Service categories with their services
+const serviceCategories = [
+  {
+    id: "web",
+    name: "Développement Web",
+    icon: Globe,
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/30",
+    services: [
+      "Site Web Vitrine",
+      "Application Web",
+      "E-commerce",
+      "Application Mobile",
+    ],
+  },
+  {
+    id: "consulting",
+    name: "Consulting & Formation",
+    icon: GraduationCap,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    borderColor: "border-emerald-500/30",
+    services: [
+      "Consulting IT",
+      "Formation Informatique",
+      "Formation Mathématiques",
+    ],
+  },
+  {
+    id: "hardware",
+    name: "Réparation Hardware",
+    icon: Wrench,
+    color: "text-orange-500",
+    bgColor: "bg-orange-500/10",
+    borderColor: "border-orange-500/30",
+    services: [
+      "Réparation PC / Laptop",
+      "Dépannage Logiciel Windows",
+      "Récupération de Données",
+      "Nettoyage / Optimisation PC",
+      "Installation Windows / Drivers",
+      "Remplacement Composants (RAM, SSD, Écran)",
+      "Diagnostic Matériel",
+    ],
+  },
 ]
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [requiresVerification, setRequiresVerification] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedService, setSelectedService] = useState<string>("")
+
+  const selectedCategoryData = serviceCategories.find(c => c.id === selectedCategory)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -42,7 +78,7 @@ export function ContactForm() {
       name: formData.get("name"),
       email: formData.get("email"),
       phone: formData.get("phone"),
-      service: formData.get("service"),
+      service: selectedService || formData.get("service"),
       message: formData.get("message"),
     }
 
@@ -203,21 +239,79 @@ export function ContactForm() {
                       />
                     </Field>
 
+                    {/* Service Category Selection */}
                     <Field>
-                      <FieldLabel htmlFor="service">Service souhaité *</FieldLabel>
-                      <Select name="service" required>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un service" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {services.map((service) => (
-                            <SelectItem key={service} value={service}>
-                              {service}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FieldLabel>Catégorie de service *</FieldLabel>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        {serviceCategories.map((category) => {
+                          const Icon = category.icon
+                          const isSelected = selectedCategory === category.id
+                          return (
+                            <button
+                              key={category.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedCategory(category.id)
+                                setSelectedService("")
+                              }}
+                              className={cn(
+                                "flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-all hover:shadow-md",
+                                isSelected
+                                  ? `${category.borderColor} ${category.bgColor} border-2`
+                                  : "border-border hover:border-primary/50"
+                              )}
+                            >
+                              <div className={cn(
+                                "flex h-10 w-10 items-center justify-center rounded-full",
+                                category.bgColor
+                              )}>
+                                <Icon className={cn("h-5 w-5", category.color)} />
+                              </div>
+                              <span className="text-sm font-medium">{category.name}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </Field>
+
+                    {/* Service Selection (Radio Buttons) */}
+                    {selectedCategoryData && (
+                      <Field>
+                        <FieldLabel>Service souhaité *</FieldLabel>
+                        <RadioGroup
+                          value={selectedService}
+                          onValueChange={setSelectedService}
+                          className="grid gap-2"
+                        >
+                          {selectedCategoryData.services.map((service) => (
+                            <div
+                              key={service}
+                              className={cn(
+                                "flex items-center space-x-3 rounded-lg border p-3 transition-colors",
+                                selectedService === service
+                                  ? `${selectedCategoryData.borderColor} ${selectedCategoryData.bgColor}`
+                                  : "border-border hover:bg-secondary/50"
+                              )}
+                            >
+                              <RadioGroupItem
+                                value={service}
+                                id={service}
+                                className={cn(
+                                  selectedService === service && selectedCategoryData.color
+                                )}
+                              />
+                              <Label
+                                htmlFor={service}
+                                className="flex-1 cursor-pointer text-sm font-medium"
+                              >
+                                {service}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                        <input type="hidden" name="service" value={selectedService} />
+                      </Field>
+                    )}
 
                     <Field>
                       <FieldLabel htmlFor="message">Votre message *</FieldLabel>
@@ -230,7 +324,11 @@ export function ContactForm() {
                       />
                     </Field>
 
-                    <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
+                    <Button 
+                      type="submit" 
+                      className="w-full gap-2" 
+                      disabled={isSubmitting || !selectedService}
+                    >
                       {isSubmitting ? (
                         <>
                           <Spinner className="h-4 w-4" />
@@ -243,6 +341,12 @@ export function ContactForm() {
                         </>
                       )}
                     </Button>
+
+                    {!selectedCategory && (
+                      <p className="text-center text-sm text-muted-foreground">
+                        Sélectionnez une catégorie de service pour continuer
+                      </p>
+                    )}
                   </FieldGroup>
                 </form>
               )}
