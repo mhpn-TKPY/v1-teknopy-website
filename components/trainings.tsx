@@ -29,21 +29,22 @@ const trainings = [
 
 export function Trainings() {
   return (
-    <section id="formations" className="py-16 md:py-24">
+    <section id="formations" className="py-10 md:py-14 lg:py-16" aria-labelledby="formations-heading">
       <div className="container mx-auto px-4">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            Formations
+        <header className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
+          <span className="mb-2 inline-block text-sm font-medium text-primary">TEKNOPY Formation</span>
+          <h2 id="formations-heading" className="mb-3 text-2xl font-bold tracking-tight text-foreground md:text-3xl lg:text-4xl">
+            Formations Informatique & Mathématiques
           </h2>
           <p className="text-muted-foreground">
-            Des cours particuliers adaptés à vos besoins, dispensés par un formateur expérimenté.
+            Des cours particuliers à Fort-de-France adaptés à vos besoins, dispensés par un formateur expérimenté à 20€/heure.
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
           {trainings.map((training) => (
             <Card key={training.title} className="overflow-hidden">
-              <div className="relative h-64 w-full bg-secondary/20">
+              <div className="relative h-48 w-full bg-secondary/20 md:h-56 lg:h-60">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={training.image}

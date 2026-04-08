@@ -38,10 +38,10 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/images/logo-teknopy.png"
-            alt="TEKNOPY Concept"
-            width={120}
-            height={87}
-            className="h-14 w-auto"
+            alt="TEKNOPY Création - L'innovation au service du web"
+            width={150}
+            height={110}
+            className="h-12 w-auto md:h-14"
             priority
           />
         </Link>

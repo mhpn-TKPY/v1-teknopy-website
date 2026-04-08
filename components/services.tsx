@@ -42,18 +42,19 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="bg-secondary/30 py-16 md:py-24">
+    <section id="services" className="bg-secondary/30 py-10 md:py-14 lg:py-16" aria-labelledby="services-heading">
       <div className="container mx-auto px-4">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            Nos Services
+        <header className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
+          <span className="mb-2 inline-block text-sm font-medium text-primary">TEKNOPY Création</span>
+          <h2 id="services-heading" className="mb-3 text-2xl font-bold tracking-tight text-foreground md:text-3xl lg:text-4xl">
+            Services de Développement Web en Martinique
           </h2>
           <p className="text-muted-foreground">
-            Des solutions complètes pour accompagner votre présence numérique et votre croissance.
+            Des solutions digitales sur mesure pour accompagner votre présence numérique et accélérer votre croissance.
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
           {services.map((service) => (
             <Card key={service.title} className="group transition-all hover:border-primary/50 hover:shadow-md">
               <CardHeader>

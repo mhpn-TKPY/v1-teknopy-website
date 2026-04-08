@@ -1,0 +1,63 @@
+{
+  "name": "TEKNOPY Création - L'innovation au service du web",
+  "short_name": "TEKNOPY",
+  "description": "Agence de développement web et consulting IT en Martinique. Création de sites web, applications et formations informatiques.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/logo-teknopy-150.png",
+      "sizes": "150x110",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo-teknopy-300.png",
+      "sizes": "300x220",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo-teknopy.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "fr-FR",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Contactez-nous pour un devis gratuit",
+      "url": "/#contact",
+      "icons": [{ "src": "/images/logo-teknopy-150.png", "sizes": "150x110" }]
+    },
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "description": "Découvrez nos services",
+      "url": "/#services",
+      "icons": [{ "src": "/images/logo-teknopy-150.png", "sizes": "150x110" }]
+    }
+  ]
+}

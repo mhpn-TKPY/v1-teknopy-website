@@ -14,8 +14,8 @@ export default function HomePage() {
       <main className="flex-1">
         <Hero />
         <ContactForm />
-        <Services />
         <Projects />
+        <Services />
         <Skills />
         <Trainings />
       </main>

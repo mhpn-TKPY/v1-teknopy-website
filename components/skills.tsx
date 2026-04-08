@@ -42,18 +42,19 @@ const skillCategories = [
 
 export function Skills() {
   return (
-    <section id="competences" className="bg-secondary/30 py-16 md:py-24">
+    <section id="competences" className="bg-secondary/30 py-10 md:py-14 lg:py-16" aria-labelledby="competences-heading">
       <div className="container mx-auto px-4">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            Compétences Techniques
+        <header className="mx-auto mb-8 max-w-2xl text-center md:mb-10">
+          <span className="mb-2 inline-block text-sm font-medium text-primary">Expertise TEKNOPY</span>
+          <h2 id="competences-heading" className="mb-3 text-2xl font-bold tracking-tight text-foreground md:text-3xl lg:text-4xl">
+            Compétences Techniques Fullstack
           </h2>
           <p className="text-muted-foreground">
-            Une expertise fullstack moderne pour réaliser vos projets web avec les meilleures technologies.
+            Une expertise fullstack moderne pour réaliser vos projets web avec les meilleures technologies du marché.
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
           {skillCategories.map((category) => (
             <Card key={category.title}>
               <CardHeader>
