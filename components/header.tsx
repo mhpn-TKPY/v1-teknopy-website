@@ -26,9 +26,9 @@ export function Header() {
             <Phone className="h-3.5 w-3.5" />
             +596 696 617 151
           </a>
-          <a href="mailto:manuel.harpon@teknopy.com" className="flex items-center gap-2 hover:opacity-80">
+          <a href="mailto:contact@plistech.com" className="flex items-center gap-2 hover:opacity-80">
             <Mail className="h-3.5 w-3.5" />
-            manuel.harpon@teknopy.com
+            contact@plistech.com
           </a>
         </div>
       </div>
@@ -99,9 +99,9 @@ export function Header() {
                 <Phone className="h-4 w-4 text-primary" />
                 +596 696 617 151
               </a>
-              <a href="mailto:manuel.harpon@teknopy.com" className="flex items-center gap-2 text-sm">
+              <a href="mailto:contact@plistech.com" className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-primary" />
-                manuel.harpon@teknopy.com
+                contact@plistech.com
               </a>
             </div>
             <Button asChild className="mt-2">

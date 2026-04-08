@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Send, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { Send, Phone, Mail, MapPin, CheckCircle, RefreshCw, Clock, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
+import { sendVerificationEmail } from "@/lib/email-client"
 
 const services = [
   "Site Web Vitrine",
@@ -21,22 +22,49 @@ const services = [
   "Autre",
 ]
 
+const RESEND_DELAY_SECONDS = 120 // 2 minutes before allowing resend
+
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+  const [emailSent, setEmailSent] = useState(false)
+  const [selectedService, setSelectedService] = useState<string>("")
+  // Saved form data for resend
+  const savedDataRef = useRef<Record<string, unknown> | null>(null)
+  // Countdown: seconds remaining before resend is allowed
+  const [countdown, setCountdown] = useState(0)
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const startCountdown = useCallback(() => {
+    setCountdown(RESEND_DELAY_SECONDS)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownRef.current!)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }, [])
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      service: formData.get("service"),
-      message: formData.get("message"),
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current)
     }
+  }, [])
+
+  const submitForm = useCallback(async (data: Record<string, unknown>, isResend = false) => {
+    if (isResend) setIsResending(true)
+    else setIsSubmitting(true)
+    
+    // Clear previous errors
+    setIsError(false)
+    setErrorMessage("")
 
     try {
       const response = await fetch("/api/contact", {
@@ -45,14 +73,77 @@ export function ContactForm() {
         body: JSON.stringify(data),
       })
 
-      if (response.ok) {
-        setIsSuccess(true)
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: "Erreur serveur" }))
+        setIsError(true)
+        setErrorMessage(err.error || "Une erreur est survenue. Veuillez réessayer.")
+        return
       }
-    } catch (error) {
-      console.error("Error submitting form:", error)
+
+      const result = await response.json()
+
+      // Attempt to send verification email — non-blocking.
+      // Token is already stored in Supabase; email is best-effort.
+      let sent = false
+      try {
+        sent = await sendVerificationEmail(
+          result.email as string,
+          result.name as string,
+          result.magicLink as string
+        )
+      } catch {
+        sent = false
+      }
+
+      savedDataRef.current = data
+      setEmailSent(sent)
+      setIsSuccess(true)
+      startCountdown()
+    } catch {
+      setIsError(true)
+      setErrorMessage("Impossible de contacter le serveur. Vérifiez votre connexion.")
     } finally {
-      setIsSubmitting(false)
+      if (isResend) setIsResending(false)
+      else setIsSubmitting(false)
     }
+  }, [startCountdown])
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      service: selectedService || formData.get("service"),
+      message: formData.get("message"),
+    }
+    await submitForm(data)
+  }
+
+  async function handleResend() {
+    if (!savedDataRef.current || countdown > 0) return
+    await submitForm(savedDataRef.current, true)
+  }
+
+  function handleNewRequest() {
+    // Reset all states to show the blank form again without page reload
+    setIsSuccess(false)
+    setIsError(false)
+    setErrorMessage("")
+    setEmailSent(false)
+    setIsSubmitting(false)
+    setIsResending(false)
+    setSelectedService("")
+    setCountdown(0)
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    savedDataRef.current = null
+  }
+
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, "0")
+    const s = (secs % 60).toString().padStart(2, "0")
+    return `${m}:${s}`
   }
 
   return (
@@ -92,7 +183,7 @@ export function ContactForm() {
                 </a>
 
                 <a
-                  href="mailto:manuel.harpon@teknopy.com"
+                  href="mailto:contact@plistech.com"
                   className="flex items-center gap-3 text-sm transition-colors hover:text-primary"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
@@ -100,7 +191,7 @@ export function ContactForm() {
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">manuel.harpon@teknopy.com</p>
+                    <p className="text-muted-foreground">contact@plistech.com</p>
                   </div>
                 </a>
 
@@ -134,15 +225,97 @@ export function ContactForm() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {isError && (
+                <div className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-900 dark:bg-red-900/20 dark:text-red-300">
+                  <p className="font-semibold mb-1">Erreur</p>
+                  <p>{errorMessage}</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setIsError(false)}
+                  >
+                    Réessayer
+                  </Button>
+                </div>
+              )}
               {isSuccess ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                    <CheckCircle className="h-8 w-8 text-primary" />
+                <div className="space-y-4">
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                      <CheckCircle className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {emailSent ? "Vérification nécessaire" : "Demande enregistrée"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {emailSent
+                        ? "Un email de vérification a été envoyé. Cliquez sur le lien pour confirmer votre demande."
+                        : "Votre demande a bien été enregistrée. Utilisez le bouton ci-dessous pour renvoyer le lien de vérification."}
+                    </p>
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">Message envoyé!</h3>
-                  <p className="text-muted-foreground">
-                    Merci pour votre message. Nous vous répondrons sous 24 heures.
-                  </p>
+
+                  <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-900/20 dark:text-blue-300">
+                    <p className="font-semibold mb-2">Comment ça fonctionne ?</p>
+                    <ul className="list-inside list-disc space-y-1 text-xs">
+                      <li>Un email de vérification est envoyé à votre adresse</li>
+                      <li>Cliquez sur le lien de vérification dans l&apos;email</li>
+                      <li>Votre message et un récapitulatif seront alors envoyés</li>
+                      <li>L&apos;équipe Teknopy recevra également votre message</li>
+                    </ul>
+                  </div>
+
+                  {/* Resend section */}
+                  <div className="rounded-lg border border-border p-4 text-center space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Le lien expire dans <strong>10 minutes</strong>. Si vous ne l&apos;avez pas reçu ou s&apos;il a expiré, vous pouvez en demander un nouveau.
+                    </p>
+                    {countdown > 0 ? (
+                      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>Renvoi disponible dans <strong className="font-mono tabular-nums">{formatCountdown(countdown)}</strong></span>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleResend}
+                        disabled={isResending}
+                      >
+                        {isResending ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Renvoi en cours...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-4 w-4" />
+                            Renvoyer un nouveau lien
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* New request — resets the form without page reload */}
+                  <div className="border-t border-border pt-4 text-center">
+                    <p className="mb-3 text-xs text-muted-foreground">
+                      Vous souhaitez soumettre une autre demande ?
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-2 text-muted-foreground hover:text-foreground"
+                      onClick={handleNewRequest}
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Nouvelle demande
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
@@ -181,7 +354,7 @@ export function ContactForm() {
 
                     <Field>
                       <FieldLabel htmlFor="service">Service souhaité *</FieldLabel>
-                      <Select name="service" required>
+                      <Select name="service" required onValueChange={setSelectedService}>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionnez un service" />
                         </SelectTrigger>

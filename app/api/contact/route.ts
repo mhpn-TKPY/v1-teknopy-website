@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { generateVerificationToken, generateMagicLink } from "@/lib/token"
+import { storeVerificationToken } from "@/lib/supabase-service"
 
+// This route ONLY interacts with Supabase. NO Web3Forms calls here.
+// Email sending is handled entirely client-side (browser → Web3Forms directly).
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { name, email, phone, service, message } = body
 
-    // Validate required fields
     if (!name || !email || !service || !message) {
       return NextResponse.json(
         { error: "Nom, email, service et message sont requis" },
@@ -14,43 +16,21 @@ export async function POST(request: Request) {
       )
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Email invalide" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Email invalide" }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const token = generateVerificationToken()
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.plistech.com"
+    const magicLink = generateMagicLink(token, baseUrl)
 
-    const { error } = await supabase.from("contacts").insert({
-      name,
-      email,
-      phone: phone || null,
-      service: service || "Autre",
-      message,
-    })
+    await storeVerificationToken(token, { name, email, phone, service, message })
 
-    if (error) {
-      console.error("Supabase error:", error)
-      // If the table doesn't exist yet, still return success
-      // This allows the form to work before the database is set up
-      if (error.code === "42P01") {
-        return NextResponse.json({ success: true, message: "Message reçu (mode démo)" })
-      }
-      return NextResponse.json(
-        { error: "Erreur lors de l'envoi du message" },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ success: true, message: "Message envoyé avec succès" })
+    return NextResponse.json({ success: true, magicLink, email, name })
   } catch (error) {
-    console.error("Error:", error)
     return NextResponse.json(
-      { error: "Erreur serveur" },
+      { error: error instanceof Error ? error.message : "Erreur serveur" },
       { status: 500 }
     )
   }
