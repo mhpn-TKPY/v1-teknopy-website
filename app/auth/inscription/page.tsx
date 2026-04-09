@@ -106,9 +106,8 @@ Email : contact@plistech.com
               `.trim(),
             }),
           })
-        } catch (emailError) {
-          // Email error should not block signup
-          console.log('[v0] Web3Forms email error (non-blocking):', emailError)
+        } catch {
+          // Email error should not block signup - silently continue
         }
         
         // 3. Also notify admin about new signup
@@ -133,8 +132,8 @@ Connectez-vous à Supabase pour voir les détails.
               `.trim(),
             }),
           })
-        } catch (adminEmailError) {
-          console.log('[v0] Admin notification error (non-blocking):', adminEmailError)
+        } catch {
+          // Admin notification error - silently continue
         }
         
         router.push('/auth/inscription-reussie')
