@@ -173,7 +173,7 @@ export function ContactPage() {
                   </a>
 
                   <a
-                    href="mailto:manuel.harpon@teknopy.com"
+                    href="mailto:contact@plistech.com"
                     className="flex items-center gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-secondary/50"
                   >
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -181,7 +181,7 @@ export function ContactPage() {
                     </div>
                     <div>
                       <p className="font-medium">Email</p>
-                      <p className="text-primary">manuel.harpon@teknopy.com</p>
+                      <p className="text-primary">contact@plistech.com</p>
                     </div>
                   </a>
 

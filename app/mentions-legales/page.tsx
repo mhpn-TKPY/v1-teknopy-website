@@ -42,7 +42,7 @@ export default function MentionsLegalesPage() {
                     <p>Micro-entreprise</p>
                     <p>Représentant légal : Manuel Harpon</p>
                     <p>Adresse : Fort-de-France, Martinique (972)</p>
-                    <p>Email : manuel.harpon@teknopy.com</p>
+                    <p>Email : contact@plistech.com</p>
                     <p>Téléphone : +596 696 617 151</p>
                     <p>SIRET : En cours d&apos;immatriculation</p>
                   </div>

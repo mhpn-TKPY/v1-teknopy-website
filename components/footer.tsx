@@ -93,11 +93,11 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:manuel.harpon@teknopy.com"
+                  href="mailto:contact@plistech.com"
                   className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Mail className="h-4 w-4" />
-                  manuel.harpon@teknopy.com
+                  contact@plistech.com
                 </a>
               </li>
               <li>

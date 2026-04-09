@@ -92,7 +92,7 @@ export function ContactForm() {
                 </a>
 
                 <a
-                  href="mailto:manuel.harpon@teknopy.com"
+                  href="mailto:contact@plistech.com"
                   className="flex items-center gap-3 text-sm transition-colors hover:text-primary"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
@@ -100,7 +100,7 @@ export function ContactForm() {
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">manuel.harpon@teknopy.com</p>
+                    <p className="text-muted-foreground">contact@plistech.com</p>
                   </div>
                 </a>
 

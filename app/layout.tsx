@@ -108,7 +108,7 @@ const jsonLd = {
       description: 'Agence de développement web, consulting IT et formations informatiques en Martinique',
       url: 'https://teknopy.com',
       telephone: '+596696617151',
-      email: 'manuel.harpon@teknopy.com',
+      email: 'contact@plistech.com',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Fort-de-France',

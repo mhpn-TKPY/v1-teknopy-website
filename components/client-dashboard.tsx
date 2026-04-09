@@ -407,11 +407,11 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                         +596 696 617 151
                       </a>
                       <a 
-                        href="mailto:manuel.harpon@teknopy.com" 
+                        href="mailto:contact@plistech.com" 
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
                       >
                         <Mail className="h-4 w-4" />
-                        manuel.harpon@teknopy.com
+                        contact@plistech.com
                       </a>
                     </div>
                     <Button asChild className="w-full">
