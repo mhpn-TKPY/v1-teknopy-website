@@ -1,5 +1,8 @@
-import { Code2, Globe, Smartphone, Database, GraduationCap, Headphones } from "lucide-react"
+import Link from "next/link"
+import { Code2, Globe, Smartphone, Database, GraduationCap, Headphones, ArrowRight, Sparkles } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 const services = [
   {
@@ -45,11 +48,15 @@ export function Services() {
     <section id="services" className="bg-secondary/30 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+          <Badge variant="secondary" className="mb-4">
+            <Sparkles className="mr-1 h-3 w-3" />
             Nos Services
+          </Badge>
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl text-balance">
+            Des solutions complètes pour votre réussite numérique
           </h2>
-          <p className="text-muted-foreground">
-            Des solutions complètes pour accompagner votre présence numérique et votre croissance.
+          <p className="text-muted-foreground text-pretty">
+            Développement web, applications mobiles, formations et support IT pour entreprises et particuliers en Martinique.
           </p>
         </div>
 
@@ -75,6 +82,15 @@ export function Services() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button asChild size="lg" className="gap-2">
+            <Link href="/tarifs">
+              Voir nos tarifs détaillés
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

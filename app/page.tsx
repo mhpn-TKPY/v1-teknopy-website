@@ -1,11 +1,7 @@
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
-import { Services } from "@/components/services"
-import { Pricing } from "@/components/pricing"
-import { Projects } from "@/components/projects"
-import { Skills } from "@/components/skills"
-import { Trainings } from "@/components/trainings"
-import { ContactForm } from "@/components/contact-form"
+import { ServicesPreview } from "@/components/services-preview"
+import { HomepageCTA } from "@/components/homepage-cta"
 import { Footer } from "@/components/footer"
 
 export default function HomePage() {
@@ -14,12 +10,8 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <Hero />
-        <Services />
-        <Pricing />
-        <Projects />
-        <Skills />
-        <Trainings />
-        <ContactForm />
+        <ServicesPreview />
+        <HomepageCTA />
       </main>
       <Footer />
     </div>

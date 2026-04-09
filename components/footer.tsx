@@ -3,11 +3,11 @@ import Link from "next/link"
 import { Phone, Mail, MapPin, Globe } from "lucide-react"
 
 const quickLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#projets", label: "Projets" },
-  { href: "#competences", label: "Compétences" },
-  { href: "#formations", label: "Formations" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#services", label: "Services" },
+  { href: "/tarifs", label: "Tarifs" },
+  { href: "/projets", label: "Projets" },
+  { href: "/formations", label: "Formations" },
+  { href: "/contact", label: "Contact" },
 ]
 
 const services = [
@@ -54,12 +54,12 @@ export function Footer() {
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -7,12 +7,11 @@ import { Menu, X, Phone, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#tarifs", label: "Tarifs" },
-  { href: "#projets", label: "Projets" },
-  { href: "#competences", label: "Compétences" },
-  { href: "#formations", label: "Formations" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#services", label: "Services" },
+  { href: "/tarifs", label: "Tarifs" },
+  { href: "/projets", label: "Projets" },
+  { href: "/formations", label: "Formations" },
+  { href: "/contact", label: "Contact" },
 ]
 
 export function Header() {
@@ -62,7 +61,7 @@ export function Header() {
 
         <div className="hidden md:block">
           <Button asChild>
-            <a href="#contact">Demander un devis</a>
+            <Link href="/contact">Demander un devis</Link>
           </Button>
         </div>
 
@@ -106,7 +105,7 @@ export function Header() {
               </a>
             </div>
             <Button asChild className="mt-2">
-              <a href="#contact">Demander un devis</a>
+              <Link href="/contact">Demander un devis</Link>
             </Button>
           </div>
         </div>

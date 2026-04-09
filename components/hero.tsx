@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { ArrowRight, Code2, Laptop, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -28,13 +29,13 @@ export function Hero() {
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild className="gap-2">
-              <a href="#contact">
+              <Link href="/contact">
                 Demander un devis gratuit
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <a href="#projets">Voir nos réalisations</a>
+              <Link href="/projets">Voir nos réalisations</Link>
             </Button>
           </div>
         </div>
