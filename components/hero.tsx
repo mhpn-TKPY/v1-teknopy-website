@@ -52,7 +52,7 @@ export function Hero() {
           <div className="mt-6">
             <Link 
               href="/auth/inscription" 
-              className="group inline-flex items-center gap-3 rounded-2xl border-2 border-primary/30 bg-primary/10 px-6 py-3 shadow-lg transition-all hover:border-primary hover:bg-primary/20 hover:shadow-xl"
+              className="group inline-flex items-center gap-3 rounded-2xl border-2 border-primary bg-primary/30 px-6 py-3 shadow-xl transition-all hover:bg-primary/50 hover:shadow-2xl"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-110">
                 <UserPlus className="h-5 w-5" />
