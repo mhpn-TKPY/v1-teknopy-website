@@ -121,9 +121,9 @@ export function Header() {
                   <Phone className="h-4 w-4 text-primary" />
                   +596 696 617 151
                 </a>
-                <a href="mailto:contact@plistech.com" className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                <a href="mailto:manuel.harpon@teknopy.com" className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-foreground">
                   <Mail className="h-4 w-4 text-primary" />
-                  contact@plistech.com
+                  manuel.harpon@teknopy.com
                 </a>
               </div>
               
@@ -186,11 +186,11 @@ export function Header() {
                         </div>
                         <span className="font-medium">+596 696 617 151</span>
                       </a>
-                      <a href="mailto:contact@plistech.com" className="flex items-center gap-2 hover:opacity-80 transition-opacity group">
+                      <a href="mailto:manuel.harpon@teknopy.com" className="flex items-center gap-2 hover:opacity-80 transition-opacity group">
                         <div className="p-1.5 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
                           <Mail className="h-3.5 w-3.5" />
                         </div>
-                        <span className="font-medium">contact@plistech.com</span>
+                        <span className="font-medium">manuel.harpon@teknopy.com</span>
                       </a>
                     </div>
                     

@@ -111,7 +111,7 @@ const jsonLd = {
       image: 'https://plistech.com/opengraph-image.png',
       description: "Agence de developpement web, consulting IT et formations informatiques en Martinique",
       telephone: '+596696617151',
-      email: 'contact@plistech.com',
+      email: 'manuel.harpon@teknopy.com',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Fort-de-France',

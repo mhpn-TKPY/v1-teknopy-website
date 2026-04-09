@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Contact | Demandez un Devis Gratuit",
-  description: "Contactez TEKNOPY Concept pour un devis gratuit sous 24h. Téléphone : +596 696 617 151. Email : contact@plistech.com. Fort-de-France, Martinique.",
+  description: "Contactez TEKNOPY Concept pour un devis gratuit sous 24h. Telephone : +596 696 617 151. Email : manuel.harpon@teknopy.com. Fort-de-France, Martinique.",
   keywords: [
     "contact agence web martinique",
     "devis site web martinique",

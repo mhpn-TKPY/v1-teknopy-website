@@ -100,11 +100,11 @@ export function Hero() {
                   +596 696 617 151
                 </a>
                 <a
-                  href="mailto:contact@plistech.com"
+                  href="mailto:manuel.harpon@teknopy.com"
                   className="inline-flex items-center justify-center gap-2 text-muted-foreground transition-colors hover:text-primary sm:justify-start"
                 >
                   <Mail className="h-4 w-4 text-primary" />
-                  contact@plistech.com
+                  manuel.harpon@teknopy.com
                 </a>
                 <span className="inline-flex items-center justify-center gap-2 text-muted-foreground sm:justify-start">
                   <MapPin className="h-4 w-4 text-primary" />

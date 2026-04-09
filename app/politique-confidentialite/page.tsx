@@ -57,7 +57,7 @@ export default function PolitiqueConfidentialitePage() {
                     <p><strong>TEKNOPY Concept</strong></p>
                     <p>Représenté par : Manuel Harpon</p>
                     <p>Adresse : Fort-de-France, Martinique</p>
-                    <p>Email : contact@plistech.com</p>
+                    <p>Email : manuel.harpon@teknopy.com</p>
                     <p>Téléphone : +596 696 617 151</p>
                   </div>
                 </CardContent>
@@ -133,7 +133,7 @@ export default function PolitiqueConfidentialitePage() {
                       <li><strong>Droit à la limitation :</strong> limiter le traitement de vos données</li>
                     </ul>
                     <p className="mt-4">
-                      Pour exercer ces droits, contactez-nous à : <strong>contact@plistech.com</strong>
+                      Pour exercer ces droits, contactez-nous a : <strong>manuel.harpon@teknopy.com</strong>
                     </p>
                   </div>
                 </CardContent>
@@ -148,7 +148,7 @@ export default function PolitiqueConfidentialitePage() {
                   </h2>
                   <p className="text-muted-foreground">
                     Pour toute question concernant cette politique ou vos données personnelles, 
-                    vous pouvez nous contacter à <strong>contact@plistech.com</strong> ou 
+                    vous pouvez nous contacter a <strong>manuel.harpon@teknopy.com</strong> ou 
                     au <strong>+596 696 617 151</strong>.
                   </p>
                   <p className="mt-4 text-muted-foreground">
