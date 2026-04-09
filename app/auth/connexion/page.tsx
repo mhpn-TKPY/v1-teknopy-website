@@ -17,11 +17,12 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
-import { LogIn, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { LogIn, Mail, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 export default function ConnexionPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -57,13 +58,25 @@ export default function ConnexionPage() {
           
           <Card className="relative border-border/50 bg-card/95 backdrop-blur-sm">
             <CardHeader className="space-y-4 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <LogIn className="h-8 w-8 text-primary" />
+              {/* Photo de profil avec message de bienvenue */}
+              <div className="mx-auto relative">
+                <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-primary/20 shadow-lg">
+                  <Image
+                    src="/images/manuel-harpon-profile.jpg"
+                    alt="Manuel Harpon - TEKNOPY"
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <LogIn className="h-4 w-4" />
+                </div>
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
+                <CardTitle className="text-2xl font-bold">Bon retour parmi nous</CardTitle>
                 <CardDescription className="mt-2">
-                  Accédez à votre espace client TEKNOPY
+                  Connectez-vous pour retrouver vos projets et suivre leur avancement.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -90,13 +103,21 @@ export default function ConnexionPage() {
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Votre mot de passe"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 pr-10"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
                 

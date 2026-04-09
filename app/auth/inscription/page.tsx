@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
+import Image from 'next/image'
 import { UserPlus, Mail, Lock, User, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 export default function InscriptionPage() {
@@ -82,13 +83,25 @@ export default function InscriptionPage() {
           
           <Card className="relative border-border/50 bg-card/95 backdrop-blur-sm">
             <CardHeader className="space-y-4 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <UserPlus className="h-8 w-8 text-primary" />
+              {/* Photo de profil avec message de bienvenue */}
+              <div className="mx-auto relative">
+                <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-primary/20 shadow-lg">
+                  <Image
+                    src="/images/manuel-harpon-profile.jpg"
+                    alt="Manuel Harpon - TEKNOPY"
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <UserPlus className="h-4 w-4" />
+                </div>
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold">Créer un compte</CardTitle>
+                <CardTitle className="text-2xl font-bold">Bienvenue chez TEKNOPY</CardTitle>
                 <CardDescription className="mt-2">
-                  Rejoignez TEKNOPY et accédez à votre espace client
+                  Je suis Manuel, votre interlocuteur dédié. Créez votre compte pour accéder à votre espace client personnalisé.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -145,13 +158,21 @@ export default function InscriptionPage() {
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Minimum 6 caractères"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 pr-10"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
                 
@@ -161,13 +182,21 @@ export default function InscriptionPage() {
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="repeatPassword"
-                      type="password"
+                      type={showRepeatPassword ? "text" : "password"}
                       placeholder="Confirmez votre mot de passe"
                       required
                       value={repeatPassword}
                       onChange={(e) => setRepeatPassword(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 pr-10"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowRepeatPassword(!showRepeatPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showRepeatPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    >
+                      {showRepeatPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
                 </div>
                 

@@ -30,6 +30,7 @@ import {
   Mail,
   Phone
 } from 'lucide-react'
+import { WelcomePopup } from '@/components/welcome-popup'
 
 interface ClientDashboardProps {
   user: User
@@ -99,6 +100,7 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-secondary/30">
+      <WelcomePopup firstName={firstName} />
       <Header />
       
       <main className="flex-1 py-8">
@@ -381,16 +383,18 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <Image
-                        src="/images/manuel-harpon-profile.jpg"
-                        alt="Manuel Harpon"
-                        width={48}
-                        height={48}
-                        className="rounded-full"
-                      />
+                      <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-primary/20 shadow-md">
+                        <Image
+                          src="/images/manuel-harpon-casual.jpg"
+                          alt="Manuel Harpon"
+                          width={56}
+                          height={56}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
                       <div>
                         <p className="font-medium">Manuel Harpon</p>
-                        <p className="text-sm text-muted-foreground">Votre interlocuteur</p>
+                        <p className="text-sm text-muted-foreground">Votre interlocuteur dédié</p>
                       </div>
                     </div>
                     <div className="space-y-2">
