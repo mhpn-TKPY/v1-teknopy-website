@@ -65,8 +65,7 @@ export function Header() {
                   alt="TEKNOPY Concept"
                   width={140}
                   height={88}
-                  className="h-[88px]"
-                  style={{ width: 'auto', height: '88px' }}
+                  style={{ width: 'auto', height: 'auto' }}
                   priority
                 />
               </Link>
@@ -179,8 +178,8 @@ export function Header() {
                 alt="TEKNOPY"
                 width={80}
                 height={40}
-                className="h-10 transition-transform group-hover:scale-105"
-                style={{ width: 'auto', height: '40px' }}
+                className="transition-transform group-hover:scale-105"
+                style={{ width: 'auto', height: 'auto' }}
               />
             </Link>
 

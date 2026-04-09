@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, X, Mail, ChevronLeft, ChevronRight } from "lucide-react"
+import { Share2, X, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 
@@ -92,150 +92,138 @@ const shareLinks = [
   },
 ]
 
-// Futuristic floating share bar - positioned on the left side, below header
+// Futuristic share widget - RIGHT SIDE (mirror of nav on left)
 export function SocialShare() {
   const [isExpanded, setIsExpanded] = useState(false)
   const pathname = usePathname()
   const siteUrl = "https://teknopy.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
-  // Hide on auth/admin pages
-  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin') || pathname?.startsWith('/espace-client')) {
+  // Hide on auth/admin/espace-client pages
+  const hiddenPaths = ['/auth', '/admin', '/espace-client']
+  if (hiddenPaths.some(path => pathname?.startsWith(path))) {
     return null
   }
 
   return (
     <>
-      {/* Desktop: Vertical bar on left side, centered vertically below header */}
-      <div 
+      {/* Desktop lg+ : Vertical bar on RIGHT side, centered vertically */}
+      <aside
         className={cn(
-          "fixed left-0 top-1/2 -translate-y-1/2 z-30 hidden lg:flex flex-col items-center transition-all duration-300",
-          isExpanded ? "w-14" : "w-10"
+          "fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col rounded-l-2xl border border-r-0 border-border/40 bg-background/95 shadow-xl backdrop-blur transition-all duration-300 ease-in-out",
+          isExpanded ? "w-48" : "w-14"
         )}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
       >
-        {/* Glassmorphism container */}
-        <div className="relative bg-background/80 backdrop-blur-xl border border-border/50 rounded-r-2xl shadow-lg overflow-hidden">
-          {/* Decorative gradient line */}
-          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent" />
-          
-          {/* Share label */}
-          <div className="px-2 py-3 border-b border-border/30">
-            <div className={cn(
-              "flex items-center justify-center transition-all duration-300",
-              isExpanded ? "gap-1" : "gap-0"
-            )}>
-              <Share2 className="h-4 w-4 text-primary" />
-              {isExpanded && (
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                  Partager
-                </span>
-              )}
-            </div>
-          </div>
-          
-          {/* Social icons */}
-          <div className="flex flex-col items-center py-2 gap-1">
-            {shareLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.getUrl(siteUrl, siteTitle)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(
-                  "group relative flex items-center justify-center rounded-lg transition-all duration-200",
-                  isExpanded ? "w-10 h-10 mx-2" : "w-8 h-8 mx-1"
-                )}
-                title={link.name}
-              >
-                {/* Hover background */}
-                <div 
-                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  style={{ backgroundColor: link.bgColor }}
-                />
-                {/* Icon */}
-                <link.icon className={cn(
-                  "relative z-10 transition-all duration-200 text-muted-foreground group-hover:text-white",
-                  isExpanded ? "h-5 w-5" : "h-4 w-4"
-                )} />
-                
-                {/* Tooltip on hover */}
-                <div className="absolute left-full ml-3 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                  {link.name}
-                </div>
-              </a>
-            ))}
-          </div>
-          
-          {/* Expand indicator */}
-          <div className="px-2 py-2 border-t border-border/30 flex justify-center">
-            {isExpanded ? (
-              <ChevronLeft className="h-3 w-3 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="h-3 w-3 text-muted-foreground" />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Tablet: Compact floating button that expands */}
-      <div className="fixed bottom-20 left-4 z-30 hidden md:flex lg:hidden">
-        <div 
-          className={cn(
-            "relative bg-background/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg overflow-hidden transition-all duration-300",
-            isExpanded ? "w-auto" : "w-12"
-          )}
-          onMouseEnter={() => setIsExpanded(true)}
-          onMouseLeave={() => setIsExpanded(false)}
-        >
+        {/* Header with share icon */}
+        <div className="px-3 py-3 border-b border-border/30">
           <div className={cn(
-            "flex items-center gap-1 p-2 transition-all duration-300",
-            isExpanded ? "flex-row" : "flex-col"
+            "flex items-center transition-all duration-300",
+            isExpanded ? "gap-2 justify-start" : "justify-center"
           )}>
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-              <Share2 className="h-4 w-4 text-primary" />
-            </div>
-            
-            {isExpanded && shareLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.getUrl(siteUrl, siteTitle)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110"
-                style={{ backgroundColor: link.bgColor }}
-                title={link.name}
-              >
-                <link.icon className="h-4 w-4 text-white" />
-              </a>
-            ))}
+            <Share2 className="h-5 w-5 text-primary shrink-0" />
+            <span className={cn(
+              "text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap transition-all duration-300",
+              isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
+            )}>
+              Partager
+            </span>
           </div>
         </div>
-      </div>
+        
+        {/* Social icons */}
+        <nav className="py-3">
+          <ul className="flex flex-col gap-1 px-2">
+            {shareLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.getUrl(siteUrl, siteTitle)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-white"
+                  style={{ '--hover-bg': link.bgColor } as React.CSSProperties}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = link.bgColor
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                  }}
+                >
+                  <link.icon className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                  <span className={cn(
+                    "whitespace-nowrap transition-all duration-300",
+                    isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
+                  )}>
+                    {link.name}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+
+      {/* Tablet md : Compact vertical bar on right */}
+      <aside
+        className={cn(
+          "fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden md:flex lg:hidden flex-col rounded-l-xl border border-r-0 border-border/40 bg-background/95 shadow-lg backdrop-blur w-12"
+        )}
+      >
+        <div className="py-2">
+          <ul className="flex flex-col items-center gap-1 px-1.5">
+            <li className="pb-2 border-b border-border/30 w-full flex justify-center">
+              <Share2 className="h-4 w-4 text-primary" />
+            </li>
+            {shareLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.getUrl(siteUrl, siteTitle)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200"
+                  title={link.name}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = link.bgColor
+                    const icon = e.currentTarget.querySelector('svg')
+                    if (icon) icon.style.color = 'white'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    const icon = e.currentTarget.querySelector('svg')
+                    if (icon) icon.style.color = ''
+                  }}
+                >
+                  <link.icon className="h-4 w-4 text-muted-foreground transition-colors" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
     </>
   )
 }
 
-// Mobile: Bottom floating pill that stays above other elements
+// Mobile: Bottom floating pill - centered, above cookie consent
 export function SocialShareMobile() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const siteUrl = "https://teknopy.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
-  // Hide on auth/admin pages
-  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin') || pathname?.startsWith('/espace-client')) {
+  // Hide on auth/admin/espace-client pages
+  const hiddenPaths = ['/auth', '/admin', '/espace-client']
+  if (hiddenPaths.some(path => pathname?.startsWith(path))) {
     return null
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 md:hidden">
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 md:hidden">
       <div className={cn(
         "relative bg-background/95 backdrop-blur-xl border border-border/50 rounded-full shadow-lg transition-all duration-300 overflow-hidden",
-        isOpen ? "px-3 py-2" : "px-4 py-2"
+        isOpen ? "px-2 py-2" : "px-4 py-2.5"
       )}>
-        {/* Collapsed state - just the share button */}
         {!isOpen ? (
           <button
             onClick={() => setIsOpen(true)}
@@ -245,8 +233,7 @@ export function SocialShareMobile() {
             <span>Partager</span>
           </button>
         ) : (
-          <div className="flex items-center gap-2">
-            {/* Close button */}
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors"
@@ -254,14 +241,13 @@ export function SocialShareMobile() {
               <X className="h-4 w-4" />
             </button>
             
-            {/* Social icons */}
             {shareLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.getUrl(siteUrl, siteTitle)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-9 h-9 rounded-full transition-transform duration-200 hover:scale-110"
+                className="flex items-center justify-center w-8 h-8 rounded-full transition-transform duration-200 active:scale-95"
                 style={{ backgroundColor: link.bgColor }}
                 title={link.name}
               >
