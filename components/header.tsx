@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X, Phone, Mail } from "lucide-react"
+import { Menu, X, Phone, Mail, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navLinks = [
@@ -59,7 +59,13 @@ export function Header() {
           ))}
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <Button asChild variant="outline" size="sm" className="gap-2">
+            <Link href="/espace-client">
+              <User className="h-4 w-4" />
+              Espace Client
+            </Link>
+          </Button>
           <Button asChild>
             <Link href="/contact">Demander un devis</Link>
           </Button>
@@ -104,6 +110,12 @@ export function Header() {
                 manuel.harpon@teknopy.com
               </a>
             </div>
+            <Button asChild variant="outline" className="mt-2 gap-2">
+              <Link href="/espace-client">
+                <User className="h-4 w-4" />
+                Espace Client
+              </Link>
+            </Button>
             <Button asChild className="mt-2">
               <Link href="/contact">Demander un devis</Link>
             </Button>

@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-secondary/50 to-background pb-16 pt-12 md:pb-24 md:pt-20">
-      {/* Background pattern */}
-      <div className="absolute inset-0 -z-10 opacity-30">
-        <div className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+    <section className="relative overflow-hidden pb-16 pt-12 md:pb-24 md:pt-20">
+      {/* Sunset Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/images/hero-sunset-martinique.jpg"
+          alt="Coucher de soleil sur la Martinique"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
       </div>
 
       <div className="container mx-auto px-4">
@@ -41,11 +48,11 @@ export function Hero() {
           </div>
 
           {/* Contact Card with Profile */}
-          <div className="mt-10 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card/80 p-6 shadow-lg backdrop-blur-sm sm:flex-row sm:items-start">
+          <div className="mt-10 flex flex-col items-center gap-6 rounded-2xl border border-white/20 bg-card/95 p-6 shadow-2xl backdrop-blur-md sm:flex-row sm:items-start">
             <div className="relative">
               <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-primary/20 shadow-md">
                 <Image
-                  src="/images/manuel-harpon.jpg"
+                  src="/images/manuel-harpon-profile.jpg"
                   alt="Manuel Harpon - Fondateur de TEKNOPY Concept"
                   width={96}
                   height={96}

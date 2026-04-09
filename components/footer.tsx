@@ -8,6 +8,7 @@ const quickLinks = [
   { href: "/projets", label: "Projets" },
   { href: "/formations", label: "Formations" },
   { href: "/contact", label: "Contact" },
+  { href: "/espace-client", label: "Espace Client" },
 ]
 
 const services = [
