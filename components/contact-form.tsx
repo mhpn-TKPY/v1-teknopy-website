@@ -30,22 +30,44 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      service: formData.get("service"),
-      message: formData.get("message"),
-    }
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const phone = formData.get("phone") as string
+    const service = formData.get("service") as string
+    const message = formData.get("message") as string
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      // Send via Web3Forms directly (no API route needed)
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY',
+          subject: `Nouvelle demande de devis - ${service}`,
+          from_name: name,
+          replyto: email,
+          message: `
+Nouvelle demande de devis sur TEKNOPY Concept
+
+Nom: ${name}
+Email: ${email}
+Téléphone: ${phone || 'Non renseigné'}
+Service: ${service}
+
+Message:
+${message}
+
+---
+Envoyé depuis le formulaire de contact TEKNOPY
+          `.trim(),
+        }),
       })
 
-      if (response.ok) {
+      const result = await response.json()
+      
+      if (result.success) {
         setIsSuccess(true)
       }
     } catch (error) {

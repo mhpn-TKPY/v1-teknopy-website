@@ -50,13 +50,11 @@ export default function InscriptionPage() {
     }
 
     try {
+      // 1. Create user in Supabase (without email confirmation requirement)
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ??
-            `${window.location.origin}/auth/callback`,
           data: {
             first_name: firstName,
             last_name: lastName,
@@ -65,10 +63,7 @@ export default function InscriptionPage() {
       })
       
       if (error) {
-        // Handle specific Supabase errors with French messages
-        if (error.message.includes('sending confirmation email') || error.message.includes('email')) {
-          setError('Erreur lors de l\'envoi de l\'email de confirmation. Veuillez réessayer ou contacter le support.')
-        } else if (error.message.includes('already registered')) {
+        if (error.message.includes('already registered')) {
           setError('Cette adresse email est déjà enregistrée. Veuillez vous connecter.')
         } else {
           setError(error.message)
@@ -77,8 +72,71 @@ export default function InscriptionPage() {
         return
       }
       
-      // Check if user was created (even without email confirmation in dev)
+      // 2. Send welcome email via Web3Forms (no API route needed)
       if (data?.user) {
+        try {
+          await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY',
+              subject: `Bienvenue chez TEKNOPY - ${firstName} ${lastName}`,
+              from_name: 'TEKNOPY Concept',
+              to: email,
+              replyto: 'contact@plistech.com',
+              message: `
+Bonjour ${firstName},
+
+Bienvenue chez TEKNOPY Concept !
+
+Votre compte client a été créé avec succès. Vous pouvez maintenant accéder à votre espace client pour :
+- Suivre l'avancement de vos projets en temps réel
+- Consulter vos factures et devis
+- Échanger directement avec votre interlocuteur dédié
+
+Connectez-vous dès maintenant : ${window.location.origin}/auth/connexion
+
+À très bientôt,
+Manuel Harpon
+Fondateur - TEKNOPY Concept
+Tél : +596 696 617 151
+Email : contact@plistech.com
+              `.trim(),
+            }),
+          })
+        } catch (emailError) {
+          // Email error should not block signup
+          console.log('[v0] Web3Forms email error (non-blocking):', emailError)
+        }
+        
+        // 3. Also notify admin about new signup
+        try {
+          await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY',
+              subject: `Nouvelle inscription - ${firstName} ${lastName}`,
+              from_name: 'TEKNOPY Espace Client',
+              message: `
+Nouvelle inscription sur TEKNOPY Concept
+
+Nom: ${firstName} ${lastName}
+Email: ${email}
+Date: ${new Date().toLocaleString('fr-FR')}
+
+Connectez-vous à Supabase pour voir les détails.
+              `.trim(),
+            }),
+          })
+        } catch (adminEmailError) {
+          console.log('[v0] Admin notification error (non-blocking):', adminEmailError)
+        }
+        
         router.push('/auth/inscription-reussie')
       }
     } catch (error: unknown) {
