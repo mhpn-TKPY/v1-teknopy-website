@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+// Note: SelectItem still used for budget selection
 import {
   FolderKanban,
   MessageSquare,
@@ -49,6 +50,7 @@ import {
   RefreshCw
 } from 'lucide-react'
 import { WelcomePopup } from '@/components/welcome-popup'
+import { ServiceSelector, type SelectedService } from '@/components/service-selector'
 
 interface ClientDashboardProps {
   user: User
@@ -94,7 +96,8 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
   // New project form state
   const [projectTitle, setProjectTitle] = useState('')
   const [projectDescription, setProjectDescription] = useState('')
-  const [projectService, setProjectService] = useState('')
+  const [projectServices, setProjectServices] = useState<SelectedService[]>([])
+  const [projectEstimatedTotal, setProjectEstimatedTotal] = useState('')
   const [projectBudget, setProjectBudget] = useState('')
   const [projectDeadline, setProjectDeadline] = useState('')
   
@@ -162,20 +165,23 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
     router.refresh()
   }
 
-  const handleCreateProject = async () => {
-    if (!projectTitle || !projectService) return
-    setIsSubmitting(true)
-
-    const { error } = await supabase
-      .from('client_projects')
-      .insert({
-        user_id: user.id,
-        title: projectTitle,
-        description: projectDescription || null,
-        service_type: projectService,
-        budget: projectBudget || null,
-        deadline: projectDeadline || null
-      })
+const handleCreateProject = async () => {
+  if (!projectTitle || projectServices.length === 0) return
+  setIsSubmitting(true)
+  
+  // Format services for database
+  const servicesText = projectServices.map(s => `${s.name} (${s.price})`).join(', ')
+  
+  const { error } = await supabase
+  .from('client_projects')
+  .insert({
+  user_id: user.id,
+  title: projectTitle,
+  description: projectDescription || null,
+  service_type: servicesText,
+  budget: projectEstimatedTotal || projectBudget || null,
+  deadline: projectDeadline || null
+  })
 
     if (!error) {
       // Reset form
@@ -364,20 +370,15 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="service">Type de service *</Label>
-                        <Select value={projectService} onValueChange={setProjectService}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selectionnez un service" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="site-vitrine">Site Vitrine</SelectItem>
-                            <SelectItem value="e-commerce">E-commerce</SelectItem>
-                            <SelectItem value="application-web">Application Web</SelectItem>
-                            <SelectItem value="refonte">Refonte de site</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                            <SelectItem value="autre">Autre</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Label>Services souhaites *</Label>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Selectionnez un ou plusieurs services
+                        </p>
+                        <ServiceSelector
+                          selectedServices={projectServices}
+                          onServicesChange={setProjectServices}
+                          onTotalChange={setProjectEstimatedTotal}
+                        />
                       </div>
                       <div>
                         <Label htmlFor="description">Description</Label>
@@ -422,7 +423,7 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                       </Button>
                       <Button 
                         onClick={handleCreateProject} 
-                        disabled={!projectTitle || !projectService || isSubmitting}
+                        disabled={!projectTitle || projectServices.length === 0 || isSubmitting}
                       >
                         {isSubmitting ? 'Envoi...' : 'Envoyer la demande'}
                       </Button>

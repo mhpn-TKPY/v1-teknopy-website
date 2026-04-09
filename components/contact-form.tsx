@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
-import { ServiceSelector } from "@/components/service-selector"
+import { ServiceSelector, type SelectedService } from "@/components/service-selector"
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [selectedServices, setSelectedServices] = useState<string[]>([])
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
+  const [estimatedTotal, setEstimatedTotal] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -30,12 +31,14 @@ export function ContactForm() {
     
     // Format services for the email
     const servicesText = selectedServices.length > 0 
-      ? selectedServices.join(', ') 
+      ? selectedServices.map(s => `${s.name} (${s.price})`).join(', ') 
       : 'Non specifie'
     formData.append('services', servicesText)
+    formData.append('estimated_total', estimatedTotal || 'Non calcule')
     
     // Subject with services
-    formData.append('subject', `[TEKNOPY] Demande de devis - ${servicesText}`)
+    const serviceNames = selectedServices.map(s => s.name).join(', ')
+    formData.append('subject', `[TEKNOPY] Demande de devis - ${serviceNames || 'Services non specifies'}`)
     formData.append('from_name', formData.get('name') as string)
     
     // Replyto for easy response
@@ -198,14 +201,15 @@ export function ContactForm() {
                         Selectionnez un ou plusieurs services pour obtenir une estimation
                       </p>
                       <ServiceSelector 
-                        value={selectedServices}
-                        onChange={setSelectedServices}
+                        selectedServices={selectedServices}
+                        onServicesChange={setSelectedServices}
+                        onTotalChange={setEstimatedTotal}
                       />
                       {/* Hidden input for form validation */}
                       <input 
                         type="hidden" 
                         name="services_selected" 
-                        value={selectedServices.join(', ')} 
+                        value={selectedServices.map(s => s.name).join(', ')} 
                         required={selectedServices.length === 0}
                       />
                     </Field>
