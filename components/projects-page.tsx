@@ -2,81 +2,102 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ExternalLink, Folder, ArrowRight, Sparkles } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ExternalLink, ArrowRight, Sparkles, Globe } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
+// Real projects data with actual links
 const projects = [
   {
     id: "1",
-    title: "Plateforme E-commerce Artisanat Martiniquais",
-    description: "Boutique en ligne complète pour artisans locaux avec paiement sécurisé et gestion des stocks.",
-    category: "E-commerce",
-    technologies: ["Next.js", "TypeScript", "Supabase", "Stripe"],
-    client_name: "Artisans de Martinique",
+    title: "PLISTECH",
+    description: "Site vitrine professionnel pour une entreprise de services technologiques et solutions informatiques.",
+    category: "Site Vitrine",
+    url: "https://plistech.com",
+    technologies: ["Next.js", "Tailwind CSS", "TypeScript"],
+    client_name: "PLISTECH",
     featured: true,
-    details: "Plateforme multi-vendeurs permettant aux artisans locaux de vendre leurs créations en ligne avec gestion automatique des frais de port DOM-TOM.",
   },
   {
     id: "2",
-    title: "Application de Réservation Restaurant",
-    description: "Système de réservation en temps réel avec gestion des tables et notifications SMS.",
-    category: "Application Web",
-    technologies: ["React", "Node.js", "PostgreSQL", "Twilio"],
-    client_name: "Restaurant Le Créole",
+    title: "Full Belly",
+    description: "Plateforme de restauration complete avec commande en ligne, gestion des menus et paiement securise.",
+    category: "E-commerce",
+    url: "https://fullbelly.fr",
+    technologies: ["React", "Node.js", "Stripe", "PostgreSQL"],
+    client_name: "Full Belly Restaurant",
     featured: true,
-    details: "Application complète de gestion des réservations avec interface admin, notifications clients et statistiques de fréquentation.",
   },
   {
     id: "3",
-    title: "Site Vitrine Cabinet Médical",
-    description: "Site responsive avec prise de rendez-vous en ligne et espace patient sécurisé.",
-    category: "Site Vitrine",
-    technologies: ["Next.js", "Tailwind CSS", "Supabase Auth"],
-    client_name: "Cabinet Dr. Laurent",
-    featured: false,
-    details: "Site professionnel avec système de prise de rendez-vous, espace patient sécurisé et informations pratiques.",
+    title: "Lakou Sankofa",
+    description: "Site communautaire et culturel avec gestion d'evenements, contenus educatifs et espace membres.",
+    category: "Application Web",
+    url: "https://lakousankofa.com",
+    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
+    client_name: "Association Lakou Sankofa",
+    featured: true,
   },
   {
     id: "4",
-    title: "Tableau de Bord Analytique",
-    description: "Dashboard interactif pour suivi des KPIs avec visualisations temps réel.",
+    title: "Afrocentricite",
+    description: "Plateforme educative et culturelle dediee a l'histoire, la culture et les savoirs africains.",
     category: "Application Web",
-    technologies: ["React", "TypeScript", "Recharts", "Supabase"],
-    client_name: "PME Caraïbes",
+    url: "https://afrocentricite.com",
+    technologies: ["Next.js", "CMS", "Tailwind CSS"],
+    client_name: "Afrocentricite",
     featured: true,
-    details: "Interface de pilotage avec graphiques interactifs, export de rapports et alertes automatiques sur indicateurs clés.",
   },
   {
     id: "5",
-    title: "Site Association Sportive",
-    description: "Plateforme communautaire avec gestion des membres, événements et résultats.",
+    title: "TEKNOPY Concept",
+    description: "Site vitrine et espace client pour agence de developpement web en Martinique.",
     category: "Site Vitrine",
-    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
-    client_name: "Club Nautique FDF",
-    featured: false,
-    details: "Espace membre complet avec calendrier d'événements, galerie photo et gestion des inscriptions en ligne.",
+    url: "https://teknopy.com",
+    technologies: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
+    client_name: "TEKNOPY Concept",
+    featured: true,
   },
   {
     id: "6",
-    title: "Application Mobile Tourisme",
-    description: "Guide touristique interactif avec géolocalisation et avis utilisateurs.",
-    category: "Application Mobile",
-    technologies: ["React Native", "TypeScript", "Supabase", "Maps API"],
-    client_name: "Office du Tourisme",
-    featured: true,
-    details: "Application iOS et Android avec carte interactive, itinéraires personnalisés et système d'avis vérifiés.",
+    title: "Golden Star 1919",
+    description: "Site officiel pour club sportif avec gestion des actualites, calendrier et espace adherents.",
+    category: "Association",
+    url: "https://goldenstar1919.org",
+    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
+    client_name: "Golden Star 1919",
+    featured: false,
+  },
+  {
+    id: "7",
+    title: "Kante Kant",
+    description: "Site e-commerce de vente de produits locaux et artisanaux avec livraison en France metropolitaine.",
+    category: "E-commerce",
+    url: "https://kantekant.fr",
+    technologies: ["Next.js", "Stripe", "PostgreSQL"],
+    client_name: "Kante Kant",
+    featured: false,
+  },
+  {
+    id: "8",
+    title: "Open IT 972",
+    description: "Site associatif pour la promotion du numerique et de l'informatique en Martinique.",
+    category: "Association",
+    url: "https://openit972.org",
+    technologies: ["Next.js", "Tailwind CSS", "CMS"],
+    client_name: "Association Open IT 972",
+    featured: false,
   },
 ]
 
-const categories = ["Tous", "E-commerce", "Application Web", "Site Vitrine", "Application Mobile"]
+const categories = ["Tous", "Site Vitrine", "E-commerce", "Application Web", "Association"]
 
 const stats = [
-  { value: "50+", label: "Projets réalisés" },
+  { value: "50+", label: "Projets realises" },
   { value: "30+", label: "Clients satisfaits" },
-  { value: "5+", label: "Années d'expérience" },
-  { value: "100%", label: "Projets livrés" },
+  { value: "5+", label: "Annees d'experience" },
+  { value: "100%", label: "Projets livres" },
 ]
 
 export function ProjectsPage() {
@@ -102,11 +123,11 @@ export function ProjectsPage() {
               Portfolio
             </Badge>
             <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl text-balance">
-              Nos <span className="text-primary">Réalisations</span>
+              Nos <span className="text-primary">Realisations</span>
             </h1>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground text-pretty">
-              Découvrez une sélection de projets réalisés pour nos clients en Martinique. 
-              Sites vitrines, e-commerce, applications web et mobiles.
+              Decouvrez une selection de projets realises pour nos clients. 
+              Sites vitrines, e-commerce, applications web et sites associatifs.
             </p>
           </div>
 
@@ -139,44 +160,65 @@ export function ProjectsPage() {
             ))}
           </div>
 
-          {/* Projects grid */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Projects grid with live previews */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProjects.map((project) => (
-              <Card key={project.id} className="group flex flex-col overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
-                {/* Project thumbnail placeholder */}
-                <div className="relative flex h-48 items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-                  <Folder className="h-16 w-16 text-primary/30 transition-transform group-hover:scale-110" />
+              <Card key={project.id} className="group flex flex-col overflow-hidden transition-all hover:shadow-lg">
+                {/* Live preview iframe */}
+                <div className="relative h-44 overflow-hidden bg-muted">
+                  <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                  <iframe
+                    src={project.url}
+                    title={`Apercu de ${project.title}`}
+                    className="h-[440px] w-[200%] origin-top-left scale-50 border-0 pointer-events-none"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin"
+                  />
                   {project.featured && (
-                    <Badge className="absolute right-3 top-3 bg-primary">
+                    <Badge className="absolute left-2 top-2 z-20 bg-primary text-xs">
                       En vedette
                     </Badge>
                   )}
+                  <div className="absolute bottom-2 right-2 z-20 opacity-0 transition-opacity group-hover:opacity-100">
+                    <a 
+                      href={project.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </div>
                 </div>
-                <CardHeader className="flex-1">
-                  <div className="mb-2">
+                
+                <CardContent className="flex flex-1 flex-col p-4">
+                  <div className="mb-2 flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       {project.category}
                     </Badge>
                   </div>
-                  <CardTitle className="line-clamp-2 text-lg">{project.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {project.details}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-4 flex flex-wrap gap-1.5">
-                    {project.technologies.map((tech) => (
+                  <h3 className="mb-1 font-semibold text-foreground">{project.title}</h3>
+                  <p className="mb-3 flex-1 text-sm text-muted-foreground line-clamp-2">
+                    {project.description}
+                  </p>
+                  <div className="mb-3 flex flex-wrap gap-1">
+                    {project.technologies.slice(0, 3).map((tech) => (
                       <Badge key={tech} variant="secondary" className="text-xs font-normal">
                         {tech}
                       </Badge>
                     ))}
                   </div>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Client: {project.client_name}</span>
-                    <Button variant="ghost" size="sm" className="gap-1 px-2">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Voir
-                    </Button>
+                  <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
+                    <span className="text-xs text-muted-foreground">{project.client_name}</span>
+                    <a 
+                      href={project.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                    >
+                      <Globe className="h-3 w-3" />
+                      Visiter
+                    </a>
                   </div>
                 </CardContent>
               </Card>
@@ -190,7 +232,7 @@ export function ProjectsPage() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="mb-4 text-2xl font-bold text-foreground md:text-3xl text-balance">
-              Vous avez un projet en tête ?
+              Vous avez un projet en tete ?
             </h2>
             <p className="mx-auto mb-6 max-w-xl text-muted-foreground">
               Discutons de votre projet et trouvons ensemble la meilleure solution pour atteindre vos objectifs.
