@@ -252,9 +252,7 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <SidebarNav />
-        <div className="md:ml-16">
-          {children}
-        </div>
+        {children}
         <CookieConsent />
         <Analytics />
       </body>
