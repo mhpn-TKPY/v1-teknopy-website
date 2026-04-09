@@ -1,22 +1,46 @@
--- Script to configure admin user for TEKNOPY
--- Admin email: manuel.harpon@teknopy.com
+-- =====================================================
+-- TEKNOPY Admin Setup Script
+-- Admin: manuel.harpon@teknopy.com
+-- =====================================================
 
--- First, check if user exists with this email
--- If user exists, update their profile to be admin
--- If user doesn't exist, they need to register first via /auth/inscription
+-- 1. Create function to auto-set admin for specific email
+CREATE OR REPLACE FUNCTION public.handle_new_user_admin()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- If the new user has the admin email, set is_admin to true
+  IF NEW.email = 'manuel.harpon@teknopy.com' THEN
+    UPDATE public.profiles 
+    SET is_admin = true 
+    WHERE id = NEW.id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Update existing user to admin if they exist
-UPDATE profiles
-SET is_admin = true
-WHERE email = 'manuel.harpon@teknopy.com';
+-- 2. Drop existing trigger if exists
+DROP TRIGGER IF EXISTS on_auth_user_created_admin ON auth.users;
 
--- If no rows were updated, it means the user doesn't exist yet
--- They need to register first at /auth/inscription with email: manuel.harpon@teknopy.com
+-- 3. Create trigger to run after user creation
+CREATE TRIGGER on_auth_user_created_admin
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user_admin();
 
--- Also ensure any other admins (like contact@plistech.com) remain admin if they exist
--- This doesn't change email sending configurations
+-- 4. If admin already exists, ensure they have admin privileges
+-- Note: email is in auth.users, not profiles
+UPDATE public.profiles 
+SET is_admin = true 
+WHERE id IN (
+  SELECT id FROM auth.users WHERE email = 'manuel.harpon@teknopy.com'
+);
 
--- Verify the update
-SELECT id, email, first_name, last_name, is_admin 
-FROM profiles 
-WHERE email = 'manuel.harpon@teknopy.com' OR is_admin = true;
+-- =====================================================
+-- NOTE: To initialize the admin account via API:
+-- 
+-- 1. Set environment variable: ADMIN_SETUP_KEY=your-secret-key
+-- 
+-- 2. Call POST /api/admin/init with:
+--    {
+--      "setupKey": "your-secret-key",
+--      "password": "your-admin-password"
+--    }
+-- =====================================================
