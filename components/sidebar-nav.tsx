@@ -10,8 +10,6 @@ import {
   GraduationCap, 
   Mail, 
   Euro,
-  User,
-  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -22,11 +20,6 @@ const navItems = [
   { href: "/projets", label: "Realisations", icon: FolderKanban },
   { href: "/formations", label: "Formations", icon: GraduationCap },
   { href: "/contact", label: "Contact", icon: Mail },
-]
-
-const ctaItems = [
-  { href: "/espace-client", label: "Espace Client", icon: User, variant: "outline" as const },
-  { href: "/contact", label: "Devis", icon: FileText, variant: "primary" as const },
 ]
 
 export function SidebarNav() {
@@ -42,15 +35,15 @@ export function SidebarNav() {
   return (
     <aside
       className={cn(
-        "fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden flex-col rounded-l-2xl border border-r-0 border-border/40 bg-background/95 shadow-xl backdrop-blur transition-all duration-300 ease-in-out lg:flex",
-        isExpanded ? "w-44" : "w-12"
+        "fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden flex-col rounded-r-2xl border border-l-0 border-border/40 bg-background/95 shadow-xl backdrop-blur transition-all duration-300 ease-in-out lg:flex",
+        isExpanded ? "w-48" : "w-14"
       )}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Navigation items */}
-      <nav className="py-3">
-        <ul className="flex flex-col gap-0.5 px-1.5">
+      <nav className="py-4">
+        <ul className="flex flex-col gap-1 px-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== "/" && pathname.startsWith(item.href.replace("/#", "/")))
@@ -60,21 +53,20 @@ export function SidebarNav() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "group flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium transition-all duration-200",
+                    "group flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md" 
+                      : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
                   )}
                   title={!isExpanded ? item.label : undefined}
                 >
                   <item.icon className={cn(
-                    "h-4 w-4 shrink-0 transition-transform duration-200",
-                    isActive && "text-primary",
+                    "h-5 w-5 shrink-0 transition-transform duration-200",
                     !isActive && "group-hover:scale-110"
                   )} />
                   <span 
                     className={cn(
-                      "whitespace-nowrap text-xs transition-all duration-300",
+                      "whitespace-nowrap transition-all duration-300",
                       isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
                     )}
                   >
@@ -86,39 +78,6 @@ export function SidebarNav() {
           })}
         </ul>
       </nav>
-
-      {/* Separator */}
-      <div className="mx-2 h-px bg-border/40" />
-
-      {/* CTA buttons */}
-      <div className="py-2 px-1.5">
-        <ul className="flex flex-col gap-0.5">
-          {ctaItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "group flex items-center gap-2.5 rounded-lg px-2 py-2 text-xs font-medium transition-all duration-200",
-                  item.variant === "primary" 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                    : "border border-border/50 bg-background hover:bg-muted"
-                )}
-                title={!isExpanded ? item.label : undefined}
-              >
-                <item.icon className="h-4 w-4 shrink-0" />
-                <span 
-                  className={cn(
-                    "whitespace-nowrap transition-all duration-300",
-                    isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
-                  )}
-                >
-                  {item.label}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
     </aside>
   )
 }
