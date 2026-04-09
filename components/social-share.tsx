@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, X, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Share2, X, Mail, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
 
 // Custom social icons as SVG components
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -55,125 +55,221 @@ const shareLinks = [
     icon: WhatsAppIcon,
     getUrl: (url: string, title: string) => 
       `https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`,
-    color: "hover:bg-[#25D366] hover:text-white",
-    bgColor: "bg-[#25D366]",
+    bgColor: "#25D366",
   },
   {
     name: "X",
     icon: XTwitterIcon,
     getUrl: (url: string, title: string) => 
       `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-    color: "hover:bg-black hover:text-white",
-    bgColor: "bg-black",
+    bgColor: "#000000",
   },
   {
     name: "Instagram",
     icon: InstagramIcon,
     getUrl: () => "https://instagram.com/teknopy_concept",
-    color: "hover:bg-gradient-to-br hover:from-[#833AB4] hover:via-[#FD1D1D] hover:to-[#F77737] hover:text-white",
-    bgColor: "bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737]",
+    bgColor: "#E4405F",
   },
   {
     name: "TikTok",
     icon: TikTokIcon,
     getUrl: () => "https://tiktok.com/@teknopy_concept",
-    color: "hover:bg-black hover:text-white",
-    bgColor: "bg-black",
+    bgColor: "#000000",
   },
   {
     name: "Google",
     icon: GoogleIcon,
     getUrl: (url: string) => 
       `https://www.google.com/search?q=${encodeURIComponent(url)}`,
-    color: "hover:bg-white hover:text-[#4285F4] hover:shadow-md",
-    bgColor: "bg-white",
+    bgColor: "#4285F4",
   },
   {
     name: "Email",
     icon: Mail,
     getUrl: (url: string, title: string) => 
       `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Decouvrez TEKNOPY Concept: ${url}`)}`,
-    color: "hover:bg-primary hover:text-white",
-    bgColor: "bg-primary",
+    bgColor: "#22863a",
   },
 ]
 
+// Futuristic floating share bar - positioned on the left side, below header
 export function SocialShare() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const pathname = usePathname()
   const siteUrl = "https://teknopy.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
-  return (
-    <div className="fixed bottom-24 right-4 z-40 hidden md:block">
-      {/* Share button */}
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        size="icon"
-        className={cn(
-          "h-12 w-12 rounded-full shadow-lg transition-all duration-300",
-          isOpen 
-            ? "bg-muted text-muted-foreground hover:bg-muted" 
-            : "bg-primary text-white hover:bg-primary/90"
-        )}
-      >
-        {isOpen ? <X className="h-5 w-5" /> : <Share2 className="h-5 w-5" />}
-      </Button>
+  // Hide on auth/admin pages
+  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin') || pathname?.startsWith('/espace-client')) {
+    return null
+  }
 
-      {/* Share options */}
-      <div
+  return (
+    <>
+      {/* Desktop: Vertical bar on left side, centered vertically below header */}
+      <div 
         className={cn(
-          "absolute bottom-16 right-0 flex flex-col gap-2 transition-all duration-300",
-          isOpen 
-            ? "opacity-100 translate-y-0 pointer-events-auto" 
-            : "opacity-0 translate-y-4 pointer-events-none"
+          "fixed left-0 top-1/2 -translate-y-1/2 z-30 hidden lg:flex flex-col items-center transition-all duration-300",
+          isExpanded ? "w-14" : "w-10"
         )}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
       >
-        {shareLinks.map((link, index) => (
-          <a
-            key={link.name}
-            href={link.getUrl(siteUrl, siteTitle)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border shadow-md transition-all duration-200",
-              link.color
+        {/* Glassmorphism container */}
+        <div className="relative bg-background/80 backdrop-blur-xl border border-border/50 rounded-r-2xl shadow-lg overflow-hidden">
+          {/* Decorative gradient line */}
+          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent" />
+          
+          {/* Share label */}
+          <div className="px-2 py-3 border-b border-border/30">
+            <div className={cn(
+              "flex items-center justify-center transition-all duration-300",
+              isExpanded ? "gap-1" : "gap-0"
+            )}>
+              <Share2 className="h-4 w-4 text-primary" />
+              {isExpanded && (
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                  Partager
+                </span>
+              )}
+            </div>
+          </div>
+          
+          {/* Social icons */}
+          <div className="flex flex-col items-center py-2 gap-1">
+            {shareLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.getUrl(siteUrl, siteTitle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "group relative flex items-center justify-center rounded-lg transition-all duration-200",
+                  isExpanded ? "w-10 h-10 mx-2" : "w-8 h-8 mx-1"
+                )}
+                title={link.name}
+              >
+                {/* Hover background */}
+                <div 
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  style={{ backgroundColor: link.bgColor }}
+                />
+                {/* Icon */}
+                <link.icon className={cn(
+                  "relative z-10 transition-all duration-200 text-muted-foreground group-hover:text-white",
+                  isExpanded ? "h-5 w-5" : "h-4 w-4"
+                )} />
+                
+                {/* Tooltip on hover */}
+                <div className="absolute left-full ml-3 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  {link.name}
+                </div>
+              </a>
+            ))}
+          </div>
+          
+          {/* Expand indicator */}
+          <div className="px-2 py-2 border-t border-border/30 flex justify-center">
+            {isExpanded ? (
+              <ChevronLeft className="h-3 w-3 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-3 w-3 text-muted-foreground" />
             )}
-            style={{
-              transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
-            }}
-            title={`Partager sur ${link.name}`}
-          >
-            <link.icon className="h-5 w-5" />
-          </a>
-        ))}
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Tablet: Compact floating button that expands */}
+      <div className="fixed bottom-20 left-4 z-30 hidden md:flex lg:hidden">
+        <div 
+          className={cn(
+            "relative bg-background/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg overflow-hidden transition-all duration-300",
+            isExpanded ? "w-auto" : "w-12"
+          )}
+          onMouseEnter={() => setIsExpanded(true)}
+          onMouseLeave={() => setIsExpanded(false)}
+        >
+          <div className={cn(
+            "flex items-center gap-1 p-2 transition-all duration-300",
+            isExpanded ? "flex-row" : "flex-col"
+          )}>
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+              <Share2 className="h-4 w-4 text-primary" />
+            </div>
+            
+            {isExpanded && shareLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.getUrl(siteUrl, siteTitle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:scale-110"
+                style={{ backgroundColor: link.bgColor }}
+                title={link.name}
+              >
+                <link.icon className="h-4 w-4 text-white" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
-// Floating share bar for mobile (horizontal at bottom)
+// Mobile: Bottom floating pill that stays above other elements
 export function SocialShareMobile() {
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
   const siteUrl = "https://teknopy.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
+  // Hide on auth/admin pages
+  if (pathname?.startsWith('/auth') || pathname?.startsWith('/admin') || pathname?.startsWith('/espace-client')) {
+    return null
+  }
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur-sm py-2 px-4 md:hidden">
-      <div className="flex items-center justify-around">
-        {shareLinks.slice(0, 5).map((link) => (
-          <a
-            key={link.name}
-            href={link.getUrl(siteUrl, siteTitle)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200",
-              link.color
-            )}
-            title={`Partager sur ${link.name}`}
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 md:hidden">
+      <div className={cn(
+        "relative bg-background/95 backdrop-blur-xl border border-border/50 rounded-full shadow-lg transition-all duration-300 overflow-hidden",
+        isOpen ? "px-3 py-2" : "px-4 py-2"
+      )}>
+        {/* Collapsed state - just the share button */}
+        {!isOpen ? (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-2 text-sm font-medium text-foreground"
           >
-            <link.icon className="h-5 w-5" />
-          </a>
-        ))}
+            <Share2 className="h-4 w-4 text-primary" />
+            <span>Partager</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            {/* Close button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            
+            {/* Social icons */}
+            {shareLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.getUrl(siteUrl, siteTitle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-9 h-9 rounded-full transition-transform duration-200 hover:scale-110"
+                style={{ backgroundColor: link.bgColor }}
+                title={link.name}
+              >
+                <link.icon className="h-4 w-4 text-white" />
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
