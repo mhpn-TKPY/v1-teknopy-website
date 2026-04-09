@@ -383,18 +383,19 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-primary/20 shadow-md">
+                      <div className="h-16 w-16 overflow-hidden rounded-full border-3 border-primary/30 shadow-lg ring-2 ring-primary/10">
                         <Image
-                          src="/images/manuel-harpon-casual.jpg"
-                          alt="Manuel Harpon"
-                          width={56}
-                          height={56}
+                          src="/images/manuel-harpon-moi2.jpg"
+                          alt="Manuel Harpon - Votre interlocuteur TEKNOPY"
+                          width={64}
+                          height={64}
                           className="h-full w-full object-cover"
                         />
                       </div>
                       <div>
-                        <p className="font-medium">Manuel Harpon</p>
+                        <p className="font-semibold text-foreground">Manuel Harpon</p>
                         <p className="text-sm text-muted-foreground">Votre interlocuteur dédié</p>
+                        <p className="text-xs text-primary">A votre service</p>
                       </div>
                     </div>
                     <div className="space-y-2">

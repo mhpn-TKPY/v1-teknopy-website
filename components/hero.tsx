@@ -1,7 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin } from "lucide-react"
+import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export function Hero() {
   return (
@@ -45,6 +46,30 @@ export function Hero() {
             <Button size="lg" variant="outline" asChild>
               <Link href="/projets">Voir nos réalisations</Link>
             </Button>
+          </div>
+
+          {/* Free Registration CTA */}
+          <div className="mt-6">
+            <Link 
+              href="/auth/inscription" 
+              className="group inline-flex items-center gap-3 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 transition-all hover:border-primary/40 hover:bg-primary/10"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <UserPlus className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium text-foreground">
+                  Espace Client Gratuit
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Suivez vos projets en temps reel
+                </p>
+              </div>
+              <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Nouveau
+              </Badge>
+            </Link>
           </div>
 
           {/* Contact Card with Profile */}
