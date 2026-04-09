@@ -1,5 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Code2, Laptop, Users } from "lucide-react"
+import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function Hero() {
@@ -37,6 +38,48 @@ export function Hero() {
             <Button size="lg" variant="outline" asChild>
               <Link href="/projets">Voir nos réalisations</Link>
             </Button>
+          </div>
+
+          {/* Contact Card with Profile */}
+          <div className="mt-10 flex flex-col items-center gap-6 rounded-2xl border border-border bg-card/80 p-6 shadow-lg backdrop-blur-sm sm:flex-row sm:items-start">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-primary/20 shadow-md">
+                <Image
+                  src="/images/manuel-harpon.jpg"
+                  alt="Manuel Harpon - Fondateur de TEKNOPY Concept"
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Code2 className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-lg font-semibold text-foreground">Manuel Harpon</h3>
+              <p className="mb-3 text-sm text-muted-foreground">Fondateur & Développeur Web</p>
+              <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-4">
+                <a
+                  href="tel:+596696617151"
+                  className="inline-flex items-center justify-center gap-2 text-muted-foreground transition-colors hover:text-primary sm:justify-start"
+                >
+                  <Phone className="h-4 w-4 text-primary" />
+                  +596 696 617 151
+                </a>
+                <a
+                  href="mailto:manuel.harpon@teknopy.com"
+                  className="inline-flex items-center justify-center gap-2 text-muted-foreground transition-colors hover:text-primary sm:justify-start"
+                >
+                  <Mail className="h-4 w-4 text-primary" />
+                  manuel.harpon@teknopy.com
+                </a>
+                <span className="inline-flex items-center justify-center gap-2 text-muted-foreground sm:justify-start">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Fort-de-France, Martinique
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
