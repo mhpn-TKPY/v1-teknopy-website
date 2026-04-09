@@ -122,34 +122,8 @@ TEKNOPY Concept - Le web au service de l'innovation
         // Email error should not block signup
       }
       
-      // 3. Send notification to admin via Web3Forms
-      const adminNotificationForm = new FormData()
-      adminNotificationForm.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      adminNotificationForm.append('to_email', 'manuel.harpon@teknopy.com')
-      adminNotificationForm.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
-      adminNotificationForm.append('from_name', 'TEKNOPY Espace Client')
-      adminNotificationForm.append('replyto', email)
-      adminNotificationForm.append('name', `${firstName} ${lastName}`)
-      adminNotificationForm.append('email', email)
-      adminNotificationForm.append('message', `
-Nouvelle inscription sur TEKNOPY Concept
-
-Nom: ${firstName} ${lastName}
-Email: ${email}
-Date: ${new Date().toLocaleString('fr-FR')}
-
-L'utilisateur peut maintenant se connecter a son espace client.
-Repondez directement a cet email pour contacter le nouvel inscrit.
-      `.trim())
-
-      try {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          body: adminNotificationForm
-        })
-      } catch {
-        // Email error should not block signup
-      }
+      // Note: Admin notification is now handled automatically by Supabase trigger
+      // when the profile is created (on_new_user_notify_admin trigger)
       
       router.push('/auth/inscription-reussie')
     } catch (error: unknown) {
