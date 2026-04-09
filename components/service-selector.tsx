@@ -175,36 +175,59 @@ const serviceCategories = [
   },
 ]
 
+export interface SelectedService {
+  name: string
+  price: string
+}
+
 interface ServiceSelectorProps {
-  value: string[]
-  onChange: (services: string[]) => void
+  selectedServices?: SelectedService[]
+  onServicesChange?: (services: SelectedService[]) => void
+  onTotalChange?: (total: string) => void
   className?: string
 }
 
-export function ServiceSelector({ value, onChange, className }: ServiceSelectorProps) {
+export function ServiceSelector({ 
+  selectedServices = [], 
+  onServicesChange, 
+  onTotalChange,
+  className 
+}: ServiceSelectorProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>("web")
+  
+  // Get selected service names for internal use
+  const selectedNames = selectedServices.map(s => s.name)
 
-  const toggleService = (serviceId: string, serviceTitle: string) => {
-    const serviceValue = `${serviceTitle}`
-    if (value.includes(serviceValue)) {
-      onChange(value.filter(v => v !== serviceValue))
+  const toggleService = (service: typeof serviceCategories[0]['services'][0]) => {
+    const isCurrentlySelected = selectedNames.includes(service.title)
+    
+    let newServices: SelectedService[]
+    if (isCurrentlySelected) {
+      newServices = selectedServices.filter(s => s.name !== service.title)
     } else {
-      onChange([...value, serviceValue])
+      newServices = [...selectedServices, {
+        name: service.title,
+        price: `${service.price}€${service.unit || ""}`
+      }]
     }
+    
+    onServicesChange?.(newServices)
+    
+    // Calculate and report new total
+    const newTotal = newServices.reduce((sum, s) => {
+      const priceNum = parseInt(s.price.replace(/[^0-9]/g, '')) || 0
+      return sum + priceNum
+    }, 0)
+    onTotalChange?.(`${newTotal}€`)
   }
 
-  const isSelected = (serviceTitle: string) => value.includes(serviceTitle)
+  const isSelected = (serviceTitle: string) => selectedNames.includes(serviceTitle)
 
   const calculateTotal = () => {
-    let total = 0
-    serviceCategories.forEach(category => {
-      category.services.forEach(service => {
-        if (value.includes(service.title)) {
-          total += service.price
-        }
-      })
-    })
-    return total
+    return selectedServices.reduce((sum, s) => {
+      const priceNum = parseInt(s.price.replace(/[^0-9]/g, '')) || 0
+      return sum + priceNum
+    }, 0)
   }
 
   const total = calculateTotal()
@@ -248,9 +271,9 @@ export function ServiceSelector({ value, onChange, className }: ServiceSelectorP
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {value.some(v => category.services.some(s => s.title === v)) && (
+              {selectedNames.some(v => category.services.some(s => s.title === v)) && (
                 <Badge variant="default" className="text-xs">
-                  {value.filter(v => category.services.some(s => s.title === v)).length} selectionne(s)
+                  {selectedNames.filter(v => category.services.some(s => s.title === v)).length} selectionne(s)
                 </Badge>
               )}
               {expandedCategory === category.id ? (
@@ -270,7 +293,7 @@ export function ServiceSelector({ value, onChange, className }: ServiceSelectorP
                   <button
                     key={service.id}
                     type="button"
-                    onClick={() => toggleService(service.id, service.title)}
+                    onClick={() => toggleService(service)}
                     className={cn(
                       "relative flex flex-col p-3 rounded-lg border-2 text-left transition-all",
                       selected 
@@ -342,13 +365,13 @@ export function ServiceSelector({ value, onChange, className }: ServiceSelectorP
       ))}
 
       {/* Total Estimator */}
-      {value.length > 0 && (
+      {selectedServices.length > 0 && (
         <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Calculator className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-foreground">
-                Estimation ({value.length} service{value.length > 1 ? "s" : ""})
+                Estimation ({selectedServices.length} service{selectedServices.length > 1 ? "s" : ""})
               </span>
             </div>
             <div className="text-right">
@@ -357,9 +380,9 @@ export function ServiceSelector({ value, onChange, className }: ServiceSelectorP
             </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-1">
-            {value.map((v, idx) => (
+            {selectedServices.map((s, idx) => (
               <Badge key={idx} variant="secondary" className="text-xs">
-                {v}
+                {s.name} - {s.price}
               </Badge>
             ))}
           </div>

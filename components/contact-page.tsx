@@ -16,60 +16,50 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
-
-const services = [
-  "Site Web Vitrine",
-  "Site E-commerce",
-  "Application Web",
-  "Application Mobile",
-  "Consulting IT",
-  "Formation Informatique",
-  "Formation Mathématiques",
-  "Réparation PC",
-  "Autre",
-]
+import { ServiceSelector, type SelectedService } from "@/components/service-selector"
 
 const benefits = [
   {
     icon: Clock,
-    title: "Réponse sous 24h",
+    title: "Reponse sous 24h",
     description: "Nous vous recontactons rapidement pour discuter de votre projet",
   },
   {
     icon: Shield,
     title: "Devis gratuit",
-    description: "Estimation détaillée sans engagement et sans frais cachés",
+    description: "Estimation detaillee sans engagement et sans frais caches",
   },
   {
     icon: Zap,
     title: "Tarifs transparents",
-    description: "Des prix clairs et compétitifs adaptés au marché martiniquais",
+    description: "Des prix clairs et competitifs adaptes au marche martiniquais",
   },
 ]
 
 const faq = [
   {
-    question: "Comment se déroule un projet ?",
-    answer: "Après un premier échange pour comprendre vos besoins, nous établissons un cahier des charges et un devis. Une fois validé, nous démarrons le développement avec des points réguliers jusqu'à la livraison.",
+    question: "Comment se deroule un projet ?",
+    answer: "Apres un premier echange pour comprendre vos besoins, nous etablissons un cahier des charges et un devis. Une fois valide, nous demarrons le developpement avec des points reguliers jusqu'a la livraison.",
   },
   {
-    question: "Quels sont les délais de réalisation ?",
-    answer: "Un site vitrine prend généralement 2-3 semaines, un e-commerce 4-6 semaines. Les délais précis sont indiqués dans le devis selon la complexité du projet.",
+    question: "Quels sont les delais de realisation ?",
+    answer: "Un site vitrine prend generalement 2-3 semaines, un e-commerce 4-6 semaines. Les delais precis sont indiques dans le devis selon la complexite du projet.",
   },
   {
     question: "Proposez-vous de la maintenance ?",
-    answer: "Oui, nous proposons des forfaits de maintenance mensuels pour garder votre site à jour, sécurisé et performant. Les tarifs sont discutés selon vos besoins.",
+    answer: "Oui, nous proposons des forfaits de maintenance mensuels pour garder votre site a jour, securise et performant. Les tarifs sont discutes selon vos besoins.",
   },
 ]
 
 export function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
+  const [estimatedTotal, setEstimatedTotal] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -80,7 +70,8 @@ export function ContactPage() {
       name: formData.get("name"),
       email: formData.get("email"),
       phone: formData.get("phone"),
-      service: formData.get("service"),
+      services: selectedServices,
+      estimatedTotal,
       message: formData.get("message"),
     }
 
@@ -121,7 +112,7 @@ export function ContactPage() {
               <span className="text-primary">3 clics</span>
             </h1>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground text-pretty">
-              Remplissez le formulaire ci-dessous et nous vous répondrons sous 24 heures avec un devis personnalisé et détaillé.
+              Remplissez le formulaire ci-dessous et nous vous repondrons sous 24 heures avec un devis personnalise et detaille.
             </p>
           </div>
 
@@ -155,7 +146,7 @@ export function ContactPage() {
                 <CardHeader>
                   <CardTitle className="text-xl">Informations de contact</CardTitle>
                   <CardDescription>
-                    N&apos;hésitez pas à nous contacter directement
+                    N&apos;hesitez pas a nous contacter directement
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -167,7 +158,7 @@ export function ContactPage() {
                       <Phone className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-medium">Téléphone</p>
+                      <p className="font-medium">Telephone</p>
                       <p className="text-lg text-primary">+596 696 617 151</p>
                     </div>
                   </a>
@@ -214,7 +205,7 @@ export function ContactPage() {
                       Devis gratuit et sans engagement
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Réponse garantie sous 24 heures ouvrées
+                      Reponse garantie sous 24 heures ouvrees
                     </p>
                   </div>
                 </CardContent>
@@ -226,7 +217,7 @@ export function ContactPage() {
               <CardHeader>
                 <CardTitle className="text-xl">Demander un devis</CardTitle>
                 <CardDescription>
-                  Décrivez votre projet et nous vous contacterons rapidement
+                  Selectionnez vos services et decrivez votre projet
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -235,12 +226,12 @@ export function ContactPage() {
                     <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                       <CheckCircle className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="mb-2 text-2xl font-semibold">Message envoyé !</h3>
+                    <h3 className="mb-2 text-2xl font-semibold">Message envoye !</h3>
                     <p className="mb-6 max-w-sm text-muted-foreground">
-                      Merci pour votre message. Nous vous répondrons sous 24 heures avec un devis personnalisé.
+                      Merci pour votre message. Nous vous repondrons sous 24 heures avec un devis personnalise.
                     </p>
                     <Button asChild variant="outline">
-                      <Link href="/">Retour à l&apos;accueil</Link>
+                      <Link href="/">Retour a l&apos;accueil</Link>
                     </Button>
                   </div>
                 ) : (
@@ -268,40 +259,30 @@ export function ContactPage() {
                         </Field>
                       </div>
 
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <Field>
-                          <FieldLabel htmlFor="phone">Téléphone</FieldLabel>
-                          <Input
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            placeholder="+596 696 ..."
-                          />
-                        </Field>
-                        <Field>
-                          <FieldLabel htmlFor="service">Service souhaité *</FieldLabel>
-                          <Select name="service" required>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionnez un service" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {services.map((service) => (
-                                <SelectItem key={service} value={service}>
-                                  {service}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </Field>
-                      </div>
+                      <Field>
+                        <FieldLabel htmlFor="phone">Telephone</FieldLabel>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+596 696 ..."
+                        />
+                      </Field>
+
+                      {/* Dynamic Service Selector */}
+                      <ServiceSelector
+                        selectedServices={selectedServices}
+                        onServicesChange={setSelectedServices}
+                        onTotalChange={setEstimatedTotal}
+                      />
 
                       <Field>
                         <FieldLabel htmlFor="message">Votre message *</FieldLabel>
                         <Textarea
                           id="message"
                           name="message"
-                          placeholder="Décrivez votre projet, vos besoins, votre budget approximatif..."
-                          rows={6}
+                          placeholder="Decrivez votre projet, vos besoins, votre budget approximatif..."
+                          rows={5}
                           required
                         />
                       </Field>
@@ -333,7 +314,7 @@ export function ContactPage() {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl">
             <h2 className="mb-8 text-center text-2xl font-bold text-foreground md:text-3xl">
-              Questions fréquentes
+              Questions frequentes
             </h2>
             <div className="space-y-4">
               {faq.map((item) => (
