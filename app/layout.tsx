@@ -49,11 +49,11 @@ export const metadata: Metadata = {
     description: "L'innovation au service du web. Creation de sites web, applications, formations et reparations informatiques a Fort-de-France. Tarifs transparents et devis gratuit sous 24h.",
     images: [
       {
-        url: 'https://plistech.com/opengraph-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'TEKNOPY Concept - Agence Web Martinique',
-        type: 'image/jpeg',
+        url: 'https://plistech.com/opengraph-image.png',
+        width: 1550,
+        height: 1127,
+        alt: 'TEKNOPY Creation - Le web au service de l\'innovation',
+        type: 'image/png',
       },
     ],
   },
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     creator: '@teknopy',
     title: 'TEKNOPY Concept | Agence Web Martinique',
     description: 'Sites web, applications, formations informatiques et reparations PC a Fort-de-France. Devis gratuit.',
-    images: ['https://plistech.com/opengraph-image.jpg'],
+    images: ['https://plistech.com/twitter-image.png'],
   },
   robots: {
     index: true,
@@ -108,7 +108,7 @@ const jsonLd = {
         width: 200,
         height: 88,
       },
-      image: 'https://plistech.com/opengraph-image.jpg',
+      image: 'https://plistech.com/opengraph-image.png',
       description: "Agence de developpement web, consulting IT et formations informatiques en Martinique",
       telephone: '+596696617151',
       email: 'contact@plistech.com',
@@ -139,7 +139,7 @@ const jsonLd = {
       '@type': 'LocalBusiness',
       '@id': 'https://plistech.com/#localbusiness',
       name: 'TEKNOPY Concept',
-      image: 'https://plistech.com/opengraph-image.jpg',
+      image: 'https://plistech.com/opengraph-image.png',
       priceRange: 'EUR EUR',
       openingHoursSpecification: {
         '@type': 'OpeningHoursSpecification',
@@ -199,13 +199,16 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <link rel="icon" href="/icon.jpg" type="image/jpeg" sizes="32x32" />
-        <link rel="apple-touch-icon" href="/apple-icon.jpg" />
-        <meta property="og:image" content="https://plistech.com/opengraph-image.jpg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta name="twitter:image" content="https://plistech.com/opengraph-image.jpg" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <meta property="og:image" content="https://plistech.com/opengraph-image.png" />
+        <meta property="og:image:width" content="1550" />
+        <meta property="og:image:height" content="1127" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="TEKNOPY Creation - Le web au service de l'innovation" />
+        <meta name="twitter:image" content="https://plistech.com/twitter-image.png" />
+        <meta name="twitter:image:alt" content="TEKNOPY Creation - Agence Web Martinique" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
