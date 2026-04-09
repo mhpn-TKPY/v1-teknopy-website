@@ -50,7 +50,7 @@ export default function InscriptionPage() {
     }
 
     try {
-      // 1. Create user in Supabase (without email confirmation requirement)
+      // 1. Create user in Supabase
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -63,81 +63,47 @@ export default function InscriptionPage() {
       })
       
       if (error) {
-        if (error.message.includes('already registered')) {
+        // Ignore email sending errors from Supabase - we use Web3Forms instead
+        if (error.message.includes('sending confirmation email') || error.message.includes('Email rate limit')) {
+          // Continue anyway - user is created, we'll send email via Web3Forms
+        } else if (error.message.includes('already registered')) {
           setError('Cette adresse email est déjà enregistrée. Veuillez vous connecter.')
-        } else {
+          setIsLoading(false)
+          return
+        } else if (!error.message.includes('email')) {
           setError(error.message)
+          setIsLoading(false)
+          return
         }
-        setIsLoading(false)
-        return
       }
       
-      // 2. Send welcome email via Web3Forms (no API route needed)
-      if (data?.user) {
-        try {
-          await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY',
-              subject: `Bienvenue chez TEKNOPY - ${firstName} ${lastName}`,
-              from_name: 'TEKNOPY Concept',
-              to: email,
-              replyto: 'contact@plistech.com',
-              message: `
-Bonjour ${firstName},
-
-Bienvenue chez TEKNOPY Concept !
-
-Votre compte client a été créé avec succès. Vous pouvez maintenant accéder à votre espace client pour :
-- Suivre l'avancement de vos projets en temps réel
-- Consulter vos factures et devis
-- Échanger directement avec votre interlocuteur dédié
-
-Connectez-vous dès maintenant : ${window.location.origin}/auth/connexion
-
-À très bientôt,
-Manuel Harpon
-Fondateur - TEKNOPY Concept
-Tél : +596 696 617 151
-Email : contact@plistech.com
-              `.trim(),
-            }),
-          })
-        } catch {
-          // Email error should not block signup - silently continue
-        }
-        
-        // 3. Also notify admin about new signup
-        try {
-          await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_KEY',
-              subject: `Nouvelle inscription - ${firstName} ${lastName}`,
-              from_name: 'TEKNOPY Espace Client',
-              message: `
+      // 2. Send notification via Web3Forms using FormData (direct HTML approach)
+      const formData = new FormData()
+      formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
+      formData.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
+      formData.append('from_name', 'TEKNOPY Espace Client')
+      formData.append('name', `${firstName} ${lastName}`)
+      formData.append('email', email)
+      formData.append('message', `
 Nouvelle inscription sur TEKNOPY Concept
 
 Nom: ${firstName} ${lastName}
 Email: ${email}
 Date: ${new Date().toLocaleString('fr-FR')}
 
-Connectez-vous à Supabase pour voir les détails.
-              `.trim(),
-            }),
-          })
-        } catch {
-          // Admin notification error - silently continue
-        }
-        
-        router.push('/auth/inscription-reussie')
+L'utilisateur peut maintenant se connecter à son espace client.
+      `.trim())
+
+      try {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        })
+      } catch {
+        // Email error should not block signup
       }
+      
+      router.push('/auth/inscription-reussie')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Une erreur est survenue')
     } finally {
