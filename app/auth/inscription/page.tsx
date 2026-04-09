@@ -77,60 +77,31 @@ export default function InscriptionPage() {
         }
       }
       
-      // 2. Send confirmation email to the user via Web3Forms
-      const userConfirmationForm = new FormData()
-      userConfirmationForm.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      userConfirmationForm.append('subject', `Bienvenue chez TEKNOPY Concept - Confirmation d'inscription`)
-      userConfirmationForm.append('from_name', 'TEKNOPY Concept')
-      userConfirmationForm.append('name', `${firstName} ${lastName}`)
-      userConfirmationForm.append('email', email)
-      userConfirmationForm.append('message', `
-Nouvelle inscription - Envoyer ce message de bienvenue a: ${email}
+      // 2. Send notification via Web3Forms using FormData (direct HTML approach)
+      const formData = new FormData()
+      formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
+      formData.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
+      formData.append('from_name', 'TEKNOPY Espace Client')
+      formData.append('name', `${firstName} ${lastName}`)
+      formData.append('email', email)
+      formData.append('message', `
+Nouvelle inscription sur TEKNOPY Concept
 
----
+Nom: ${firstName} ${lastName}
+Email: ${email}
+Date: ${new Date().toLocaleString('fr-FR')}
 
-Bonjour ${firstName},
-
-Bienvenue chez TEKNOPY Concept !
-
-Votre compte a ete cree avec succes. Vous pouvez maintenant vous connecter a votre espace client pour :
-
-- Suivre l'avancement de vos projets
-- Demander des devis personnalises
-- Acceder a vos factures et documents
-- Communiquer directement avec notre equipe
-
-Vos identifiants de connexion :
-Email : ${email}
-
-Connectez-vous ici : https://www.plistech.com/auth/connexion
-
-Si vous avez des questions, n'hesitez pas a nous contacter :
-- Email : manuel.harpon@teknopy.com
-- Telephone : +596 696 617 151
-
-A tres bientot !
-
-Manuel HARPON
-TEKNOPY Concept - Le web au service de l'innovation
+L'utilisateur peut maintenant se connecter à son espace client.
       `.trim())
 
       try {
-        const response = await fetch('https://api.web3forms.com/submit', {
+        await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          body: userConfirmationForm
+          body: formData
         })
-        const data = await response.json()
-        if (!data.success) {
-          console.log('[v0] Web3Forms error:', data)
-        }
-      } catch (err) {
-        console.log('[v0] Email sending error:', err)
+      } catch {
         // Email error should not block signup
       }
-      
-      // Note: Admin notification is now handled automatically by Supabase trigger
-      // when the profile is created (on_new_user_notify_admin trigger)
       
       router.push('/auth/inscription-reussie')
     } catch (error: unknown) {
