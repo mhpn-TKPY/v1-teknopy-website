@@ -77,27 +77,75 @@ export default function InscriptionPage() {
         }
       }
       
-      // 2. Send notification via Web3Forms using FormData (direct HTML approach)
-      const formData = new FormData()
-      formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      formData.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
-      formData.append('from_name', 'TEKNOPY Espace Client')
-      formData.append('name', `${firstName} ${lastName}`)
-      formData.append('email', email)
-      formData.append('message', `
+      // 2. Send confirmation email to the user via Web3Forms
+      const userConfirmationForm = new FormData()
+      userConfirmationForm.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
+      userConfirmationForm.append('to_email', email)
+      userConfirmationForm.append('subject', 'Bienvenue chez TEKNOPY Concept - Confirmation d\'inscription')
+      userConfirmationForm.append('from_name', 'TEKNOPY Concept')
+      userConfirmationForm.append('replyto', 'manuel.harpon@teknopy.com')
+      userConfirmationForm.append('name', `${firstName} ${lastName}`)
+      userConfirmationForm.append('email', email)
+      userConfirmationForm.append('message', `
+Bonjour ${firstName},
+
+Bienvenue chez TEKNOPY Concept !
+
+Votre compte a ete cree avec succes. Vous pouvez maintenant vous connecter a votre espace client pour :
+
+- Suivre l'avancement de vos projets
+- Demander des devis personnalises
+- Acceder a vos factures et documents
+- Communiquer directement avec notre equipe
+
+Vos identifiants de connexion :
+Email : ${email}
+
+Connectez-vous ici : https://www.plistech.com/auth/connexion
+
+Si vous avez des questions, n'hesitez pas a nous contacter :
+- Email : manuel.harpon@teknopy.com
+- Telephone : +596 696 617 151
+
+A tres bientot !
+
+Manuel HARPON
+TEKNOPY Concept - Le web au service de l'innovation
+      `.trim())
+
+      try {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: userConfirmationForm
+        })
+      } catch {
+        // Email error should not block signup
+      }
+      
+      // 3. Send notification to admin via Web3Forms
+      const adminNotificationForm = new FormData()
+      adminNotificationForm.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
+      adminNotificationForm.append('to_email', 'manuel.harpon@teknopy.com')
+      adminNotificationForm.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
+      adminNotificationForm.append('from_name', 'TEKNOPY Espace Client')
+      adminNotificationForm.append('replyto', email)
+      adminNotificationForm.append('name', `${firstName} ${lastName}`)
+      adminNotificationForm.append('email', email)
+      adminNotificationForm.append('message', `
 Nouvelle inscription sur TEKNOPY Concept
 
 Nom: ${firstName} ${lastName}
 Email: ${email}
 Date: ${new Date().toLocaleString('fr-FR')}
 
-L'utilisateur peut maintenant se connecter à son espace client.
+L'utilisateur peut maintenant se connecter a son espace client.
+Repondez directement a cet email pour contacter le nouvel inscrit.
       `.trim())
 
       try {
         await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          body: formData
+          body: adminNotificationForm
         })
       } catch {
         // Email error should not block signup
