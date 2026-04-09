@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
-import { UserPlus, Mail, Lock, User, ArrowLeft } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 
 export default function InscriptionPage() {
   const [firstName, setFirstName] = useState('')
@@ -24,6 +24,8 @@ export default function InscriptionPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
