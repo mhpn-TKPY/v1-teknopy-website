@@ -3,6 +3,7 @@ import { Inter, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsent } from '@/components/cookie-consent'
 import { SidebarNav } from '@/components/sidebar-nav'
+import { SocialShare, SocialShareMobile } from '@/components/social-share'
 import './globals.css'
 
 const _inter = Inter({ subsets: ["latin"] });
@@ -71,20 +72,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/favicon.jpg', sizes: '32x32', type: 'image/jpeg' },
+      { url: '/favicon.jpg', sizes: '16x16', type: 'image/jpeg' },
     ],
-    apple: '/apple-icon.png',
+    apple: { url: '/apple-icon.jpg', sizes: '180x180', type: 'image/jpeg' },
+    shortcut: '/favicon.jpg',
   },
 }
 
@@ -253,6 +245,8 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <SidebarNav />
         {children}
+        <SocialShare />
+        <SocialShareMobile />
         <CookieConsent />
         <Analytics />
       </body>

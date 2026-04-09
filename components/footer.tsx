@@ -5,7 +5,7 @@ import { Phone, Mail, MapPin, Globe } from "lucide-react"
 const quickLinks = [
   { href: "/#services", label: "Services" },
   { href: "/tarifs", label: "Tarifs" },
-  { href: "/projets", label: "Projets" },
+  { href: "/projets", label: "Realisations" },
   { href: "/formations", label: "Formations" },
   { href: "/contact", label: "Contact" },
   { href: "/espace-client", label: "Espace Client" },
