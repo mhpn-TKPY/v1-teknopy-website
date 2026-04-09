@@ -7,20 +7,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// Real projects data - ordered: Afrocentricite, fullbelly, lakousankofa, kantekant first, then others
+// Real projects data - ordered: fullbelly, lakousankofa, goldenstar1919, kantekant first, then others randomly
 const projects = [
   {
     id: "1",
-    title: "Afrocentricite",
-    description: "Plateforme educative et culturelle dediee a l'histoire, la culture et les savoirs africains.",
-    category: "Application Web",
-    url: "https://afrocentricite.com",
-    technologies: ["Next.js", "CMS", "Tailwind CSS"],
-    client_name: "Afrocentricite",
-    featured: true,
-  },
-  {
-    id: "2",
     title: "Full Belly",
     description: "Plateforme de restauration complete avec commande en ligne, gestion des menus et paiement securise.",
     category: "E-commerce",
@@ -30,13 +20,23 @@ const projects = [
     featured: true,
   },
   {
-    id: "3",
+    id: "2",
     title: "Lakou Sankofa",
     description: "Site communautaire et culturel avec gestion d'evenements, contenus educatifs et espace membres.",
     category: "Application Web",
     url: "https://lakousankofa.com",
     technologies: ["Next.js", "Supabase", "Tailwind CSS"],
     client_name: "Association Lakou Sankofa",
+    featured: true,
+  },
+  {
+    id: "3",
+    title: "Golden Star 1919",
+    description: "Site officiel pour club sportif avec gestion des actualites, calendrier et espace adherents.",
+    category: "Association",
+    url: "https://goldenstar1919.org",
+    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
+    client_name: "Golden Star 1919",
     featured: true,
   },
   {
@@ -51,6 +51,16 @@ const projects = [
   },
   {
     id: "5",
+    title: "Afrocentricite",
+    description: "Plateforme educative et culturelle dediee a l'histoire, la culture et les savoirs africains.",
+    category: "Application Web",
+    url: "https://afrocentricite.com",
+    technologies: ["Next.js", "CMS", "Tailwind CSS"],
+    client_name: "Afrocentricite",
+    featured: false,
+  },
+  {
+    id: "6",
     title: "PLISTECH",
     description: "Site vitrine professionnel pour une entreprise de services technologiques et solutions informatiques.",
     category: "Site Vitrine",
@@ -60,27 +70,7 @@ const projects = [
     featured: false,
   },
   {
-    id: "6",
-    title: "TEKNOPY Concept",
-    description: "Site vitrine et espace client pour agence de developpement web en Martinique.",
-    category: "Site Vitrine",
-    url: "https://teknopy.com",
-    technologies: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
-    client_name: "TEKNOPY Concept",
-    featured: false,
-  },
-  {
     id: "7",
-    title: "Golden Star 1919",
-    description: "Site officiel pour club sportif avec gestion des actualites, calendrier et espace adherents.",
-    category: "Association",
-    url: "https://goldenstar1919.org",
-    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
-    client_name: "Golden Star 1919",
-    featured: false,
-  },
-  {
-    id: "8",
     title: "Open IT 972",
     description: "Site associatif pour la promotion du numerique et de l'informatique en Martinique.",
     category: "Association",

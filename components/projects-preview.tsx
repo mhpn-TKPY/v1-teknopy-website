@@ -8,19 +8,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// Real projects data - ordered: Afrocentricite, fullbelly, lakousankofa, kantekant first
+// Real projects data - ordered: fullbelly, lakousankofa, goldenstar1919, kantekant first
 const featuredProjects = [
   {
     id: "1",
-    title: "Afrocentricite",
-    description: "Plateforme educative et culturelle dediee a l'histoire et la culture africaine.",
-    category: "Application Web",
-    url: "https://afrocentricite.com",
-    technologies: ["Next.js", "CMS"],
-    thumbnail: "/images/projects/afrocentricite.jpg",
-  },
-  {
-    id: "2",
     title: "Full Belly",
     description: "Plateforme de restauration avec commande en ligne et gestion des menus.",
     category: "E-commerce",
@@ -29,13 +20,22 @@ const featuredProjects = [
     thumbnail: "/images/projects/fullbelly.jpg",
   },
   {
-    id: "3",
+    id: "2",
     title: "Lakou Sankofa",
     description: "Site communautaire et culturel avec gestion d'evenements et contenus.",
     category: "Application Web",
     url: "https://lakousankofa.com",
     technologies: ["Next.js", "Supabase"],
     thumbnail: "/images/projects/lakousankofa.jpg",
+  },
+  {
+    id: "3",
+    title: "Golden Star 1919",
+    description: "Site officiel pour club sportif avec actualites et espace adherents.",
+    category: "Association",
+    url: "https://goldenstar1919.org",
+    technologies: ["Next.js", "Supabase"],
+    thumbnail: "/images/projects/goldenstar.jpg",
   },
   {
     id: "4",
