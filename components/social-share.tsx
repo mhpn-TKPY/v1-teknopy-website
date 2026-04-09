@@ -219,7 +219,7 @@ export function SocialShareMobile() {
   }
 
   return (
-    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 md:hidden">
+    <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 md:hidden">
       <div className={cn(
         "relative bg-background/95 backdrop-blur-xl border border-border/50 rounded-full shadow-lg transition-all duration-300 overflow-hidden",
         isOpen ? "px-2 py-2" : "px-4 py-2.5"
