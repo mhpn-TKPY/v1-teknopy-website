@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -12,23 +12,41 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import {
-  LayoutDashboard,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   FolderKanban,
-  FileText,
   MessageSquare,
   Settings,
   LogOut,
   Clock,
   CheckCircle2,
   AlertCircle,
-  Euro,
   Calendar,
   Plus,
-  ArrowRight,
   User as UserIcon,
   Mail,
-  Phone
+  Phone,
+  Send,
+  Lock,
+  RefreshCw
 } from 'lucide-react'
 import { WelcomePopup } from '@/components/welcome-popup'
 
@@ -36,67 +54,185 @@ interface ClientDashboardProps {
   user: User
 }
 
-// Mock data for demonstration
-const mockProjects = [
-  { 
-    id: 1, 
-    name: 'Site Vitrine Restaurant Le Marin', 
-    status: 'en-cours', 
-    progress: 65, 
-    startDate: '2026-03-01',
-    estimatedEnd: '2026-04-15',
-    budget: 450
-  },
-  { 
-    id: 2, 
-    name: 'Refonte E-commerce Boutique Mode', 
-    status: 'en-attente', 
-    progress: 0, 
-    startDate: '2026-04-20',
-    estimatedEnd: '2026-06-01',
-    budget: 1200
-  },
-]
+interface ClientProject {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  service_type: string
+  budget: string | null
+  deadline: string | null
+  status: 'pending' | 'validated' | 'in_progress' | 'completed' | 'rejected'
+  progress: number
+  admin_notes: string | null
+  created_at: string
+  updated_at: string
+}
 
-const mockInvoices = [
-  { id: 'FAC-2026-001', date: '2026-03-01', amount: 200, status: 'payee', project: 'Site Vitrine Restaurant' },
-  { id: 'FAC-2026-002', date: '2026-03-15', amount: 250, status: 'en-attente', project: 'Site Vitrine Restaurant' },
-]
-
-const mockMessages = [
-  { id: 1, subject: 'Validation maquette page accueil', date: '2026-04-05', read: false },
-  { id: 2, subject: 'Choix des couleurs - confirmation', date: '2026-04-02', read: true },
-]
+interface ClientMessage {
+  id: string
+  project_id: string
+  sender_id: string
+  content: string
+  is_from_admin: boolean
+  is_read: boolean
+  created_at: string
+}
 
 export function ClientDashboard({ user }: ClientDashboardProps) {
   const router = useRouter()
+  const supabase = createClient()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [projects, setProjects] = useState<ClientProject[]>([])
+  const [selectedProject, setSelectedProject] = useState<ClientProject | null>(null)
+  const [messages, setMessages] = useState<ClientMessage[]>([])
+  const [newMessage, setNewMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // New project form state
+  const [projectTitle, setProjectTitle] = useState('')
+  const [projectDescription, setProjectDescription] = useState('')
+  const [projectService, setProjectService] = useState('')
+  const [projectBudget, setProjectBudget] = useState('')
+  const [projectDeadline, setProjectDeadline] = useState('')
   
   const firstName = user.user_metadata?.first_name || 'Client'
   const lastName = user.user_metadata?.last_name || ''
-  
+
+  // Check if user can create a new project
+  const canCreateProject = !projects.some(p => 
+    p.status === 'pending' || p.status === 'validated' || p.status === 'in_progress'
+  )
+
+  // Fetch user's projects
+  const fetchProjects = async () => {
+    setIsLoading(true)
+    const { data, error } = await supabase
+      .from('client_projects')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    
+    if (!error && data) {
+      setProjects(data)
+      // Auto-select the active project if exists
+      const activeProject = data.find(p => p.status === 'validated' || p.status === 'in_progress')
+      if (activeProject) {
+        setSelectedProject(activeProject)
+      }
+    }
+    setIsLoading(false)
+  }
+
+  // Fetch messages for selected project
+  const fetchMessages = async (projectId: string) => {
+    const { data, error } = await supabase
+      .from('client_messages')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: true })
+    
+    if (!error && data) {
+      setMessages(data)
+      // Mark unread admin messages as read
+      await supabase
+        .from('client_messages')
+        .update({ is_read: true })
+        .eq('project_id', projectId)
+        .eq('is_from_admin', true)
+    }
+  }
+
+  useEffect(() => {
+    fetchProjects()
+  }, [])
+
+  useEffect(() => {
+    if (selectedProject) {
+      fetchMessages(selectedProject.id)
+    }
+  }, [selectedProject])
+
   const handleLogout = async () => {
     setIsLoggingOut(true)
-    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/')
     router.refresh()
   }
 
+  const handleCreateProject = async () => {
+    if (!projectTitle || !projectService) return
+    setIsSubmitting(true)
+
+    const { error } = await supabase
+      .from('client_projects')
+      .insert({
+        user_id: user.id,
+        title: projectTitle,
+        description: projectDescription || null,
+        service_type: projectService,
+        budget: projectBudget || null,
+        deadline: projectDeadline || null
+      })
+
+    if (!error) {
+      // Reset form
+      setProjectTitle('')
+      setProjectDescription('')
+      setProjectService('')
+      setProjectBudget('')
+      setProjectDeadline('')
+      setShowNewProjectDialog(false)
+      await fetchProjects()
+    }
+    setIsSubmitting(false)
+  }
+
+  const handleSendMessage = async () => {
+    if (!selectedProject || !newMessage.trim()) return
+    
+    // Check if project is validated or in_progress
+    if (selectedProject.status !== 'validated' && selectedProject.status !== 'in_progress') {
+      return
+    }
+
+    const { error } = await supabase
+      .from('client_messages')
+      .insert({
+        project_id: selectedProject.id,
+        sender_id: user.id,
+        content: newMessage.trim(),
+        is_from_admin: false
+      })
+
+    if (!error) {
+      setNewMessage('')
+      await fetchMessages(selectedProject.id)
+    }
+  }
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'en-cours':
-        return <Badge className="bg-primary/10 text-primary hover:bg-primary/20">En cours</Badge>
-      case 'en-attente':
-        return <Badge variant="secondary">En attente</Badge>
-      case 'termine':
-        return <Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20">Terminé</Badge>
-      case 'payee':
-        return <Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20">Payée</Badge>
+      case 'pending':
+        return <Badge variant="outline" className="border-orange-500 text-orange-500">En attente de validation</Badge>
+      case 'validated':
+        return <Badge className="bg-blue-500/10 text-blue-600">Valide</Badge>
+      case 'in_progress':
+        return <Badge className="bg-primary/10 text-primary">En cours</Badge>
+      case 'completed':
+        return <Badge className="bg-green-500/10 text-green-600">Termine</Badge>
+      case 'rejected':
+        return <Badge variant="destructive">Refuse</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
   }
+
+  const activeProject = projects.find(p => p.status === 'validated' || p.status === 'in_progress')
+  const pendingProject = projects.find(p => p.status === 'pending')
+  const unreadMessages = messages.filter(m => m.is_from_admin && !m.is_read).length
 
   return (
     <div className="flex min-h-screen flex-col bg-secondary/30">
@@ -122,7 +258,7 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
             </div>
             <Button variant="outline" onClick={handleLogout} disabled={isLoggingOut} className="gap-2">
               <LogOut className="h-4 w-4" />
-              {isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
+              {isLoggingOut ? 'Deconnexion...' : 'Se deconnecter'}
             </Button>
           </div>
 
@@ -134,19 +270,31 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                   <FolderKanban className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{mockProjects.length}</p>
-                  <p className="text-sm text-muted-foreground">Projets actifs</p>
+                  <p className="text-2xl font-bold">{projects.length}</p>
+                  <p className="text-sm text-muted-foreground">Total projets</p>
                 </div>
               </CardContent>
             </Card>
             
             <Card>
               <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-                  <Clock className="h-6 w-6 text-accent" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
+                  <AlertCircle className="h-6 w-6 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">1</p>
+                  <p className="text-2xl font-bold">{pendingProject ? 1 : 0}</p>
+                  <p className="text-sm text-muted-foreground">En attente</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10">
+                  <Clock className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{activeProject ? 1 : 0}</p>
                   <p className="text-sm text-muted-foreground">En cours</p>
                 </div>
               </CardContent>
@@ -155,23 +303,11 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
             <Card>
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
-                  <Euro className="h-6 w-6 text-green-600" />
+                  <CheckCircle2 className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">200 €</p>
-                  <p className="text-sm text-muted-foreground">Total payé</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/10">
-                  <MessageSquare className="h-6 w-6 text-orange-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">1</p>
-                  <p className="text-sm text-muted-foreground">Message non lu</p>
+                  <p className="text-2xl font-bold">{projects.filter(p => p.status === 'completed').length}</p>
+                  <p className="text-sm text-muted-foreground">Termines</p>
                 </div>
               </CardContent>
             </Card>
@@ -179,18 +315,19 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
 
           {/* Main Content Tabs */}
           <Tabs defaultValue="projets" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-none lg:flex">
+            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-none lg:flex">
               <TabsTrigger value="projets" className="gap-2">
                 <FolderKanban className="h-4 w-4" />
                 <span className="hidden sm:inline">Projets</span>
               </TabsTrigger>
-              <TabsTrigger value="factures" className="gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Factures</span>
-              </TabsTrigger>
               <TabsTrigger value="messages" className="gap-2">
                 <MessageSquare className="h-4 w-4" />
                 <span className="hidden sm:inline">Messages</span>
+                {unreadMessages > 0 && (
+                  <Badge variant="destructive" className="ml-1 h-5 w-5 rounded-full p-0 text-xs">
+                    {unreadMessages}
+                  </Badge>
+                )}
               </TabsTrigger>
               <TabsTrigger value="profil" className="gap-2">
                 <Settings className="h-4 w-4" />
@@ -202,138 +339,248 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
             <TabsContent value="projets" className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Mes Projets</h2>
-                <Button asChild className="gap-2">
-                  <Link href="/contact">
-                    <Plus className="h-4 w-4" />
-                    Nouveau projet
-                  </Link>
-                </Button>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                {mockProjects.map((project) => (
-                  <Card key={project.id} className="overflow-hidden">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-lg">{project.name}</CardTitle>
-                        {getStatusBadge(project.status)}
+                <Dialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2" disabled={!canCreateProject}>
+                      <Plus className="h-4 w-4" />
+                      Nouveau projet
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Demande de nouveau projet</DialogTitle>
+                      <DialogDescription>
+                        Decrivez votre projet et nous vous contacterons rapidement.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div>
+                        <Label htmlFor="title">Titre du projet *</Label>
+                        <Input 
+                          id="title"
+                          value={projectTitle}
+                          onChange={(e) => setProjectTitle(e.target.value)}
+                          placeholder="Ex: Site vitrine pour mon restaurant"
+                        />
                       </div>
-                      <CardDescription>Budget : {project.budget} €</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {/* Progress Bar */}
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Progression</span>
-                          <span className="font-medium">{project.progress}%</span>
+                      <div>
+                        <Label htmlFor="service">Type de service *</Label>
+                        <Select value={projectService} onValueChange={setProjectService}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selectionnez un service" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="site-vitrine">Site Vitrine</SelectItem>
+                            <SelectItem value="e-commerce">E-commerce</SelectItem>
+                            <SelectItem value="application-web">Application Web</SelectItem>
+                            <SelectItem value="refonte">Refonte de site</SelectItem>
+                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                            <SelectItem value="autre">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea 
+                          id="description"
+                          value={projectDescription}
+                          onChange={(e) => setProjectDescription(e.target.value)}
+                          placeholder="Decrivez votre projet en detail..."
+                          rows={4}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="budget">Budget estime</Label>
+                          <Select value={projectBudget} onValueChange={setProjectBudget}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selectionnez" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="moins-500">Moins de 500 EUR</SelectItem>
+                              <SelectItem value="500-1000">500 - 1000 EUR</SelectItem>
+                              <SelectItem value="1000-2000">1000 - 2000 EUR</SelectItem>
+                              <SelectItem value="2000-5000">2000 - 5000 EUR</SelectItem>
+                              <SelectItem value="plus-5000">Plus de 5000 EUR</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                          <div 
-                            className="h-full bg-primary transition-all duration-500"
-                            style={{ width: `${project.progress}%` }}
+                        <div>
+                          <Label htmlFor="deadline">Deadline souhaitee</Label>
+                          <Input 
+                            id="deadline"
+                            type="date"
+                            value={projectDeadline}
+                            onChange={(e) => setProjectDeadline(e.target.value)}
                           />
                         </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          Début : {new Date(project.startDate).toLocaleDateString('fr-FR')}
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          Fin estimée : {new Date(project.estimatedEnd).toLocaleDateString('fr-FR')}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowNewProjectDialog(false)}>
+                        Annuler
+                      </Button>
+                      <Button 
+                        onClick={handleCreateProject} 
+                        disabled={!projectTitle || !projectService || isSubmitting}
+                      >
+                        {isSubmitting ? 'Envoi...' : 'Envoyer la demande'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
+
+              {!canCreateProject && (
+                <Card className="border-orange-500/50 bg-orange-500/5">
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <AlertCircle className="h-5 w-5 text-orange-500" />
+                    <p className="text-sm text-orange-700 dark:text-orange-400">
+                      Vous ne pouvez pas creer de nouveau projet tant que votre projet actuel n&apos;est pas termine.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
               
-              {mockProjects.length === 0 && (
+              {isLoading ? (
+                <Card className="p-12 text-center">
+                  <RefreshCw className="mx-auto h-8 w-8 animate-spin text-primary" />
+                  <p className="mt-4 text-muted-foreground">Chargement...</p>
+                </Card>
+              ) : projects.length === 0 ? (
                 <Card className="p-12 text-center">
                   <FolderKanban className="mx-auto h-12 w-12 text-muted-foreground" />
                   <h3 className="mt-4 font-semibold">Aucun projet pour le moment</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Démarrez votre premier projet avec TEKNOPY
+                    Demarrez votre premier projet avec TEKNOPY
                   </p>
-                  <Button asChild className="mt-4">
-                    <Link href="/contact">Demander un devis</Link>
+                  <Button onClick={() => setShowNewProjectDialog(true)} className="mt-4 gap-2">
+                    <Plus className="h-4 w-4" />
+                    Creer mon premier projet
                   </Button>
                 </Card>
+              ) : (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {projects.map((project) => (
+                    <Card 
+                      key={project.id} 
+                      className={`overflow-hidden cursor-pointer transition-all hover:shadow-md ${
+                        selectedProject?.id === project.id ? 'ring-2 ring-primary' : ''
+                      }`}
+                      onClick={() => setSelectedProject(project)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <CardTitle className="text-lg">{project.title}</CardTitle>
+                          {getStatusBadge(project.status)}
+                        </div>
+                        <CardDescription>{project.service_type}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {(project.status === 'validated' || project.status === 'in_progress' || project.status === 'completed') && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Progression</span>
+                              <span className="font-medium">{project.progress}%</span>
+                            </div>
+                            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                              <div 
+                                className="h-full bg-primary transition-all duration-500"
+                                style={{ width: `${project.progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        {project.status === 'pending' && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            En attente de validation par TEKNOPY
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          Demande: {new Date(project.created_at).toLocaleDateString('fr-FR')}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               )}
-            </TabsContent>
-
-            {/* Factures Tab */}
-            <TabsContent value="factures" className="space-y-6">
-              <h2 className="text-xl font-semibold">Mes Factures</h2>
-              
-              <Card>
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b bg-muted/50">
-                          <th className="p-4 text-left text-sm font-medium">N° Facture</th>
-                          <th className="p-4 text-left text-sm font-medium">Date</th>
-                          <th className="p-4 text-left text-sm font-medium">Projet</th>
-                          <th className="p-4 text-left text-sm font-medium">Montant</th>
-                          <th className="p-4 text-left text-sm font-medium">Statut</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {mockInvoices.map((invoice) => (
-                          <tr key={invoice.id} className="border-b last:border-0">
-                            <td className="p-4 font-medium">{invoice.id}</td>
-                            <td className="p-4 text-muted-foreground">
-                              {new Date(invoice.date).toLocaleDateString('fr-FR')}
-                            </td>
-                            <td className="p-4">{invoice.project}</td>
-                            <td className="p-4 font-medium">{invoice.amount} €</td>
-                            <td className="p-4">{getStatusBadge(invoice.status)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
 
             {/* Messages Tab */}
             <TabsContent value="messages" className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Mes Messages</h2>
-                <Button asChild variant="outline" className="gap-2">
-                  <Link href="/contact">
-                    <Plus className="h-4 w-4" />
-                    Nouveau message
-                  </Link>
-                </Button>
-              </div>
+              <h2 className="text-xl font-semibold">Messages</h2>
               
-              <div className="space-y-3">
-                {mockMessages.map((message) => (
-                  <Card key={message.id} className={`cursor-pointer transition-colors hover:bg-muted/50 ${!message.read ? 'border-primary/50 bg-primary/5' : ''}`}>
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
-                        {!message.read && (
-                          <div className="h-2 w-2 rounded-full bg-primary" />
-                        )}
-                        <div>
-                          <p className={`font-medium ${!message.read ? 'text-foreground' : 'text-muted-foreground'}`}>
-                            {message.subject}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(message.date).toLocaleDateString('fr-FR')}
-                          </p>
-                        </div>
+              {!selectedProject ? (
+                <Card className="p-12 text-center">
+                  <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="mt-4 font-semibold">Selectionnez un projet</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Cliquez sur un projet dans l&apos;onglet Projets pour voir les messages
+                  </p>
+                </Card>
+              ) : selectedProject.status === 'pending' ? (
+                <Card className="p-12 text-center">
+                  <Lock className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="mt-4 font-semibold">Messagerie non disponible</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    La messagerie sera disponible une fois votre projet valide par TEKNOPY
+                  </p>
+                </Card>
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{selectedProject.title}</CardTitle>
+                    <CardDescription>
+                      Echangez avec TEKNOPY concernant votre projet
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Messages List */}
+                    <div className="h-80 space-y-3 overflow-y-auto rounded-lg border p-4">
+                      {messages.length === 0 ? (
+                        <p className="text-center text-sm text-muted-foreground py-8">
+                          Aucun message pour le moment. Commencez la conversation !
+                        </p>
+                      ) : (
+                        messages.map((msg) => (
+                          <div 
+                            key={msg.id}
+                            className={`rounded-lg p-3 ${
+                              msg.is_from_admin 
+                                ? 'bg-muted mr-8' 
+                                : 'bg-primary/10 ml-8'
+                            }`}
+                          >
+                            <p className="text-sm">{msg.content}</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {msg.is_from_admin ? 'TEKNOPY' : 'Vous'} - {new Date(msg.created_at).toLocaleString('fr-FR')}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    
+                    {/* Send Message */}
+                    {(selectedProject.status === 'validated' || selectedProject.status === 'in_progress') && (
+                      <div className="flex gap-2">
+                        <Input 
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          placeholder="Ecrire un message..."
+                          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        />
+                        <Button onClick={handleSendMessage} size="icon">
+                          <Send className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             {/* Profil Tab */}
@@ -394,7 +641,7 @@ export function ClientDashboard({ user }: ClientDashboardProps) {
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">Manuel Harpon</p>
-                        <p className="text-sm text-muted-foreground">Votre interlocuteur dédié</p>
+                        <p className="text-sm text-muted-foreground">Votre interlocuteur dedie</p>
                         <p className="text-xs text-primary">A votre service</p>
                       </div>
                     </div>

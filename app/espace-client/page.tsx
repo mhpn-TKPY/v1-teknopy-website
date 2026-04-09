@@ -15,5 +15,16 @@ export default async function EspaceClientPage() {
     redirect('/auth/connexion')
   }
 
+  // Check if user is admin - redirect to admin dashboard
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', data.user.id)
+    .single()
+  
+  if (profile?.is_admin) {
+    redirect('/admin')
+  }
+
   return <ClientDashboard user={data.user} />
 }
