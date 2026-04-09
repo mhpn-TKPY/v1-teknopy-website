@@ -2,21 +2,21 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ExternalLink, ArrowRight, Sparkles, Globe } from "lucide-react"
+import { ExternalLink, ArrowRight, Sparkles, Globe, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// Real projects data with actual links
+// Real projects data - ordered: Afrocentricite, fullbelly, lakousankofa, kantekant first, then others
 const projects = [
   {
     id: "1",
-    title: "PLISTECH",
-    description: "Site vitrine professionnel pour une entreprise de services technologiques et solutions informatiques.",
-    category: "Site Vitrine",
-    url: "https://plistech.com",
-    technologies: ["Next.js", "Tailwind CSS", "TypeScript"],
-    client_name: "PLISTECH",
+    title: "Afrocentricite",
+    description: "Plateforme educative et culturelle dediee a l'histoire, la culture et les savoirs africains.",
+    category: "Application Web",
+    url: "https://afrocentricite.com",
+    technologies: ["Next.js", "CMS", "Tailwind CSS"],
+    client_name: "Afrocentricite",
     featured: true,
   },
   {
@@ -41,42 +41,42 @@ const projects = [
   },
   {
     id: "4",
-    title: "Afrocentricite",
-    description: "Plateforme educative et culturelle dediee a l'histoire, la culture et les savoirs africains.",
-    category: "Application Web",
-    url: "https://afrocentricite.com",
-    technologies: ["Next.js", "CMS", "Tailwind CSS"],
-    client_name: "Afrocentricite",
-    featured: true,
-  },
-  {
-    id: "5",
-    title: "TEKNOPY Concept",
-    description: "Site vitrine et espace client pour agence de developpement web en Martinique.",
-    category: "Site Vitrine",
-    url: "https://teknopy.com",
-    technologies: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
-    client_name: "TEKNOPY Concept",
-    featured: true,
-  },
-  {
-    id: "6",
-    title: "Golden Star 1919",
-    description: "Site officiel pour club sportif avec gestion des actualites, calendrier et espace adherents.",
-    category: "Association",
-    url: "https://goldenstar1919.org",
-    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
-    client_name: "Golden Star 1919",
-    featured: false,
-  },
-  {
-    id: "7",
     title: "Kante Kant",
     description: "Site e-commerce de vente de produits locaux et artisanaux avec livraison en France metropolitaine.",
     category: "E-commerce",
     url: "https://kantekant.fr",
     technologies: ["Next.js", "Stripe", "PostgreSQL"],
     client_name: "Kante Kant",
+    featured: true,
+  },
+  {
+    id: "5",
+    title: "PLISTECH",
+    description: "Site vitrine professionnel pour une entreprise de services technologiques et solutions informatiques.",
+    category: "Site Vitrine",
+    url: "https://plistech.com",
+    technologies: ["Next.js", "Tailwind CSS", "TypeScript"],
+    client_name: "PLISTECH",
+    featured: false,
+  },
+  {
+    id: "6",
+    title: "TEKNOPY Concept",
+    description: "Site vitrine et espace client pour agence de developpement web en Martinique.",
+    category: "Site Vitrine",
+    url: "https://teknopy.com",
+    technologies: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
+    client_name: "TEKNOPY Concept",
+    featured: false,
+  },
+  {
+    id: "7",
+    title: "Golden Star 1919",
+    description: "Site officiel pour club sportif avec gestion des actualites, calendrier et espace adherents.",
+    category: "Association",
+    url: "https://goldenstar1919.org",
+    technologies: ["Next.js", "Supabase", "Tailwind CSS"],
+    client_name: "Golden Star 1919",
     featured: false,
   },
   {
@@ -99,6 +99,106 @@ const stats = [
   { value: "5+", label: "Annees d'experience" },
   { value: "100%", label: "Projets livres" },
 ]
+
+function ProjectCard({ project }: { project: typeof projects[0] }) {
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+
+  return (
+    <Card className="group flex flex-col overflow-hidden transition-all hover:shadow-lg">
+      {/* Live preview iframe with loading state */}
+      <div className="relative h-44 overflow-hidden bg-muted">
+        {/* Loading skeleton */}
+        {isLoading && !hasError && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="text-xs text-muted-foreground">Chargement de l&apos;apercu...</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Fallback if iframe fails (for HTTP sites or CORS issues) */}
+        {hasError && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+            <div className="text-center px-4">
+              <Globe className="mx-auto h-10 w-10 text-primary/50" />
+              <span className="mt-2 block text-sm font-medium text-foreground">{project.title}</span>
+              <span className="mt-1 block text-xs text-muted-foreground">Cliquez pour visiter</span>
+            </div>
+          </div>
+        )}
+        
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        
+        {/* Iframe with extended loading time for slow sites */}
+        <iframe
+          src={project.url}
+          title={`Apercu de ${project.title}`}
+          className={`h-[440px] w-[200%] origin-top-left scale-50 border-0 pointer-events-none transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          loading="eager"
+          sandbox="allow-scripts allow-same-origin"
+          referrerPolicy="no-referrer"
+          onLoad={() => {
+            // Extended delay to ensure full page render including images and styles
+            setTimeout(() => setIsLoading(false), 3000)
+          }}
+          onError={() => {
+            setHasError(true)
+            setIsLoading(false)
+          }}
+        />
+        
+        {project.featured && (
+          <Badge className="absolute left-2 top-2 z-20 bg-primary text-xs">
+            En vedette
+          </Badge>
+        )}
+        <div className="absolute bottom-2 right-2 z-20 opacity-0 transition-opacity group-hover:opacity-100">
+          <a 
+            href={project.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </div>
+      </div>
+      
+      <CardContent className="flex flex-1 flex-col p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <Badge variant="outline" className="text-xs">
+            {project.category}
+          </Badge>
+        </div>
+        <h3 className="mb-1 font-semibold text-foreground">{project.title}</h3>
+        <p className="mb-3 flex-1 text-sm text-muted-foreground line-clamp-2">
+          {project.description}
+        </p>
+        <div className="mb-3 flex flex-wrap gap-1">
+          {project.technologies.slice(0, 3).map((tech) => (
+            <Badge key={tech} variant="secondary" className="text-xs font-normal">
+              {tech}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
+          <span className="text-xs text-muted-foreground">{project.client_name}</span>
+          <a 
+            href={project.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          >
+            <Globe className="h-3 w-3" />
+            Visiter
+          </a>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("Tous")
@@ -163,65 +263,7 @@ export function ProjectsPage() {
           {/* Projects grid with live previews */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProjects.map((project) => (
-              <Card key={project.id} className="group flex flex-col overflow-hidden transition-all hover:shadow-lg">
-                {/* Live preview iframe */}
-                <div className="relative h-44 overflow-hidden bg-muted">
-                  <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                  <iframe
-                    src={project.url}
-                    title={`Apercu de ${project.title}`}
-                    className="h-[440px] w-[200%] origin-top-left scale-50 border-0 pointer-events-none"
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin"
-                  />
-                  {project.featured && (
-                    <Badge className="absolute left-2 top-2 z-20 bg-primary text-xs">
-                      En vedette
-                    </Badge>
-                  )}
-                  <div className="absolute bottom-2 right-2 z-20 opacity-0 transition-opacity group-hover:opacity-100">
-                    <a 
-                      href={project.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-                
-                <CardContent className="flex flex-1 flex-col p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {project.category}
-                    </Badge>
-                  </div>
-                  <h3 className="mb-1 font-semibold text-foreground">{project.title}</h3>
-                  <p className="mb-3 flex-1 text-sm text-muted-foreground line-clamp-2">
-                    {project.description}
-                  </p>
-                  <div className="mb-3 flex flex-wrap gap-1">
-                    {project.technologies.slice(0, 3).map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-xs font-normal">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
-                    <span className="text-xs text-muted-foreground">{project.client_name}</span>
-                    <a 
-                      href={project.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                    >
-                      <Globe className="h-3 w-3" />
-                      Visiter
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         </div>
