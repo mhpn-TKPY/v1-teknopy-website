@@ -50,7 +50,7 @@ export default function InscriptionPage() {
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -63,8 +63,24 @@ export default function InscriptionPage() {
           },
         },
       })
-      if (error) throw error
-      router.push('/auth/inscription-reussie')
+      
+      if (error) {
+        // Handle specific Supabase errors with French messages
+        if (error.message.includes('sending confirmation email') || error.message.includes('email')) {
+          setError('Erreur lors de l\'envoi de l\'email de confirmation. Veuillez réessayer ou contacter le support.')
+        } else if (error.message.includes('already registered')) {
+          setError('Cette adresse email est déjà enregistrée. Veuillez vous connecter.')
+        } else {
+          setError(error.message)
+        }
+        setIsLoading(false)
+        return
+      }
+      
+      // Check if user was created (even without email confirmation in dev)
+      if (data?.user) {
+        router.push('/auth/inscription-reussie')
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Une erreur est survenue')
     } finally {
@@ -87,7 +103,7 @@ export default function InscriptionPage() {
               <div className="mx-auto relative">
                 <div className="h-20 w-20 overflow-hidden rounded-full border-4 border-primary/20 shadow-lg">
                   <Image
-                    src="/images/manuel-harpon-profile.jpg"
+                    src="/images/manuel-harpon-moi2.jpg"
                     alt="Manuel Harpon - TEKNOPY"
                     width={80}
                     height={80}
