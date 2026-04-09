@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Portfolio TEKNOPY | Nos Realisations Web",
     description: "Sites vitrines, e-commerce, applications web et mobiles. Decouvrez nos projets realises en Martinique.",
-    url: "https://teknopy.com/projets",
+    url: "https://plistech.com/projets",
   },
 }
 

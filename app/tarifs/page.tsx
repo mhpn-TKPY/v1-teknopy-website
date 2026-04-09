@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tarifs TEKNOPY Concept | Grille Tarifaire Complète",
     description: "Sites web dès 400€, e-commerce dès 1000€, formations à 20€/h. Tarifs clairs et compétitifs en Martinique.",
-    url: "https://teknopy.com/tarifs",
+    url: "https://plistech.com/tarifs",
   },
 }
 

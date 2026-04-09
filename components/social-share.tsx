@@ -67,13 +67,13 @@ const shareLinks = [
   {
     name: "Instagram",
     icon: InstagramIcon,
-    getUrl: () => "https://instagram.com/teknopy_concept",
+    getUrl: () => "https://instagram.com/plistech_mq",
     bgColor: "#E4405F",
   },
   {
     name: "TikTok",
     icon: TikTokIcon,
-    getUrl: () => "https://tiktok.com/@teknopy_concept",
+    getUrl: () => "https://tiktok.com/@plistech_mq",
     bgColor: "#000000",
   },
   {
@@ -96,7 +96,7 @@ const shareLinks = [
 export function SocialShare() {
   const [isExpanded, setIsExpanded] = useState(false)
   const pathname = usePathname()
-  const siteUrl = "https://teknopy.com"
+  const siteUrl = "https://plistech.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
   // Hide on auth/admin/espace-client pages
@@ -209,7 +209,7 @@ export function SocialShare() {
 export function SocialShareMobile() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const siteUrl = "https://teknopy.com"
+  const siteUrl = "https://plistech.com"
   const siteTitle = "TEKNOPY Concept - Agence Web en Martinique"
 
   // Hide on auth/admin/espace-client pages

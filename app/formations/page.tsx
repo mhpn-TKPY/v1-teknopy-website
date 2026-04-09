@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Formations TEKNOPY | Cours Informatique & Mathématiques",
     description: "Cours particuliers à 20€/h : informatique, bureautique, code, mathématiques 6e-2nd. Fort-de-France, Martinique.",
-    url: "https://teknopy.com/formations",
+    url: "https://plistech.com/formations",
   },
 }
 

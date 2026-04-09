@@ -11,53 +11,59 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'TEKNOPY Concept | Agence Web & Prestations Informatiques en Martinique',
+    default: 'TEKNOPY Concept | Agence Web en Martinique',
     template: '%s | TEKNOPY Concept',
   },
-  description: 'Agence de développement web, création de sites vitrines (400€), e-commerce (1000€), applications web, formations informatique et mathématiques (20€/h), réparation PC à Fort-de-France. Devis gratuit sous 24h.',
+  description: "L'innovation au service du web. Creation de sites vitrines (400EUR), e-commerce (1000EUR), applications web, formations informatique et mathematiques (20EUR/h), reparation PC a Fort-de-France. Devis gratuit sous 24h.",
   keywords: [
     'agence web martinique',
-    'création site web martinique',
-    'développeur web fort-de-france',
+    'creation site web martinique',
+    'developpeur web fort-de-france',
     'site vitrine martinique',
     'e-commerce martinique',
     'application web martinique',
     'formation informatique martinique',
-    'cours mathématiques martinique',
-    'réparation PC martinique',
-    'dépannage informatique fort-de-france',
+    'cours mathematiques martinique',
+    'reparation PC martinique',
+    'depannage informatique fort-de-france',
     'consulting IT martinique',
     'tarif site web martinique',
     'prix site internet martinique',
+    'plistech',
+    'teknopy',
   ],
-  authors: [{ name: 'TEKNOPY Concept', url: 'https://teknopy.com' }],
+  authors: [{ name: 'TEKNOPY Concept', url: 'https://plistech.com' }],
   creator: 'Manuel Harpon',
   publisher: 'TEKNOPY Concept',
   generator: 'v0.app',
-  metadataBase: new URL('https://teknopy.com'),
+  metadataBase: new URL('https://plistech.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://teknopy.com',
+    url: 'https://plistech.com',
     siteName: 'TEKNOPY Concept',
-    title: 'TEKNOPY Concept | Agence Web & Prestations Informatiques en Martinique',
-    description: 'Création de sites web, applications, formations et réparations informatiques à Fort-de-France. Tarifs transparents et devis gratuit sous 24h.',
+    title: 'TEKNOPY Concept | Agence Web en Martinique',
+    description: "L'innovation au service du web. Creation de sites web, applications, formations et reparations informatiques a Fort-de-France. Tarifs transparents et devis gratuit sous 24h.",
     images: [
       {
-        url: '/images/og-teknopy.jpg',
+        url: 'https://plistech.com/opengraph-image.jpg',
         width: 1200,
         height: 630,
         alt: 'TEKNOPY Concept - Agence Web Martinique',
+        type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@teknopy',
+    creator: '@teknopy',
     title: 'TEKNOPY Concept | Agence Web Martinique',
-    description: 'Sites web, applications, formations informatiques et réparations PC à Fort-de-France. Devis gratuit.',
+    description: 'Sites web, applications, formations informatiques et reparations PC a Fort-de-France. Devis gratuit.',
+    images: ['https://plistech.com/opengraph-image.jpg'],
   },
   robots: {
     index: true,
@@ -70,14 +76,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: {
-    icon: [
-      { url: '/favicon.jpg', sizes: '32x32', type: 'image/jpeg' },
-      { url: '/favicon.jpg', sizes: '16x16', type: 'image/jpeg' },
-    ],
-    apple: { url: '/apple-icon.jpg', sizes: '180x180', type: 'image/jpeg' },
-    shortcut: '/favicon.jpg',
+  verification: {
+    google: 'google-site-verification-code',
   },
+  category: 'technology',
 }
 
 export const viewport: Viewport = {
@@ -87,6 +89,7 @@ export const viewport: Viewport = {
   ],
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 5,
 }
 
 // Structured Data (JSON-LD) for SEO
@@ -94,18 +97,26 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'LocalBusiness',
-      '@id': 'https://teknopy.com/#organization',
+      '@type': 'Organization',
+      '@id': 'https://plistech.com/#organization',
       name: 'TEKNOPY Concept',
       alternateName: 'Plistech',
-      description: 'Agence de développement web, consulting IT et formations informatiques en Martinique',
-      url: 'https://teknopy.com',
+      url: 'https://plistech.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://plistech.com/images/logo-teknopy.png',
+        width: 200,
+        height: 88,
+      },
+      image: 'https://plistech.com/opengraph-image.jpg',
+      description: "Agence de developpement web, consulting IT et formations informatiques en Martinique",
       telephone: '+596696617151',
       email: 'contact@plistech.com',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Fort-de-France',
         addressRegion: 'Martinique',
+        postalCode: '97200',
         addressCountry: 'FR',
       },
       geo: {
@@ -117,7 +128,19 @@ const jsonLd = {
         '@type': 'Place',
         name: 'Martinique',
       },
-      priceRange: '€€',
+      sameAs: [
+        'https://www.facebook.com/teknopy',
+        'https://www.instagram.com/teknopy',
+        'https://twitter.com/teknopy',
+        'https://www.linkedin.com/company/teknopy',
+      ],
+    },
+    {
+      '@type': 'LocalBusiness',
+      '@id': 'https://plistech.com/#localbusiness',
+      name: 'TEKNOPY Concept',
+      image: 'https://plistech.com/opengraph-image.jpg',
+      priceRange: 'EUR EUR',
       openingHoursSpecification: {
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -126,11 +149,20 @@ const jsonLd = {
       },
     },
     {
+      '@type': 'WebSite',
+      '@id': 'https://plistech.com/#website',
+      url: 'https://plistech.com',
+      name: 'TEKNOPY Concept',
+      description: 'Agence Web en Martinique',
+      publisher: { '@id': 'https://plistech.com/#organization' },
+      inLanguage: 'fr-FR',
+    },
+    {
       '@type': 'Service',
-      '@id': 'https://teknopy.com/#web-services',
-      name: 'Création de Sites Web',
-      provider: { '@id': 'https://teknopy.com/#organization' },
-      serviceType: 'Développement Web',
+      '@id': 'https://plistech.com/#web-services',
+      name: 'Creation de Sites Web',
+      provider: { '@id': 'https://plistech.com/#organization' },
+      serviceType: 'Developpement Web',
       areaServed: 'Martinique',
       offers: [
         {
@@ -143,85 +175,15 @@ const jsonLd = {
         {
           '@type': 'Offer',
           name: 'Site E-commerce',
-          description: 'Boutique en ligne avec paiement sécurisé Stripe/PayPal',
+          description: 'Boutique en ligne avec paiement securise Stripe/PayPal',
           price: '1000',
           priceCurrency: 'EUR',
         },
         {
           '@type': 'Offer',
           name: 'Application Web',
-          description: 'Espace client personnalisé avec tableau de bord',
+          description: 'Espace client personnalise avec tableau de bord',
           price: '1500',
-          priceCurrency: 'EUR',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Application Mobile',
-          description: 'Application cross-platform iOS & Android',
-          price: '1200',
-          priceCurrency: 'EUR',
-        },
-      ],
-    },
-    {
-      '@type': 'EducationalOrganization',
-      '@id': 'https://teknopy.com/#training',
-      name: 'TEKNOPY Formations',
-      parentOrganization: { '@id': 'https://teknopy.com/#organization' },
-      areaServed: 'Fort-de-France, Martinique',
-      offers: [
-        {
-          '@type': 'Offer',
-          name: 'Cours d\'informatique particulier',
-          description: 'Initiation, bureautique, sécurité web, HTML/CSS/JS',
-          price: '20',
-          priceCurrency: 'EUR',
-          unitCode: 'HUR',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Cours de mathématiques',
-          description: 'Niveau 6e à 2nd, préparation Brevet, adultes',
-          price: '20',
-          priceCurrency: 'EUR',
-          unitCode: 'HUR',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Formation Intra-Entreprise',
-          description: 'Session de 2h minimum, jusqu\'à 5 personnes',
-          price: '100',
-          priceCurrency: 'EUR',
-        },
-      ],
-    },
-    {
-      '@type': 'Service',
-      '@id': 'https://teknopy.com/#repair-services',
-      name: 'Réparation & Maintenance PC',
-      provider: { '@id': 'https://teknopy.com/#organization' },
-      serviceType: 'Dépannage Informatique',
-      areaServed: 'Martinique',
-      offers: [
-        {
-          '@type': 'Offer',
-          name: 'Diagnostic Matériel',
-          description: 'Rapport de panne complet, offert si réparation acceptée',
-          price: '20',
-          priceCurrency: 'EUR',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Installation Windows/Drivers',
-          description: 'Formatage, OS, drivers et logiciels essentiels',
-          price: '50',
-          priceCurrency: 'EUR',
-        },
-        {
-          '@type': 'Offer',
-          name: 'Récupération de Données',
-          description: 'Sur disque fonctionnel',
-          price: '50',
           priceCurrency: 'EUR',
         },
       ],
@@ -237,6 +199,13 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
+        <link rel="icon" href="/icon.jpg" type="image/jpeg" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-icon.jpg" />
+        <meta property="og:image" content="https://plistech.com/opengraph-image.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta name="twitter:image" content="https://plistech.com/opengraph-image.jpg" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

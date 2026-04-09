@@ -43,8 +43,8 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Globe className="h-4 w-4 text-primary" />
-              <a href="https://www.teknopy.com" className="hover:text-primary" target="_blank" rel="noopener noreferrer">
-                www.teknopy.com
+              <a href="https://www.plistech.com" className="hover:text-primary" target="_blank" rel="noopener noreferrer">
+                www.plistech.com
               </a>
             </div>
           </div>

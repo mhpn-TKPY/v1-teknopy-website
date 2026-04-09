@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contactez TEKNOPY | Devis Gratuit sous 24h",
     description: "Demandez un devis gratuit pour votre projet web. Réponse garantie sous 24 heures.",
-    url: "https://teknopy.com/contact",
+    url: "https://plistech.com/contact",
   },
 }
 

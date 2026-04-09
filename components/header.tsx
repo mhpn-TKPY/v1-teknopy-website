@@ -151,27 +151,27 @@ export function Header() {
           {/* Full header when not scrolled */}
           <div className={cn(
             "transition-all duration-500 overflow-hidden",
-            isScrolled ? "max-h-0 opacity-0" : "max-h-32 opacity-100"
+            isScrolled ? "max-h-0 opacity-0" : "max-h-24 opacity-100"
           )}>
-            <div className="flex items-stretch">
+            <div className="flex items-stretch h-[88px]">
               {/* Logo section - perfectly aligned with bands */}
-              <div className="flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-6 min-w-[160px]">
-                <Link href="/" className="flex items-center py-1">
+              <div className="flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 px-4 min-w-[120px]">
+                <Link href="/" className="flex items-center">
                   <Image
                     src="/images/logo-teknopy.png"
                     alt="TEKNOPY Concept"
-                    width={140}
+                    width={120}
                     height={80}
-                    className="h-[76px] w-auto"
+                    className="h-[80px] w-auto object-contain"
                     priority
                   />
                 </Link>
               </div>
 
               {/* Right section - stacked bands (same height as logo) */}
-              <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col h-[88px]">
                 {/* Top bar - green band */}
-                <div className="flex-1 bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
+                <div className="h-[44px] bg-gradient-to-r from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
                   <div className="absolute inset-0 opacity-10">
                     <div className="absolute inset-0" style={{
                       backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)`,
@@ -212,7 +212,7 @@ export function Header() {
                 </div>
 
                 {/* Bottom bar - white/glass band */}
-                <div className="flex-1 relative bg-gradient-to-r from-slate-50/98 via-white to-slate-50/98 dark:from-slate-900/98 dark:via-slate-800 dark:to-slate-900/98 backdrop-blur-sm">
+                <div className="h-[44px] relative bg-gradient-to-r from-slate-50/98 via-white to-slate-50/98 dark:from-slate-900/98 dark:via-slate-800 dark:to-slate-900/98 backdrop-blur-sm">
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
                     <div className="absolute -bottom-8 left-1/4 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
@@ -293,7 +293,7 @@ export function Header() {
         "transition-all duration-300",
         "h-14", // Mobile default
         "lg:h-0", // Desktop: managed by scroll
-        isScrolled ? "lg:h-14" : "lg:h-[80px]"
+        isScrolled ? "lg:h-14" : "lg:h-[88px]"
       )} />
 
       {/* Scroll to top button */}
