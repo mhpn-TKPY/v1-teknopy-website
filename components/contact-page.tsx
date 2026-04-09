@@ -66,24 +66,36 @@ export function ContactPage() {
     setIsSubmitting(true)
 
     const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      services: selectedServices,
-      estimatedTotal,
-      message: formData.get("message"),
-    }
+    
+    // Web3Forms configuration
+    formData.append("access_key", "dd2f81b5-56ac-4e05-8320-ae65fddec383")
+    formData.append("to_email", "manuel.harpon@teknopy.com")
+    formData.append("from_name", "TEKNOPY Contact")
+    formData.append("replyto", formData.get("email") as string)
+    
+    // Format services for the email
+    const servicesText = selectedServices.length > 0 
+      ? selectedServices.map(s => `${s.name} (${s.price})`).join(', ') 
+      : 'Non specifie'
+    formData.append("services", servicesText)
+    formData.append("estimated_total", estimatedTotal || 'Non calcule')
+    
+    // Subject with services
+    const serviceNames = selectedServices.map(s => s.name).join(', ')
+    formData.append("subject", `[TEKNOPY] Demande de devis - ${serviceNames || 'Contact general'}`)
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: formData,
       })
 
-      if (response.ok) {
+      const data = await response.json()
+      if (data.success) {
         setIsSuccess(true)
+        ;(e.target as HTMLFormElement).reset()
+        setSelectedServices([])
+        setEstimatedTotal("")
       }
     } catch (error) {
       console.error("Error submitting form:", error)
