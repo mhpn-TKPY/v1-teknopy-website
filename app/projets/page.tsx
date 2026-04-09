@@ -4,20 +4,20 @@ import { ProjectsPage } from "@/components/projects-page"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
-  title: "Projets | Portfolio de Réalisations Web en Martinique",
-  description: "Découvrez nos réalisations : sites vitrines, e-commerce, applications web et mobiles développés pour nos clients en Martinique. Portfolio complet de TEKNOPY Concept.",
+  title: "Realisations | Portfolio Web en Martinique",
+  description: "Decouvrez nos realisations : sites vitrines, e-commerce, applications web et mobiles developpes pour nos clients en Martinique. Portfolio complet de TEKNOPY Concept.",
   keywords: [
     "portfolio web martinique",
-    "réalisations site web martinique",
-    "projets développement web fort-de-france",
-    "références agence web martinique",
+    "realisations site web martinique",
+    "projets developpement web fort-de-france",
+    "references agence web martinique",
   ],
   alternates: {
     canonical: "/projets",
   },
   openGraph: {
-    title: "Portfolio TEKNOPY | Nos Réalisations Web",
-    description: "Sites vitrines, e-commerce, applications web et mobiles. Découvrez nos projets réalisés en Martinique.",
+    title: "Portfolio TEKNOPY | Nos Realisations Web",
+    description: "Sites vitrines, e-commerce, applications web et mobiles. Decouvrez nos projets realises en Martinique.",
     url: "https://teknopy.com/projets",
   },
 }

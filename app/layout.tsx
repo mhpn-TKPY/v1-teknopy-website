@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsent } from '@/components/cookie-consent'
+import { SidebarNav } from '@/components/sidebar-nav'
 import './globals.css'
 
 const _inter = Inter({ subsets: ["latin"] });
@@ -250,7 +251,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        {children}
+        <SidebarNav />
+        <div className="md:ml-16">
+          {children}
+        </div>
         <CookieConsent />
         <Analytics />
       </body>

@@ -157,7 +157,7 @@ export function ProjectsPreview() {
         <div className="mt-8 text-center">
           <Button asChild variant="outline" className="gap-2">
             <Link href="/projets">
-              Voir tous nos projets
+              Voir toutes nos realisations
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
