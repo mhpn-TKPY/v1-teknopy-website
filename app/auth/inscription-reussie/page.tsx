@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
-import { CheckCircle2, Mail, ArrowLeft } from 'lucide-react'
+import { CheckCircle2, Sparkles, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -34,22 +34,22 @@ export default function InscriptionReussiePage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="rounded-lg border border-border bg-muted/50 p-4">
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                 <div className="flex items-start gap-3">
-                  <Mail className="mt-0.5 h-5 w-5 text-primary" />
+                  <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
                   <div className="text-sm">
-                    <p className="font-medium text-foreground">Vérifiez votre boîte mail</p>
+                    <p className="font-medium text-foreground">Votre compte est pret !</p>
                     <p className="mt-1 text-muted-foreground">
-                      Un email de confirmation vous a été envoyé. Cliquez sur le lien pour activer votre compte.
+                      Vous pouvez maintenant vous connecter a votre espace client pour suivre vos projets en temps reel.
                     </p>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-3">
-                <Button asChild className="w-full" variant="outline">
+                <Button asChild className="w-full">
                   <Link href="/auth/connexion">
-                    Se connecter
+                    Se connecter maintenant
                   </Link>
                 </Button>
                 <Link 
