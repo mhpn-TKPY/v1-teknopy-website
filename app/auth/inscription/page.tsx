@@ -80,13 +80,15 @@ export default function InscriptionPage() {
       // 2. Send confirmation email to the user via Web3Forms
       const userConfirmationForm = new FormData()
       userConfirmationForm.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      userConfirmationForm.append('to_email', email)
-      userConfirmationForm.append('subject', 'Bienvenue chez TEKNOPY Concept - Confirmation d\'inscription')
+      userConfirmationForm.append('subject', `Bienvenue chez TEKNOPY Concept - Confirmation d'inscription`)
       userConfirmationForm.append('from_name', 'TEKNOPY Concept')
-      userConfirmationForm.append('replyto', 'manuel.harpon@teknopy.com')
       userConfirmationForm.append('name', `${firstName} ${lastName}`)
       userConfirmationForm.append('email', email)
       userConfirmationForm.append('message', `
+Nouvelle inscription - Envoyer ce message de bienvenue a: ${email}
+
+---
+
 Bonjour ${firstName},
 
 Bienvenue chez TEKNOPY Concept !
@@ -114,11 +116,16 @@ TEKNOPY Concept - Le web au service de l'innovation
       `.trim())
 
       try {
-        await fetch('https://api.web3forms.com/submit', {
+        const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: userConfirmationForm
         })
-      } catch {
+        const data = await response.json()
+        if (!data.success) {
+          console.log('[v0] Web3Forms error:', data)
+        }
+      } catch (err) {
+        console.log('[v0] Email sending error:', err)
         // Email error should not block signup
       }
       
