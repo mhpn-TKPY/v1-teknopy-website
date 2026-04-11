@@ -184,10 +184,28 @@ const handleCreateProject = async () => {
   })
 
     if (!error) {
+      // Send email notifications via Resend
+      try {
+        await fetch('/api/client/notify-project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'project_created',
+            projectTitle,
+            serviceType: servicesText,
+            description: projectDescription,
+            budget: projectEstimatedTotal || projectBudget,
+          }),
+        })
+      } catch {
+        // Email error should not block project creation
+      }
+      
       // Reset form
       setProjectTitle('')
       setProjectDescription('')
-      setProjectService('')
+      setProjectServices([])
+      setProjectEstimatedTotal('')
       setProjectBudget('')
       setProjectDeadline('')
       setShowNewProjectDialog(false)
@@ -214,6 +232,20 @@ const handleCreateProject = async () => {
       })
 
     if (!error) {
+      // Send email notification via Resend
+      try {
+        await fetch('/api/client/notify-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: selectedProject.id,
+            messageContent: newMessage.trim(),
+          }),
+        })
+      } catch {
+        // Email error should not block message sending
+      }
+      
       setNewMessage('')
       await fetchMessages(selectedProject.id)
     }

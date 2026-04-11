@@ -77,27 +77,16 @@ export default function InscriptionPage() {
         }
       }
       
-      // 2. Send notification via Web3Forms using FormData (direct HTML approach)
-      const formData = new FormData()
-      formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      formData.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
-      formData.append('from_name', 'TEKNOPY Espace Client')
-      formData.append('name', `${firstName} ${lastName}`)
-      formData.append('email', email)
-      formData.append('message', `
-Nouvelle inscription sur TEKNOPY Concept
-
-Nom: ${firstName} ${lastName}
-Email: ${email}
-Date: ${new Date().toLocaleString('fr-FR')}
-
-L'utilisateur peut maintenant se connecter à son espace client.
-      `.trim())
-
+      // 2. Send welcome email via Resend (Espace Client uses Resend, Vitrine uses Web3Forms)
       try {
-        await fetch('https://api.web3forms.com/submit', {
+        await fetch('/api/auth/send-welcome-email', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            firstName,
+            lastName,
+          }),
         })
       } catch {
         // Email error should not block signup
