@@ -37,7 +37,7 @@ const allOffers = [
       "Design responsive mobile-first",
       "Formulaire de contact fonctionnel",
       "SEO de base optimise",
-      "Domaine .fr/.com offert 1 an",
+      "Sous-domaine offert votre-site.teknopy.com",
       "Hebergement offert 1 an",
     ],
     color: "from-primary to-emerald-600",
@@ -252,8 +252,8 @@ const benefits = [
   },
   {
     icon: Gift,
-    title: "Domaine offert 1 an",
-    description: "Votre .fr ou .com inclus (partenariat IONOS)",
+    title: "Sous-domaine offert",
+    description: "votre-site.plistech.com / votre-site.teknopy.com",
   },
   {
     icon: Clock,
