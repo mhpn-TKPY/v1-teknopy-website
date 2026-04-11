@@ -17,7 +17,7 @@ const techLogos = [
 ]
 
 const miniPromos = [
-  { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
+  { label: "Coup de Pouce Associatif", price: "19EUR/an", icon: Users, href: "/promos#association" },
   { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
   { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag, href: "/promos#vitrine-marche" },
 ]

@@ -7,19 +7,20 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
+// Sorted by ascending price: 19, 79, 99, 149
 const promoOffers = [
   {
-    id: "site-vitrine",
-    icon: Globe,
-    title: "Site Vitrine 3 pages",
-    description: "Accueil, Services, Contact + Formulaire",
-    price: 99,
-    originalPrice: 400,
-    unit: "",
-    badge: "Best-seller",
-    features: ["Responsive mobile", "Formulaire contact", "SEO de base"],
-    color: "from-primary to-emerald-600",
-    bgGlow: "bg-primary/20",
+    id: "association",
+    icon: Users,
+    title: "Coup de Pouce Associatif",
+    description: "Site 1 page sur sous-domaine",
+    price: 19,
+    originalPrice: 99,
+    unit: "/an",
+    badge: "Solidaire",
+    features: ["Sous-domaine offert", "Design pro", "Support inclus"],
+    color: "from-emerald-500 to-green-600",
+    bgGlow: "bg-emerald-500/20",
   },
   {
     id: "restaurant",
@@ -35,17 +36,17 @@ const promoOffers = [
     bgGlow: "bg-amber-500/20",
   },
   {
-    id: "association",
-    icon: Users,
-    title: "Coup de Pouce Associatif",
-    description: "Site 1 page sur sous-domaine",
-    price: 19,
-    originalPrice: 99,
-    unit: "/an",
-    badge: "Solidaire",
-    features: ["Sous-domaine offert", "Design pro", "Support inclus"],
-    color: "from-emerald-500 to-green-600",
-    bgGlow: "bg-emerald-500/20",
+    id: "site-vitrine",
+    icon: Globe,
+    title: "Site Vitrine 3 pages",
+    description: "Accueil, Services, Contact + Formulaire",
+    price: 99,
+    originalPrice: 400,
+    unit: "",
+    badge: "Best-seller",
+    features: ["Responsive mobile", "Formulaire contact", "SEO de base"],
+    color: "from-primary to-emerald-600",
+    bgGlow: "bg-primary/20",
   },
   {
     id: "influenceur",
@@ -114,12 +115,12 @@ export function PromosSection() {
           ))}
         </div>
 
-        {/* Promo cards grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-10">
+        {/* Promo cards grid - uniform width and height */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-10">
           {promoOffers.map((offer) => (
             <Card
               key={offer.id}
-              className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full"
             >
               {/* Glow effect */}
               <div className={cn("absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity", offer.bgGlow)} />
@@ -131,9 +132,9 @@ export function PromosSection() {
                 </Badge>
               </div>
 
-              <CardContent className="p-6 relative">
+              <CardContent className="p-6 relative flex flex-col flex-1">
                 {/* Icon */}
-                <div className={cn("w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4 shadow-lg", offer.color)}>
+                <div className={cn("w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4 shadow-lg shrink-0", offer.color)}>
                   <offer.icon className="h-6 w-6 text-white" />
                 </div>
 
@@ -141,7 +142,7 @@ export function PromosSection() {
                 <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">
                   {offer.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">
                   {offer.description}
                 </p>
 
@@ -156,18 +157,18 @@ export function PromosSection() {
                   </span>
                 </div>
 
-                {/* Features */}
-                <ul className="space-y-2 mb-4">
+                {/* Features - flex-1 to push button down */}
+                <ul className="space-y-2 mb-4 flex-1">
                   {offer.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                      <div className={cn("w-1.5 h-1.5 rounded-full bg-gradient-to-r", offer.color)} />
+                      <div className={cn("w-1.5 h-1.5 rounded-full bg-gradient-to-r shrink-0", offer.color)} />
                       {feature}
                     </li>
                   ))}
                 </ul>
 
-                {/* CTA */}
-                <Button asChild variant="outline" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+                {/* CTA - always at bottom */}
+                <Button asChild variant="outline" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all mt-auto">
                   <Link href={`/promos#${offer.id}`}>
                     En savoir plus
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
