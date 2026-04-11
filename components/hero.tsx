@@ -1,8 +1,26 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus } from "lucide-react"
+import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus, Zap, Tag, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+
+// Official technology logos
+const techLogos = [
+  { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Next.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
+  { name: "TypeScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+  { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+  { name: "Supabase", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
+  { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name: "Vercel", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+]
+
+const miniPromos = [
+  { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
+  { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
+  { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag, href: "/promos#vitrine-marche" },
+]
 
 export function Hero() {
   return (
@@ -32,19 +50,40 @@ export function Hero() {
             <span className="text-primary">l&apos;Innovation</span>
           </h1>
 
-          <p className="mx-auto mb-6 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
+          <p className="mx-auto mb-4 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
             Développement web sur mesure, consulting IT et formations informatiques pour entreprises, associations et particuliers en Martinique.
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          {/* Mini promos bar - Right after subtitle */}
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            {miniPromos.map((item, index) => (
+              <Link
+                key={index}
+                href={item.href}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-lg border-2 border-amber-300/60 hover:border-primary hover:shadow-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 backdrop-blur-sm"
+              >
+                <item.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.label}</span>
+                <span className="text-sm font-bold text-primary">{item.price}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             <Button size="lg" asChild className="gap-2">
               <Link href="/contact">
                 Demander un devis gratuit
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
+            <Button size="lg" asChild className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl">
+              <Link href="/promos">
+                <Sparkles className="h-4 w-4" />
+                Nos promos
+              </Link>
+            </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/projets">Voir nos réalisations</Link>
+              <Link href="/projets">Voir nos realisations</Link>
             </Button>
           </div>
 
@@ -139,6 +178,36 @@ export function Hero() {
             </div>
             <span className="text-2xl font-bold text-foreground">5+</span>
             <span className="text-xs text-muted-foreground">Annees</span>
+          </div>
+        </div>
+
+        {/* Technology Logos Strip */}
+        <div className="mt-8 rounded-xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm">
+          <p className="text-center text-xs text-muted-foreground mb-4 uppercase tracking-wider font-medium">
+            Technologies maitrisees par Manuel HARPON
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+            {techLogos.map((tech) => (
+              <div
+                key={tech.name}
+                className="group flex flex-col items-center gap-1.5 transition-transform hover:scale-110"
+                title={tech.name}
+              >
+                <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 transition-all group-hover:shadow-md group-hover:border-primary/30">
+                  <Image
+                    src={tech.logo}
+                    alt={tech.name}
+                    width={28}
+                    height={28}
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+                <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                  {tech.name}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

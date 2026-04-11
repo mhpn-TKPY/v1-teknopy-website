@@ -618,7 +618,15 @@ const handleCreateProject = async () => {
 
             {/* Profil Tab */}
             <TabsContent value="profil" className="space-y-6">
-              <h2 className="text-xl font-semibold">Mon Profil</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Mon Profil</h2>
+                <Button asChild variant="outline">
+                  <Link href="/espace-client/profil">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Gerer mon compte
+                  </Link>
+                </Button>
+              </div>
               
               <div className="grid gap-6 md:grid-cols-2">
                 <Card>
@@ -636,7 +644,7 @@ const handleCreateProject = async () => {
                     <div className="flex items-center gap-3">
                       <Mail className="h-5 w-5 text-muted-foreground" />
                       <div>
-                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="text-sm text-muted-foreground">Email (identifiant)</p>
                         <p className="font-medium">{user.email}</p>
                       </div>
                     </div>
@@ -652,6 +660,15 @@ const handleCreateProject = async () => {
                           })}
                         </p>
                       </div>
+                    </div>
+                    <div className="pt-2 border-t">
+                      <Link 
+                        href="/espace-client/profil" 
+                        className="text-sm text-primary hover:underline flex items-center gap-1"
+                      >
+                        <Lock className="h-3 w-3" />
+                        Modifier mon mot de passe
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>

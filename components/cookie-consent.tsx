@@ -37,41 +37,41 @@ export function CookieConsent() {
   if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-[280px]">
-      <div className="relative rounded-xl border border-border/50 bg-card/95 p-4 shadow-lg backdrop-blur-md">
+    <div className="fixed bottom-28 right-4 z-40 max-w-[240px] lg:bottom-24">
+      <div className="relative rounded-lg border border-border/30 bg-card/90 p-3 shadow-md backdrop-blur-sm">
         <button 
           onClick={() => setIsVisible(false)}
-          className="absolute right-2 top-2 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute right-1.5 top-1.5 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Fermer"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
         
-        <div className="flex items-center gap-2 mb-2 pr-4">
-          <Cookie className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">Cookies</span>
+        <div className="flex items-center gap-1.5 mb-1.5 pr-4">
+          <Cookie className="h-3.5 w-3.5 text-primary" />
+          <span className="text-xs font-medium text-foreground">Cookies</span>
         </div>
         
-        <p className="text-xs text-muted-foreground mb-3">
+        <p className="text-[11px] text-muted-foreground mb-2 leading-tight">
           Ce site utilise des cookies.{' '}
           <Link href="/politique-confidentialite" className="underline hover:text-primary">
             En savoir plus
           </Link>
         </p>
         
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <Button
             variant="outline"
             size="sm"
             onClick={handleRefuse}
-            className="flex-1 h-8 text-xs"
+            className="flex-1 h-7 text-[10px] px-2"
           >
             Refuser
           </Button>
           <Button
             size="sm"
             onClick={handleAccept}
-            className="flex-1 h-8 text-xs"
+            className="flex-1 h-7 text-[10px] px-2"
           >
             Accepter
           </Button>

@@ -13,41 +13,33 @@ import { ServiceSelector, type SelectedService } from "@/components/service-sele
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
   const [estimatedTotal, setEstimatedTotal] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
     const form = e.currentTarget
     const formData = new FormData(form)
-    
-    // Web3Forms configuration
-    formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-    
-    // IMPORTANT: Redirect emails to the admin email
-    formData.append('to_email', 'manuel.harpon@teknopy.com')
-    
-    // Format services for the email
-    const servicesText = selectedServices.length > 0 
-      ? selectedServices.map(s => `${s.name} (${s.price})`).join(', ') 
-      : 'Non specifie'
-    formData.append('services', servicesText)
-    formData.append('estimated_total', estimatedTotal || 'Non calcule')
-    
-    // Subject with services
-    const serviceNames = selectedServices.map(s => s.name).join(', ')
-    formData.append('subject', `[TEKNOPY] Demande de devis - ${serviceNames || 'Services non specifies'}`)
-    formData.append('from_name', formData.get('name') as string)
-    
-    // Replyto for easy response
-    formData.append('replyto', formData.get('email') as string)
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      // Use the API route which handles both Web3Forms and Supabase
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone') || null,
+          services: selectedServices.map(s => ({ name: s.name, price: s.price })),
+          estimatedTotal: estimatedTotal || 'Non calcule',
+          message: formData.get('message'),
+        })
       })
 
       const result = await response.json()
@@ -56,9 +48,13 @@ export function ContactForm() {
         setIsSuccess(true)
         form.reset()
         setSelectedServices([])
+        setEstimatedTotal("")
+      } else {
+        setError(result.error || "Une erreur s'est produite")
       }
-    } catch (error) {
-      console.error("Error submitting form:", error)
+    } catch (err) {
+      console.error("Error submitting form:", err)
+      setError("Erreur de connexion. Veuillez reessayer.")
     } finally {
       setIsSubmitting(false)
     }
@@ -246,6 +242,12 @@ export function ContactForm() {
                     {selectedServices.length === 0 && (
                       <p className="text-xs text-center text-muted-foreground">
                         Veuillez selectionner au moins un service pour continuer
+                      </p>
+                    )}
+
+                    {error && (
+                      <p className="text-xs text-center text-red-500 bg-red-50 p-2 rounded-lg">
+                        {error}
                       </p>
                     )}
                   </FieldGroup>
