@@ -6,7 +6,8 @@ export const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Admin email for notifications
 export const ADMIN_EMAIL = 'manuel.harpon@teknopy.com'
-export const FROM_EMAIL = 'TEKNOPY Concept <noreply@plistech.com>'
+// Use onboarding@resend.dev for testing, or a verified domain in production
+export const FROM_EMAIL = 'TEKNOPY Concept <onboarding@resend.dev>'
 
 // Email types for Espace Client
 export type EmailType = 
