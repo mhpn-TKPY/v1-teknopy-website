@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sendWelcomeEmail, sendAdminNewSignupNotification } from '@/lib/resend'
+import { sendWelcomeEmail } from '@/lib/resend'
 
 export async function POST(request: Request) {
   try {
@@ -12,24 +12,19 @@ export async function POST(request: Request) {
       )
     }
 
-    // Send welcome email to user
-    const userEmailResult = await sendWelcomeEmail({
-      email,
-      firstName,
-      lastName,
-    })
-
-    // Send notification to admin
-    const adminEmailResult = await sendAdminNewSignupNotification({
+    // Send welcome email to the user who just signed up
+    // Admin notification is not needed - admin can check Resend dashboard
+    const result = await sendWelcomeEmail({
       email,
       firstName,
       lastName,
     })
 
     return NextResponse.json({
-      success: true,
-      userEmail: userEmailResult.success,
-      adminEmail: adminEmailResult.success,
+      success: result.success,
+      message: result.success 
+        ? `Email de bienvenue envoye a ${email}` 
+        : 'Erreur lors de l\'envoi',
     })
   } catch (error) {
     console.error('[API] Error sending welcome email:', error)

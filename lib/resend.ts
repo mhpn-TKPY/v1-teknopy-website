@@ -55,63 +55,103 @@ export async function sendWelcomeEmail(user: {
   firstName: string
   lastName: string
 }) {
+  // Plain text version for better deliverability
+  const textContent = `
+Bonjour ${user.firstName},
+
+Merci pour votre inscription sur TEKNOPY Concept.
+
+Votre compte est maintenant actif. Vous pouvez vous connecter a votre espace client avec l'adresse email: ${user.email}
+
+Lien de connexion: https://www.plistech.com/auth/connexion
+
+Pour toute question, contactez-nous:
+- Email: manuel.harpon@teknopy.com
+- Telephone: +596 696 617 151
+
+Cordialement,
+Manuel HARPON
+TEKNOPY Concept
+  `.trim()
+
   const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background: linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">Bienvenue chez TEKNOPY Concept</h1>
-      </div>
-      
-      <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-        <p style="font-size: 16px;">Bonjour <strong>${user.firstName}</strong>,</p>
-        
-        <p>Votre compte a ete cree avec succes ! Vous pouvez maintenant acceder a votre espace client pour :</p>
-        
-        <ul style="padding-left: 20px;">
-          <li>Suivre l'avancement de vos projets</li>
-          <li>Demander des devis personnalises</li>
-          <li>Acceder a vos factures et documents</li>
-          <li>Communiquer directement avec notre equipe</li>
-        </ul>
-        
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="https://www.plistech.com/auth/connexion" 
-             style="background: #1a5f2a; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-            Acceder a mon espace client
-          </a>
-        </div>
-        
-        <p style="color: #666; font-size: 14px;">
-          Vos identifiants de connexion :<br>
-          <strong>Email :</strong> ${user.email}
-        </p>
-        
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-        
-        <p style="color: #666; font-size: 14px;">
-          Si vous avez des questions, n'hesitez pas a nous contacter :<br>
-          <strong>Email :</strong> manuel.harpon@teknopy.com<br>
-          <strong>Telephone :</strong> +596 696 617 151
-        </p>
-        
-        <p style="margin-top: 30px;">
-          A tres bientot !<br>
-          <strong>Manuel HARPON</strong><br>
-          <em>TEKNOPY Concept - Le web au service de l'innovation</em>
-        </p>
-      </div>
-    </body>
-    </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation d'inscription</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; color: #333333; background-color: #f4f4f4;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1a5f2a; padding: 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">TEKNOPY Concept</h1>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="margin: 0 0 20px;">Bonjour <strong>${user.firstName}</strong>,</p>
+              
+              <p style="margin: 0 0 20px;">Merci pour votre inscription. Votre compte TEKNOPY Concept est maintenant actif.</p>
+              
+              <p style="margin: 0 0 20px;">Vous pouvez desormais acceder a votre espace client pour gerer vos projets et suivre leur avancement.</p>
+              
+              <!-- Button -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 30px auto;">
+                <tr>
+                  <td style="background-color: #1a5f2a; border-radius: 6px;">
+                    <a href="https://www.plistech.com/auth/connexion" style="display: inline-block; padding: 14px 30px; color: #ffffff; text-decoration: none; font-weight: bold;">Se connecter</a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 10px; color: #666666; font-size: 14px;">
+                <strong>Votre email de connexion:</strong> ${user.email}
+              </p>
+              
+              <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
+              
+              <p style="margin: 0 0 10px; color: #666666; font-size: 14px;">
+                Une question? Contactez-nous:<br>
+                Email: manuel.harpon@teknopy.com<br>
+                Tel: +596 696 617 151
+              </p>
+              
+              <p style="margin: 20px 0 0; color: #333333;">
+                Cordialement,<br>
+                <strong>Manuel HARPON</strong><br>
+                <span style="color: #666666; font-size: 14px;">TEKNOPY Concept</span>
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8f8f8; padding: 20px 30px; text-align: center;">
+              <p style="margin: 0; color: #999999; font-size: 12px;">
+                TEKNOPY Concept - Agence web en Martinique<br>
+                Fort-de-France, Martinique
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
   `
 
   return sendEmail({
     to: user.email,
-    subject: 'Bienvenue chez TEKNOPY Concept - Votre compte est pret',
+    subject: 'Confirmation de votre inscription - TEKNOPY Concept',
     html,
   })
 }
