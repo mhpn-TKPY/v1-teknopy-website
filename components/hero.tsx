@@ -4,6 +4,18 @@ import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPl
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
+// Official technology logos
+const techLogos = [
+  { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Next.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
+  { name: "TypeScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" },
+  { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+  { name: "Supabase", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
+  { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name: "Vercel", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
+]
+
 const miniPromos = [
   { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
   { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
@@ -166,6 +178,36 @@ export function Hero() {
             </div>
             <span className="text-2xl font-bold text-foreground">5+</span>
             <span className="text-xs text-muted-foreground">Annees</span>
+          </div>
+        </div>
+
+        {/* Technology Logos Strip */}
+        <div className="mt-8 rounded-xl border border-border bg-card/80 p-4 shadow-sm backdrop-blur-sm">
+          <p className="text-center text-xs text-muted-foreground mb-4 uppercase tracking-wider font-medium">
+            Technologies maitrisees par Manuel HARPON
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+            {techLogos.map((tech) => (
+              <div
+                key={tech.name}
+                className="group flex flex-col items-center gap-1.5 transition-transform hover:scale-110"
+                title={tech.name}
+              >
+                <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 transition-all group-hover:shadow-md group-hover:border-primary/30">
+                  <Image
+                    src={tech.logo}
+                    alt={tech.name}
+                    width={28}
+                    height={28}
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+                <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                  {tech.name}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
