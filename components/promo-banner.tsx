@@ -6,20 +6,8 @@ import { X, Utensils, Users, Star, ChevronRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+// Ordered by ascending price: 19EUR -> 79EUR -> 149EUR
 const promoOffers = [
-  {
-    id: "restaurant",
-    icon: Utensils,
-    title: "Menu Restaurant Digital",
-    description: "1 page + QR Code",
-    price: 79,
-    originalPrice: 149,
-    unit: "/an",
-    color: "from-amber-500 to-orange-600",
-    bgColor: "bg-amber-50",
-    textColor: "text-amber-700",
-    href: "/promos#restaurant",
-  },
   {
     id: "association",
     icon: Users,
@@ -32,6 +20,19 @@ const promoOffers = [
     bgColor: "bg-emerald-50",
     textColor: "text-emerald-700",
     href: "/promos#association",
+  },
+  {
+    id: "restaurant",
+    icon: Utensils,
+    title: "Menu Restaurant Digital",
+    description: "1 page + QR Code",
+    price: 79,
+    originalPrice: 149,
+    unit: "/an",
+    color: "from-amber-500 to-orange-600",
+    bgColor: "bg-amber-50",
+    textColor: "text-amber-700",
+    href: "/promos#restaurant",
   },
   {
     id: "influenceur",

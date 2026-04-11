@@ -1,15 +1,24 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { 
   Globe, Utensils, Users, Star, Zap, Tag, Clock, Check, 
   ArrowRight, Sparkles, CreditCard, Gift, Shield, Phone,
-  RefreshCw, QrCode, Briefcase, TrendingUp, Heart
+  RefreshCw, QrCode, Briefcase, TrendingUp, Heart, Filter
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+
+// Categories for filtering
+const categories = [
+  { id: "all", label: "Toutes", icon: Filter },
+  { id: "micro", label: "Micro-sites", icon: Zap },
+  { id: "web", label: "Sites Web", icon: Globe },
+  { id: "premium", label: "Premium", icon: Star },
+]
 
 // All offers from Marketing document
 const allOffers = [
@@ -259,8 +268,18 @@ const benefits = [
 ]
 
 export function PromosPageContent() {
-  const highlightedOffers = allOffers.filter(o => o.highlight)
-  const otherOffers = allOffers.filter(o => !o.highlight)
+  const [activeCategory, setActiveCategory] = useState("all")
+  
+  // Sort all offers by price ascending
+  const sortedOffers = [...allOffers].sort((a, b) => a.price - b.price)
+  
+  // Filter by category
+  const filteredOffers = activeCategory === "all" 
+    ? sortedOffers 
+    : sortedOffers.filter(o => o.category === activeCategory)
+  
+  const highlightedOffers = filteredOffers.filter(o => o.highlight)
+  const otherOffers = filteredOffers.filter(o => !o.highlight)
 
   return (
     <div className="relative">
@@ -312,17 +331,44 @@ export function PromosPageContent() {
         </div>
       </section>
 
-      {/* Highlighted offers */}
-      <section className="py-16 relative">
+      {/* Filter bar */}
+      <section className="py-6 bg-white dark:bg-slate-900 sticky top-14 lg:top-[88px] z-30 border-b">
         <div className="container px-4 md:px-6">
-          <div className="text-center mb-10">
-            <Badge className="mb-4 bg-gradient-to-r from-amber-500 to-primary text-white border-0">
-              <Heart className="h-3 w-3 mr-1" /> Coups de Coeur
-            </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold">Nos Offres Phares</h2>
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm font-medium transition-all",
+                  activeCategory === cat.id
+                    ? "bg-gradient-to-r from-primary to-emerald-600 text-white shadow-lg"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                )}
+              >
+                <cat.icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{cat.label}</span>
+                <span className="sm:hidden">{cat.label.split(' ')[0]}</span>
+              </button>
+            ))}
           </div>
+        </div>
+      </section>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+      {/* Highlighted offers */}
+      <section className="py-12 md:py-16 relative">
+        <div className="container px-4 md:px-6">
+          {highlightedOffers.length > 0 && (
+            <div className="text-center mb-8 md:mb-10">
+              <Badge className="mb-4 bg-gradient-to-r from-amber-500 to-primary text-white border-0">
+                <Heart className="h-3 w-3 mr-1" /> Coups de Coeur
+              </Badge>
+              <h2 className="text-2xl md:text-3xl font-bold">Nos Offres Phares</h2>
+            </div>
+          )}
+
+          {highlightedOffers.length > 0 && (
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
             {highlightedOffers.map((offer) => (
               <Card
                 key={offer.id}
@@ -389,18 +435,20 @@ export function PromosPageContent() {
               </Card>
             ))}
           </div>
+          )}
         </div>
       </section>
 
       {/* Other offers */}
-      <section className="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+      {otherOffers.length > 0 && (
+      <section className="py-12 md:py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
         <div className="container px-4 md:px-6">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8 md:mb-10">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Toutes nos Offres</h2>
             <p className="text-muted-foreground">Solutions adaptees a chaque besoin et budget</p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             {otherOffers.map((offer) => (
               <Card
                 key={offer.id}
@@ -453,6 +501,7 @@ export function PromosPageContent() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Programme Partenaire */}
       <section className="py-16 relative overflow-hidden">

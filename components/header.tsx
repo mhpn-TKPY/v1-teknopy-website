@@ -7,9 +7,12 @@ import { Menu, X, Phone, Mail, User, UserPlus, Home, Layers, FolderKanban, Gradu
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
+import { Tag } from "lucide-react"
+
 const mobileNavLinks = [
   { href: "/", label: "Accueil", icon: Home },
   { href: "/#services", label: "Services", icon: Layers },
+  { href: "/promos", label: "Promos", icon: Tag, highlight: true },
   { href: "/tarifs", label: "Tarifs", icon: Euro },
   { href: "/projets", label: "Realisations", icon: FolderKanban },
   { href: "/formations", label: "Formations", icon: GraduationCap },
@@ -103,11 +106,19 @@ export function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all hover:bg-primary/10 hover:text-primary active:scale-[0.98]"
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all active:scale-[0.98]",
+                    link.highlight 
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" 
+                      : "hover:bg-primary/10 hover:text-primary"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <link.icon className="h-4 w-4 text-primary" />
+                  <div className={cn(
+                    "p-2 rounded-lg",
+                    link.highlight ? "bg-white/20" : "bg-primary/10"
+                  )}>
+                    <link.icon className={cn("h-4 w-4", link.highlight ? "text-white" : "text-primary")} />
                   </div>
                   {link.label}
                 </a>
@@ -225,6 +236,12 @@ export function Header() {
                         <Link href="/tarifs">
                           <Euro className="h-4 w-4 text-primary" />
                           Voir les Tarifs
+                        </Link>
+                      </Button>
+                      <Button asChild size="sm" className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg transition-all">
+                        <Link href="/promos">
+                          <Sparkles className="h-4 w-4" />
+                          Nos Promos
                         </Link>
                       </Button>
                       <Button asChild size="sm" className="gap-2 shadow-md hover:shadow-lg transition-all">
