@@ -292,7 +292,7 @@ export function PromosPageContent() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
         
-        <div className="container relative px-4 md:px-6">
+        <div className="container relative px-4 md:px-6 max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-100 to-emerald-100 dark:from-amber-900/40 dark:to-emerald-900/40 mb-6">
               <Sparkles className="h-5 w-5 text-amber-600" />
