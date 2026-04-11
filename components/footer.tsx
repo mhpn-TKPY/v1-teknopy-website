@@ -3,11 +3,12 @@ import Link from "next/link"
 import { Phone, Mail, MapPin, Globe } from "lucide-react"
 
 const quickLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#projets", label: "Projets" },
-  { href: "#competences", label: "Compétences" },
-  { href: "#formations", label: "Formations" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#services", label: "Services" },
+  { href: "/tarifs", label: "Tarifs" },
+  { href: "/projets", label: "Realisations" },
+  { href: "/formations", label: "Formations" },
+  { href: "/contact", label: "Contact" },
+  { href: "/espace-client", label: "Espace Client" },
 ]
 
 const services = [
@@ -42,8 +43,8 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Globe className="h-4 w-4 text-primary" />
-              <a href="https://www.teknopy.com" className="hover:text-primary" target="_blank" rel="noopener noreferrer">
-                www.teknopy.com
+              <a href="https://www.plistech.com" className="hover:text-primary" target="_blank" rel="noopener noreferrer">
+                www.plistech.com
               </a>
             </div>
           </div>
@@ -54,12 +55,12 @@ export function Footer() {
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -5,48 +5,57 @@ import { Send, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
-
-const services = [
-  "Site Web Vitrine",
-  "Application Web",
-  "Application Mobile",
-  "E-commerce",
-  "Consulting IT",
-  "Formation Informatique",
-  "Formation Mathématiques",
-  "Autre",
-]
+import { ServiceSelector, type SelectedService } from "@/components/service-selector"
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
+  const [estimatedTotal, setEstimatedTotal] = useState("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      service: formData.get("service"),
-      message: formData.get("message"),
-    }
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    
+    // Web3Forms configuration
+    formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
+    
+    // IMPORTANT: Redirect emails to the admin email
+    formData.append('to_email', 'manuel.harpon@teknopy.com')
+    
+    // Format services for the email
+    const servicesText = selectedServices.length > 0 
+      ? selectedServices.map(s => `${s.name} (${s.price})`).join(', ') 
+      : 'Non specifie'
+    formData.append('services', servicesText)
+    formData.append('estimated_total', estimatedTotal || 'Non calcule')
+    
+    // Subject with services
+    const serviceNames = selectedServices.map(s => s.name).join(', ')
+    formData.append('subject', `[TEKNOPY] Demande de devis - ${serviceNames || 'Services non specifies'}`)
+    formData.append('from_name', formData.get('name') as string)
+    
+    // Replyto for easy response
+    formData.append('replyto', formData.get('email') as string)
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
       })
 
-      if (response.ok) {
+      const result = await response.json()
+      
+      if (result.success) {
         setIsSuccess(true)
+        form.reset()
+        setSelectedServices([])
       }
     } catch (error) {
       console.error("Error submitting form:", error)
@@ -63,18 +72,18 @@ export function ContactForm() {
             Contactez-nous
           </h2>
           <p className="text-muted-foreground">
-            Devenez client en 3 clics! Remplissez le formulaire et nous vous répondrons sous 24h.
+            Devenez client en 3 clics! Remplissez le formulaire et nous vous repondrons sous 24h.
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-5">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-5">
           {/* Contact info */}
           <div className="space-y-6 lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Informations de contact</CardTitle>
                 <CardDescription>
-                  N&apos;hésitez pas à nous contacter directement
+                  N&apos;hesitez pas a nous contacter directement
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -86,7 +95,7 @@ export function ContactForm() {
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium">Téléphone</p>
+                    <p className="font-medium">Telephone</p>
                     <p className="text-muted-foreground">+596 696 617 151</p>
                   </div>
                 </a>
@@ -119,7 +128,7 @@ export function ContactForm() {
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="pt-6">
                 <p className="text-center text-sm text-muted-foreground">
-                  <strong className="text-foreground">Devis gratuit</strong> pour tous vos projets web. Réponse garantie sous 24 heures ouvrées.
+                  <strong className="text-foreground">Devis gratuit</strong> pour tous vos projets web. Reponse garantie sous 24 heures ouvrees.
                 </p>
               </CardContent>
             </Card>
@@ -130,7 +139,7 @@ export function ContactForm() {
             <CardHeader>
               <CardTitle className="text-lg">Demander un devis</CardTitle>
               <CardDescription>
-                Décrivez votre projet et nous vous contacterons rapidement
+                Selectionnez vos services et decrivez votre projet
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -139,10 +148,17 @@ export function ContactForm() {
                   <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                     <CheckCircle className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">Message envoyé!</h3>
+                  <h3 className="mb-2 text-xl font-semibold">Message envoye!</h3>
                   <p className="text-muted-foreground">
-                    Merci pour votre message. Nous vous répondrons sous 24 heures.
+                    Merci pour votre message. Nous vous repondrons sous 24 heures.
                   </p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => setIsSuccess(false)}
+                  >
+                    Envoyer un autre message
+                  </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
@@ -170,7 +186,7 @@ export function ContactForm() {
                     </div>
 
                     <Field>
-                      <FieldLabel htmlFor="phone">Téléphone</FieldLabel>
+                      <FieldLabel htmlFor="phone">Telephone</FieldLabel>
                       <Input
                         id="phone"
                         name="phone"
@@ -180,33 +196,40 @@ export function ContactForm() {
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor="service">Service souhaité *</FieldLabel>
-                      <Select name="service" required>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un service" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {services.map((service) => (
-                            <SelectItem key={service} value={service}>
-                              {service}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FieldLabel>Services souhaites *</FieldLabel>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Selectionnez un ou plusieurs services pour obtenir une estimation
+                      </p>
+                      <ServiceSelector 
+                        selectedServices={selectedServices}
+                        onServicesChange={setSelectedServices}
+                        onTotalChange={setEstimatedTotal}
+                      />
+                      {/* Hidden input for form validation */}
+                      <input 
+                        type="hidden" 
+                        name="services_selected" 
+                        value={selectedServices.map(s => s.name).join(', ')} 
+                        required={selectedServices.length === 0}
+                      />
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor="message">Votre message *</FieldLabel>
+                      <FieldLabel htmlFor="message">Details du projet *</FieldLabel>
                       <Textarea
                         id="message"
                         name="message"
-                        placeholder="Décrivez votre projet ou votre besoin..."
+                        placeholder="Decrivez votre projet, vos objectifs, vos delais souhaites..."
                         rows={4}
                         required
                       />
                     </Field>
 
-                    <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
+                    <Button 
+                      type="submit" 
+                      className="w-full gap-2" 
+                      disabled={isSubmitting || selectedServices.length === 0}
+                    >
                       {isSubmitting ? (
                         <>
                           <Spinner className="h-4 w-4" />
@@ -215,10 +238,16 @@ export function ContactForm() {
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          Envoyer le message
+                          Envoyer la demande de devis
                         </>
                       )}
                     </Button>
+
+                    {selectedServices.length === 0 && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        Veuillez selectionner au moins un service pour continuer
+                      </p>
+                    )}
                   </FieldGroup>
                 </form>
               )}

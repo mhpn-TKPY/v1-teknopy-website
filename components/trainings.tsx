@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { Clock, Users, MapPin, Euro } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -98,7 +99,7 @@ export function Trainings() {
                 )}
 
                 <Button asChild className="w-full">
-                  <a href="#contact">Réserver un cours</a>
+                  <Link href="/contact">Réserver un cours</Link>
                 </Button>
               </CardContent>
             </Card>

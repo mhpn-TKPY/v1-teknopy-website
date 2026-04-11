@@ -1,10 +1,8 @@
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
-import { Services } from "@/components/services"
-import { Projects } from "@/components/projects"
-import { Skills } from "@/components/skills"
-import { Trainings } from "@/components/trainings"
-import { ContactForm } from "@/components/contact-form"
+import { ServicesPreview } from "@/components/services-preview"
+import { ProjectsPreview } from "@/components/projects-preview"
+import { HomepageCTA } from "@/components/homepage-cta"
 import { Footer } from "@/components/footer"
 
 export default function HomePage() {
@@ -13,11 +11,9 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <Hero />
-        <Services />
-        <Projects />
-        <Skills />
-        <Trainings />
-        <ContactForm />
+        <ServicesPreview />
+        <ProjectsPreview />
+        <HomepageCTA />
       </main>
       <Footer />
     </div>

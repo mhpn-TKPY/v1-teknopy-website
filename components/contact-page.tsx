@@ -1,0 +1,356 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { 
+  Send, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  CheckCircle, 
+  Clock, 
+  MessageSquare,
+  Shield,
+  Zap
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
+import { Spinner } from "@/components/ui/spinner"
+import { ServiceSelector, type SelectedService } from "@/components/service-selector"
+
+const benefits = [
+  {
+    icon: Clock,
+    title: "Reponse sous 24h",
+    description: "Nous vous recontactons rapidement pour discuter de votre projet",
+  },
+  {
+    icon: Shield,
+    title: "Devis gratuit",
+    description: "Estimation detaillee sans engagement et sans frais caches",
+  },
+  {
+    icon: Zap,
+    title: "Tarifs transparents",
+    description: "Des prix clairs et competitifs adaptes au marche martiniquais",
+  },
+]
+
+const faq = [
+  {
+    question: "Comment se deroule un projet ?",
+    answer: "Apres un premier echange pour comprendre vos besoins, nous etablissons un cahier des charges et un devis. Une fois valide, nous demarrons le developpement avec des points reguliers jusqu'a la livraison.",
+  },
+  {
+    question: "Quels sont les delais de realisation ?",
+    answer: "Un site vitrine prend generalement 2-3 semaines, un e-commerce 4-6 semaines. Les delais precis sont indiques dans le devis selon la complexite du projet.",
+  },
+  {
+    question: "Proposez-vous de la maintenance ?",
+    answer: "Oui, nous proposons des forfaits de maintenance mensuels pour garder votre site a jour, securise et performant. Les tarifs sont discutes selon vos besoins.",
+  },
+]
+
+export function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
+  const [estimatedTotal, setEstimatedTotal] = useState("")
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    const formData = new FormData(e.currentTarget)
+    
+    // Web3Forms configuration
+    formData.append("access_key", "dd2f81b5-56ac-4e05-8320-ae65fddec383")
+    formData.append("to_email", "manuel.harpon@teknopy.com")
+    formData.append("from_name", "TEKNOPY Contact")
+    formData.append("replyto", formData.get("email") as string)
+    
+    // Format services for the email
+    const servicesText = selectedServices.length > 0 
+      ? selectedServices.map(s => `${s.name} (${s.price})`).join(', ') 
+      : 'Non specifie'
+    formData.append("services", servicesText)
+    formData.append("estimated_total", estimatedTotal || 'Non calcule')
+    
+    // Subject with services
+    const serviceNames = selectedServices.map(s => s.name).join(', ')
+    formData.append("subject", `[TEKNOPY] Demande de devis - ${serviceNames || 'Contact general'}`)
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setIsSuccess(true)
+        ;(e.target as HTMLFormElement).reset()
+        setSelectedServices([])
+        setEstimatedTotal("")
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-secondary/50 to-background pb-12 pt-8 md:pb-16 md:pt-12">
+        <div className="absolute inset-0 -z-10 opacity-30">
+          <div className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
+        </div>
+
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <Badge variant="secondary" className="mb-4">
+              <MessageSquare className="mr-1 h-3 w-3" />
+              Contactez-nous
+            </Badge>
+            <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl text-balance">
+              Devenez client en{" "}
+              <span className="text-primary">3 clics</span>
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground text-pretty">
+              Remplissez le formulaire ci-dessous et nous vous repondrons sous 24 heures avec un devis personnalise et detaille.
+            </p>
+          </div>
+
+          {/* Benefits */}
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {benefits.map((benefit) => (
+              <div
+                key={benefit.title}
+                className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <benefit.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">{benefit.title}</h3>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Main Contact Section */}
+      <section className="py-12 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-5">
+            {/* Contact info */}
+            <div className="space-y-6 lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Informations de contact</CardTitle>
+                  <CardDescription>
+                    N&apos;hesitez pas a nous contacter directement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <a
+                    href="tel:+596696617151"
+                    className="flex items-center gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-secondary/50"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <Phone className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Telephone</p>
+                      <p className="text-lg text-primary">+596 696 617 151</p>
+                    </div>
+                  </a>
+
+                  <a
+                    href="mailto:manuel.harpon@teknopy.com"
+                    className="flex items-center gap-3 rounded-lg p-3 text-sm transition-colors hover:bg-secondary/50"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <Mail className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Email</p>
+                      <p className="text-primary">manuel.harpon@teknopy.com</p>
+                    </div>
+                  </a>
+
+                  <div className="flex items-center gap-3 rounded-lg p-3 text-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <MapPin className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Localisation</p>
+                      <p className="text-muted-foreground">Fort-de-France, Martinique</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 rounded-lg p-3 text-sm">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Horaires</p>
+                      <p className="text-muted-foreground">Lun-Sam: 10h - 21h</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="pt-6">
+                  <div className="text-center">
+                    <p className="mb-2 text-lg font-semibold text-foreground">
+                      Devis gratuit et sans engagement
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Reponse garantie sous 24 heures ouvrees
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Contact form */}
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle className="text-xl">Demander un devis</CardTitle>
+                <CardDescription>
+                  Selectionnez vos services et decrivez votre projet
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isSuccess ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                      <CheckCircle className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="mb-2 text-2xl font-semibold">Message envoye !</h3>
+                    <p className="mb-6 max-w-sm text-muted-foreground">
+                      Merci pour votre message. Nous vous repondrons sous 24 heures avec un devis personnalise.
+                    </p>
+                    <Button asChild variant="outline">
+                      <Link href="/">Retour a l&apos;accueil</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit}>
+                    <FieldGroup>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <Field>
+                          <FieldLabel htmlFor="name">Nom complet *</FieldLabel>
+                          <Input
+                            id="name"
+                            name="name"
+                            placeholder="Votre nom"
+                            required
+                          />
+                        </Field>
+                        <Field>
+                          <FieldLabel htmlFor="email">Email *</FieldLabel>
+                          <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="votre@email.com"
+                            required
+                          />
+                        </Field>
+                      </div>
+
+                      <Field>
+                        <FieldLabel htmlFor="phone">Telephone</FieldLabel>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+596 696 ..."
+                        />
+                      </Field>
+
+                      {/* Dynamic Service Selector */}
+                      <ServiceSelector
+                        selectedServices={selectedServices}
+                        onServicesChange={setSelectedServices}
+                        onTotalChange={setEstimatedTotal}
+                      />
+
+                      <Field>
+                        <FieldLabel htmlFor="message">Votre message *</FieldLabel>
+                        <Textarea
+                          id="message"
+                          name="message"
+                          placeholder="Decrivez votre projet, vos besoins, votre budget approximatif..."
+                          rows={5}
+                          required
+                        />
+                      </Field>
+
+                      <Button type="submit" className="w-full gap-2" size="lg" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                          <>
+                            <Spinner className="h-4 w-4" />
+                            Envoi en cours...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="h-4 w-4" />
+                            Envoyer le message
+                          </>
+                        )}
+                      </Button>
+                    </FieldGroup>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-secondary/30 py-12 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="mb-8 text-center text-2xl font-bold text-foreground md:text-3xl">
+              Questions frequentes
+            </h2>
+            <div className="space-y-4">
+              {faq.map((item) => (
+                <Card key={item.question}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-semibold">{item.question}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{item.answer}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground">
+                Une autre question ?{" "}
+                <a href="tel:+596696617151" className="font-medium text-primary hover:underline">
+                  Appelez-nous directement
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
