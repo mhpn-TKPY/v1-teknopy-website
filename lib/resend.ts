@@ -28,12 +28,13 @@ interface SendEmailOptions {
 
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions) {
   try {
+    // According to Resend docs, 'to' must be an array
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to,
+      to: [to],
       subject,
       html,
-      replyTo: replyTo || ADMIN_EMAIL,
+      reply_to: replyTo || ADMIN_EMAIL,
     })
 
     if (error) {
