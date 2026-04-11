@@ -63,47 +63,54 @@ const promoOffers = [
 ]
 
 const miniPrices = [
-  { label: "CV Pro Augmente", price: "19EUR", icon: Zap },
+  { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap },
   { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag },
   { label: "Sous-domaine", price: "6 mois offerts", icon: Clock },
 ]
 
 export function PromosSection() {
   return (
-    <section className="py-16 lg:py-24 relative overflow-hidden">
-      {/* Warm gradient background - colors matching logo (green/gold accents) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-white to-emerald-50/50 dark:from-amber-950/20 dark:via-slate-900 dark:to-emerald-950/20" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-200/30 rounded-full blur-3xl" />
+    <section 
+      className="py-12 lg:py-16 relative overflow-hidden"
+      aria-labelledby="promos-title"
+      role="region"
+    >
+      {/* Accessible warm gradient background - high contrast maintained */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50/80 to-emerald-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+      {/* Subtle decorative elements - purely visual */}
+      <div className="absolute top-0 left-1/4 w-80 h-80 bg-amber-200/40 rounded-full blur-3xl" aria-hidden="true" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-emerald-200/40 rounded-full blur-3xl" aria-hidden="true" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-32 bg-gradient-to-r from-transparent via-white/50 to-transparent dark:via-white/5" aria-hidden="true" />
       
-      <div className="container relative px-4 md:px-6">
-        {/* Section header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-100 to-emerald-100 dark:from-amber-900/30 dark:to-emerald-900/30 mb-4">
-            <Sparkles className="h-4 w-4 text-amber-600" />
-            <span className="text-sm font-semibold text-amber-700 dark:text-amber-400">Offres Exclusives Martinique</span>
+      <div className="container relative px-4 md:px-6 max-w-7xl mx-auto">
+        {/* Section header - centered */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-100 to-emerald-100 dark:from-amber-900/50 dark:to-emerald-900/50 mb-4 shadow-sm">
+            <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+            <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">Offres Exclusives Martinique</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          <h2 id="promos-title" className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
             <span className="bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent">
               Promos & Nouveautes
             </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto">
             Des tarifs imbattables pour lancer votre presence en ligne. Paiement en 4x sans frais des 99EUR.
           </p>
         </div>
 
-        {/* Mini prices bar */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {/* Mini prices bar - LARGER CTAs */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
           {miniPrices.map((item, index) => (
-            <div
+            <Link
               key={index}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-slate-800 shadow-md border border-amber-200/50 dark:border-amber-700/30"
+              href="/promos"
+              className="flex items-center gap-3 px-6 py-3.5 rounded-full bg-white dark:bg-slate-800 shadow-lg border-2 border-amber-300/60 dark:border-amber-600/40 hover:border-primary hover:shadow-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
-              <item.icon className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.label}</span>
-              <span className="text-sm font-bold text-primary">{item.price}</span>
-            </div>
+              <item.icon className="h-5 w-5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+              <span className="text-base font-semibold text-slate-800 dark:text-slate-200">{item.label}</span>
+              <span className="text-base font-bold text-primary">{item.price}</span>
+            </Link>
           ))}
         </div>
 

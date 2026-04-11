@@ -1,8 +1,14 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus } from "lucide-react"
+import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus, Zap, Tag, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+
+const miniPromos = [
+  { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
+  { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag, href: "/promos#vitrine-marche" },
+  { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
+]
 
 export function Hero() {
   return (
@@ -32,9 +38,24 @@ export function Hero() {
             <span className="text-primary">l&apos;Innovation</span>
           </h1>
 
-          <p className="mx-auto mb-6 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
+          <p className="mx-auto mb-4 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
             Développement web sur mesure, consulting IT et formations informatiques pour entreprises, associations et particuliers en Martinique.
           </p>
+
+          {/* Mini promos bar - Right after subtitle */}
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            {miniPromos.map((item, index) => (
+              <Link
+                key={index}
+                href={item.href}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-lg border-2 border-amber-300/60 hover:border-primary hover:shadow-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 backdrop-blur-sm"
+              >
+                <item.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.label}</span>
+                <span className="text-sm font-bold text-primary">{item.price}</span>
+              </Link>
+            ))}
+          </div>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild className="gap-2">

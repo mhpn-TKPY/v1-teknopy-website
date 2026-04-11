@@ -10,12 +10,14 @@ import {
   GraduationCap, 
   Mail, 
   Euro,
+  Tag,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/", label: "Accueil", icon: Home },
   { href: "/#services", label: "Services", icon: Layers },
+  { href: "/promos", label: "Promos", icon: Tag },
   { href: "/tarifs", label: "Tarifs", icon: Euro },
   { href: "/projets", label: "Realisations", icon: FolderKanban },
   { href: "/formations", label: "Formations", icon: GraduationCap },
