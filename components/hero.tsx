@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 const miniPromos = [
+  { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
   { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
   { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag, href: "/promos#vitrine-marche" },
-  { label: "Sous-domaine", price: "6 mois offerts", icon: Clock, href: "/promos#sous-domaine" },
 ]
 
 export function Hero() {
@@ -57,15 +57,21 @@ export function Hero() {
             ))}
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
             <Button size="lg" asChild className="gap-2">
               <Link href="/contact">
                 Demander un devis gratuit
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
+            <Button size="lg" asChild className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl">
+              <Link href="/promos">
+                <Sparkles className="h-4 w-4" />
+                Nos promos
+              </Link>
+            </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/projets">Voir nos réalisations</Link>
+              <Link href="/projets">Voir nos realisations</Link>
             </Button>
           </div>
 

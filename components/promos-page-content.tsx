@@ -175,7 +175,7 @@ const allOffers = [
     description: "Site CV moderne avec portfolio et liens professionnels",
     price: 19,
     originalPrice: 49,
-    unit: "",
+    unit: "/an",
     badge: "Emploi",
     badgeColor: "bg-slate-600",
     features: [
@@ -322,12 +322,12 @@ export function PromosPageContent() {
             <h2 className="text-2xl md:text-3xl font-bold">Nos Offres Phares</h2>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
             {highlightedOffers.map((offer) => (
               <Card
                 key={offer.id}
                 id={offer.id}
-                className="group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 scroll-mt-32"
+                className="group relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 scroll-mt-32 flex flex-col h-full"
               >
                 {/* Gradient border effect */}
                 <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity -z-10", offer.color)} />
@@ -343,15 +343,15 @@ export function PromosPageContent() {
                   </Badge>
                 </div>
 
-                <CardContent className="relative p-6 pt-8">
+                <CardContent className="relative p-6 pt-8 flex flex-col flex-1">
                   {/* Icon */}
                   <div className={cn("w-14 h-14 rounded-2xl bg-gradient-to-br flex items-center justify-center mb-4 shadow-lg", offer.color)}>
                     <offer.icon className="h-7 w-7 text-white" />
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold mb-2">{offer.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{offer.description}</p>
+                  <h3 className="text-xl font-bold mb-2 min-h-[56px]">{offer.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4 min-h-[40px]">{offer.description}</p>
 
                   {/* Price */}
                   <div className="flex items-baseline gap-2 mb-6">
@@ -364,8 +364,8 @@ export function PromosPageContent() {
                     </span>
                   </div>
 
-                  {/* Features */}
-                  <ul className="space-y-2 mb-6">
+                  {/* Features - flex-1 to push button to bottom */}
+                  <ul className="space-y-2 mb-6 flex-1">
                     {offer.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-sm">
                         <Check className={cn("h-4 w-4 mt-0.5 flex-shrink-0", 
@@ -378,8 +378,8 @@ export function PromosPageContent() {
                     ))}
                   </ul>
 
-                  {/* CTA */}
-                  <Button asChild className={cn("w-full bg-gradient-to-r hover:opacity-90 shadow-lg", offer.color)}>
+                  {/* CTA - always at bottom */}
+                  <Button asChild className={cn("w-full bg-gradient-to-r hover:opacity-90 shadow-lg mt-auto", offer.color)}>
                     <Link href="/contact" className="gap-2">
                       Commander
                       <ArrowRight className="h-4 w-4" />
@@ -400,12 +400,12 @@ export function PromosPageContent() {
             <p className="text-muted-foreground">Solutions adaptees a chaque besoin et budget</p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             {otherOffers.map((offer) => (
               <Card
                 key={offer.id}
                 id={offer.id}
-                className="group hover:shadow-xl transition-all duration-300 scroll-mt-32"
+                className="group hover:shadow-xl transition-all duration-300 scroll-mt-32 flex flex-col h-full"
               >
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
@@ -416,10 +416,10 @@ export function PromosPageContent() {
                       {offer.badge}
                     </Badge>
                   </div>
-                  <CardTitle className="text-lg mt-4">{offer.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{offer.description}</p>
+                  <CardTitle className="text-lg mt-4 min-h-[28px]">{offer.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground min-h-[40px]">{offer.description}</p>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col flex-1">
                   {/* Price */}
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className={cn("text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent", offer.color)}>
@@ -431,17 +431,17 @@ export function PromosPageContent() {
                     </span>
                   </div>
 
-                  {/* Features */}
-                  <ul className="space-y-1.5 mb-4">
+                  {/* Features - flex-1 to push button to bottom */}
+                  <ul className="space-y-1.5 mb-4 flex-1">
                     {offer.features.slice(0, 3).map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                        <div className={cn("w-1.5 h-1.5 rounded-full bg-gradient-to-r", offer.color)} />
+                        <div className={cn("w-1.5 h-1.5 rounded-full bg-gradient-to-r flex-shrink-0", offer.color)} />
                         {feature}
                       </li>
                     ))}
                   </ul>
 
-                  <Button asChild variant="outline" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
+                  <Button asChild variant="outline" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all mt-auto">
                     <Link href="/contact">
                       En savoir plus
                       <ArrowRight className="ml-2 h-4 w-4" />

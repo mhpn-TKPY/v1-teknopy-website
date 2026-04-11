@@ -269,7 +269,19 @@ export function Header() {
                   </div>
                   <span className="font-medium">+596 696 617 151</span>
                 </a>
+                <a href="mailto:manuel.harpon@teknopy.com" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group">
+                  <div className="p-1.5 rounded-lg bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                    <Mail className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="font-medium hidden xl:inline">manuel.harpon@teknopy.com</span>
+                </a>
                 <div className="h-5 w-px bg-border/50" />
+                <Button asChild size="sm" className="h-8 gap-1.5 text-xs bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 shadow-md hover:shadow-lg transition-all animate-pulse hover:animate-none">
+                  <Link href="/promos">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Promos
+                  </Link>
+                </Button>
                 <Button asChild variant="ghost" size="sm" className="h-8 gap-1.5 text-xs hover:bg-primary/5">
                   <Link href="/espace-client">
                     <User className="h-3.5 w-3.5" />
