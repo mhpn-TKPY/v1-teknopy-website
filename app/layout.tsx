@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     default: 'TEKNOPY Concept | Agence Web en Martinique',
     template: '%s | TEKNOPY Concept',
   },
-  description: "L'innovation au service du web. Creation de sites vitrines (400EUR), e-commerce (1000EUR), applications web, formations informatique et mathematiques (20EUR/h), reparation PC a Fort-de-France. Devis gratuit sous 24h.",
+  description: "Agence de developpement web et consulting IT en Martinique. Site vitrine 3 pages 99EUR | sous-domaine offert 6 mois | offre associatif 19EUR/an | Menu Restaurant Digital (1 page + QR Code) 79EUR | Creation de sites web, applications, formations informatiques a Fort-de-France. Devis gratuit sous 24h.",
   keywords: [
     'agence web martinique',
     'creation site web martinique',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     url: 'https://plistech.com',
     siteName: 'TEKNOPY Concept',
     title: 'TEKNOPY Concept | Agence Web en Martinique',
-    description: "L'innovation au service du web. Creation de sites web, applications, formations et reparations informatiques a Fort-de-France. Tarifs transparents et devis gratuit sous 24h.",
+    description: "Agence de developpement web et consulting IT en Martinique. Site vitrine 3 pages 99EUR | sous-domaine offert 6 mois | offre associatif 19EUR/an | Menu Restaurant Digital 79EUR. Devis gratuit sous 24h.",
     images: [
       {
         url: 'https://plistech.com/opengraph-image.png',
