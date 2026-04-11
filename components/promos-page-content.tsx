@@ -331,9 +331,9 @@ export function PromosPageContent() {
         </div>
       </section>
 
-      {/* Filter bar */}
-      <section className="py-6 bg-white dark:bg-slate-900 sticky top-14 lg:top-[88px] z-30 border-b">
-        <div className="container px-4 md:px-6">
+      {/* Filter bar - NOT sticky */}
+      <section className="py-6 bg-white dark:bg-slate-900 border-b">
+        <div className="container px-4 md:px-6 max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-2 md:gap-3">
             {categories.map((cat) => (
               <button
@@ -357,7 +357,7 @@ export function PromosPageContent() {
 
       {/* Highlighted offers */}
       <section className="py-12 md:py-16 relative">
-        <div className="container px-4 md:px-6">
+        <div className="container px-4 md:px-6 max-w-7xl mx-auto">
           {highlightedOffers.length > 0 && (
             <div className="text-center mb-8 md:mb-10">
               <Badge className="mb-4 bg-gradient-to-r from-amber-500 to-primary text-white border-0">
@@ -368,7 +368,7 @@ export function PromosPageContent() {
           )}
 
           {highlightedOffers.length > 0 && (
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {highlightedOffers.map((offer) => (
               <Card
                 key={offer.id}
@@ -442,13 +442,13 @@ export function PromosPageContent() {
       {/* Other offers */}
       {otherOffers.length > 0 && (
       <section className="py-12 md:py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
-        <div className="container px-4 md:px-6">
+        <div className="container px-4 md:px-6 max-w-7xl mx-auto">
           <div className="text-center mb-8 md:mb-10">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Toutes nos Offres</h2>
             <p className="text-muted-foreground">Solutions adaptees a chaque besoin et budget</p>
           </div>
 
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {otherOffers.map((offer) => (
               <Card
                 key={offer.id}
@@ -507,7 +507,7 @@ export function PromosPageContent() {
       <section className="py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-amber-500/5 to-emerald-500/5" />
         
-        <div className="container relative px-4 md:px-6">
+        <div className="container relative px-4 md:px-6 max-w-7xl mx-auto">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <Badge className="mb-4 bg-gradient-to-r from-amber-500 to-primary text-white border-0">
@@ -544,7 +544,7 @@ export function PromosPageContent() {
 
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-primary via-emerald-600 to-primary text-white">
-        <div className="container px-4 md:px-6 text-center">
+        <div className="container px-4 md:px-6 max-w-7xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
             Pret a lancer votre projet ?
           </h2>
