@@ -63,13 +63,35 @@ export default function InscriptionPage() {
       })
       
       if (error) {
-        // Ignore email sending errors from Supabase - we use Web3Forms instead
+        console.log('[v0] Signup error:', error.message)
+        // Ignore email sending errors from Supabase - we use Resend instead
         if (error.message.includes('sending confirmation email') || error.message.includes('Email rate limit')) {
-          // Continue anyway - user is created, we'll send email via Web3Forms
-        } else if (error.message.includes('already registered')) {
+          // Continue anyway - user is created, we'll send email via Resend
+        } else if (error.message.includes('already registered') || error.message.includes('already been registered')) {
           setError('Cette adresse email est déjà enregistrée. Veuillez vous connecter.')
           setIsLoading(false)
           return
+        } else if (error.message.includes('Database error') || error.message.includes('database')) {
+          // Database error during profile creation - try to continue if user was created
+          console.log('[v0] Database error, checking if user was created...')
+          if (!data?.user) {
+            setError('Erreur lors de la création du compte. Veuillez réessayer.')
+            setIsLoading(false)
+            return
+          }
+          // User was created but profile might have failed - try to create profile manually
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              first_name: firstName,
+              last_name: lastName,
+              is_admin: email === 'manuel.harpon@teknopy.com',
+            }, { onConflict: 'id' })
+          
+          if (profileError) {
+            console.log('[v0] Manual profile creation failed:', profileError)
+          }
         } else if (!error.message.includes('email')) {
           setError(error.message)
           setIsLoading(false)
@@ -77,34 +99,27 @@ export default function InscriptionPage() {
         }
       }
       
-      // 2. Send notification via Web3Forms using FormData (direct HTML approach)
-      const formData = new FormData()
-      formData.append('access_key', 'dd2f81b5-56ac-4e05-8320-ae65fddec383')
-      formData.append('subject', `Nouvelle inscription TEKNOPY - ${firstName} ${lastName}`)
-      formData.append('from_name', 'TEKNOPY Espace Client')
-      formData.append('name', `${firstName} ${lastName}`)
-      formData.append('email', email)
-      formData.append('message', `
-Nouvelle inscription sur TEKNOPY Concept
-
-Nom: ${firstName} ${lastName}
-Email: ${email}
-Date: ${new Date().toLocaleString('fr-FR')}
-
-L'utilisateur peut maintenant se connecter à son espace client.
-      `.trim())
-
+      // 2. Send welcome email via Resend (Espace Client uses Resend, Vitrine uses Web3Forms)
       try {
-        await fetch('https://api.web3forms.com/submit', {
+        const emailResponse = await fetch('/api/auth/send-welcome-email', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            firstName,
+            lastName,
+          }),
         })
-      } catch {
+        const emailResult = await emailResponse.json()
+        console.log('[v0] Welcome email sent:', emailResult)
+      } catch (emailError) {
+        console.log('[v0] Email sending failed:', emailError)
         // Email error should not block signup
       }
       
       router.push('/auth/inscription-reussie')
     } catch (error: unknown) {
+      console.log('[v0] Unexpected error:', error)
       setError(error instanceof Error ? error.message : 'Une erreur est survenue')
     } finally {
       setIsLoading(false)
