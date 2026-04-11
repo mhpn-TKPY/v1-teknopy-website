@@ -189,7 +189,7 @@ export function PromosSection() {
             </Link>
           </Button>
           <p className="text-sm text-muted-foreground mt-3">
-            Paiement en 4x sans frais | Domaine .fr/.com offert 1 an | Deplacement offert Fort-de-France
+            Paiement en 4x sans frais | Sous-domaine offert votre-site.teknopy.com | Deplacement offert Fort-de-France
           </p>
         </div>
       </div>

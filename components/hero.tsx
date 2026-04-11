@@ -40,9 +40,24 @@ export function Hero() {
 
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
-            <Code2 className="h-4 w-4" />
-            Agence Web en Martinique
+          <div className="mb-4 flex flex-col items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+              <Code2 className="h-4 w-4" />
+              Agence Web en Martinique
+            </div>
+            {/* Logo + TEKNOPY Concept - Mobile first */}
+            <div className="flex items-center gap-2">
+              <Image
+                src="/images/logo-teknopy.png"
+                alt="TEKNOPY Concept"
+                width={32}
+                height={32}
+                className="h-8 w-8 md:h-10 md:w-10 object-contain"
+              />
+              <span className="text-lg md:text-xl font-bold text-foreground tracking-tight">
+                TEKNOPY <span className="text-primary">Concept</span>
+              </span>
+            </div>
           </div>
 
           <h1 className="mb-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl">
