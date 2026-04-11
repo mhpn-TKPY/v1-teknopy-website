@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createHash } from 'crypto'
 
-export async function DELETE() {
+// Hash user ID for anonymized storage in projects (visible in admin dashboard)
+function hashUserId(userId: string): string {
+  const salt = process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 16) || 'teknopy-salt'
+  return createHash('sha256').update(userId + salt).digest('hex').substring(0, 16)
+}
+
+export async function DELETE(request: Request) {
   try {
     const supabase = await createClient()
     
@@ -14,54 +22,86 @@ export async function DELETE() {
         { status: 401 }
       )
     }
+
+    // Verify confirmation from request body
+    const { confirmation } = await request.json()
     
-    // 1. Anonymize profile data (keep the ID for project references)
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        first_name: 'Utilisateur',
-        last_name: 'Supprime',
-        // Keep is_admin as false for deleted accounts
-        is_admin: false,
-      })
-      .eq('id', user.id)
-    
-    if (profileError) {
-      console.error('[delete-account] Profile anonymization error:', profileError)
-      // Continue anyway - we want to delete the auth user
+    if (confirmation !== 'SUPPRIMER') {
+      return NextResponse.json(
+        { error: 'Confirmation invalide. Veuillez taper SUPPRIMER.' },
+        { status: 400 }
+      )
     }
-    
-    // 2. Anonymize messages (keep content but remove sender info)
-    // Messages are linked by user_id, so they'll be orphaned but still visible in project history
-    
-    // 3. Update projects to mark user as deleted
-    // Projects are kept for business records but user_id remains for reference
+
+    const userIdHash = hashUserId(user.id)
+
+    // 1. Update projects: store hashed user ID and set user_id to NULL
+    // This keeps project history with anonymized reference while freeing FK constraint
     const { error: projectsError } = await supabase
       .from('client_projects')
       .update({
-        // Add a note that user was deleted
-        description: supabase.rpc('concat_description', { 
-          project_id: user.id 
-        })
+        deleted_user_hash: userIdHash,
+        user_id: null,
       })
       .eq('user_id', user.id)
-    
-    // Ignore project update errors - not critical
+
     if (projectsError) {
       console.error('[delete-account] Projects update error:', projectsError)
+      // Continue - project update is not blocking
     }
-    
-    // 4. Delete the auth user account
-    // This requires admin privileges, so we'll use a service role or 
-    // let Supabase handle it via the signOut + account deletion flow
-    // For now, we'll just sign out the user - full deletion requires admin API
-    
-    // Sign out the user
-    await supabase.auth.signOut()
-    
+
+    // 2. Delete all user messages (personal/sensitive data)
+    const { error: messagesError } = await supabase
+      .from('client_messages')
+      .delete()
+      .eq('user_id', user.id)
+
+    if (messagesError) {
+      console.error('[delete-account] Messages delete error:', messagesError)
+    }
+
+    // 3. Delete profile from profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user.id)
+
+    if (profileError) {
+      console.error('[delete-account] Profile delete error:', profileError)
+    }
+
+    // 4. Delete user from auth.users using Admin API
+    // This completely removes the user and FREES THE EMAIL for re-registration
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('[delete-account] Missing Supabase admin credentials')
+      return NextResponse.json(
+        { error: 'Configuration serveur manquante' },
+        { status: 500 }
+      )
+    }
+
+    const supabaseAdmin = createAdminClient(supabaseUrl, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    })
+
+    const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
+
+    if (deleteUserError) {
+      console.error('[delete-account] Auth user delete error:', deleteUserError)
+      return NextResponse.json(
+        { error: 'Erreur lors de la suppression. Contactez le support.' },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json({
       success: true,
-      message: 'Compte supprime avec succes',
+      message: 'Compte supprime. Votre email peut etre reutilise pour une nouvelle inscription.',
+      emailFreed: true,
+      projectsPreserved: true,
     })
   } catch (error) {
     console.error('[delete-account] Error:', error)
