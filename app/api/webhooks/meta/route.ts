@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import crypto from 'crypto'
 
 // Meta Webhook Verify Token - should match what you set in Meta Developer Console
-const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || 'teknopy_meta_webhook_2024'
+const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN
+const META_APP_SECRET = process.env.META_APP_SECRET
+
+/**
+ * Validate Meta webhook signature (X-Hub-Signature-256)
+ * https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests
+ */
+function validateSignature(payload: string, signature: string | null): boolean {
+  if (!signature || !META_APP_SECRET) {
+    console.log('[Meta Webhook] Missing signature or app secret')
+    return false
+  }
+
+  const expectedSignature = 'sha256=' + crypto
+    .createHmac('sha256', META_APP_SECRET)
+    .update(payload)
+    .digest('hex')
+
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  )
+
+  if (!isValid) {
+    console.log('[Meta Webhook] Invalid signature')
+  }
+
+  return isValid
+}
 
 /**
  * GET - Webhook Verification (required by Meta)
@@ -36,7 +65,19 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    // Get raw body for signature validation
+    const rawBody = await request.text()
+    const signature = request.headers.get('x-hub-signature-256')
+
+    // Validate signature in production
+    if (process.env.NODE_ENV === 'production' && META_APP_SECRET) {
+      if (!validateSignature(rawBody, signature)) {
+        console.log('[Meta Webhook] Signature validation failed')
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+      }
+    }
+
+    const body = JSON.parse(rawBody)
     
     console.log('[Meta Webhook] Received event:', JSON.stringify(body, null, 2))
 
