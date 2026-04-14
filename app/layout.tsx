@@ -199,6 +199,8 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
+        {/* Facebook Domain Verification for Meta Business Suite */}
+        <meta name="facebook-domain-verification" content="2we9yfp611346knfwwzrop998jpf7q" />
         {/* Favicon configuration for Google/Bing search results */}
         <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
