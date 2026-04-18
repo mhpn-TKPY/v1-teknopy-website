@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { CookieConsent } from '@/components/cookie-consent'
 import { SidebarNav } from '@/components/sidebar-nav'
 import { SocialShare, SocialShareMobile } from '@/components/social-share'
+import { WhatsAppWidget } from '@/components/whatsapp-widget'
 import './globals.css'
 
 const _inter = Inter({ subsets: ["latin"] });
@@ -226,6 +227,7 @@ export default function RootLayout({
         <SocialShare />
         <SocialShareMobile />
         <CookieConsent />
+        <WhatsAppWidget />
         <Analytics />
       </body>
     </html>
