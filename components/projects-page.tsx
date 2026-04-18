@@ -2,12 +2,13 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ExternalLink, ArrowRight, Sparkles, Globe, Loader2 } from "lucide-react"
+import Image from "next/image"
+import { ExternalLink, ArrowRight, Sparkles, Globe } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// Real projects data - ordered: fullbelly, lakousankofa, goldenstar1919, kantekant first, then others randomly
+// Real projects data - using logos for fast loading
 const projects = [
   {
     id: "1",
@@ -18,6 +19,7 @@ const projects = [
     technologies: ["React", "Node.js", "Stripe", "PostgreSQL"],
     client_name: "Full Belly Restaurant",
     featured: true,
+    logo: "/images/projects/fullbelly-logo.jpeg",
   },
   {
     id: "2",
@@ -28,6 +30,7 @@ const projects = [
     technologies: ["Next.js", "Supabase", "Tailwind CSS"],
     client_name: "Association Lakou Sankofa",
     featured: true,
+    logo: "/images/projects/lakousankofa-logo.webp",
   },
   {
     id: "3",
@@ -38,16 +41,18 @@ const projects = [
     technologies: ["Next.js", "Supabase", "Tailwind CSS"],
     client_name: "Golden Star 1919",
     featured: true,
+    logo: "/images/projects/goldenstar-logo.png",
   },
   {
     id: "4",
-    title: "Kante Kant",
+    title: "Kant & Kant",
     description: "Site e-commerce de vente de produits locaux et artisanaux avec livraison en France metropolitaine.",
     category: "E-commerce",
     url: "https://kantekant.fr",
     technologies: ["Next.js", "Stripe", "PostgreSQL"],
-    client_name: "Kante Kant",
+    client_name: "Kant & Kant",
     featured: true,
+    logo: "/images/projects/kantekant-logo.png",
   },
   {
     id: "5",
@@ -58,6 +63,7 @@ const projects = [
     technologies: ["Next.js", "CMS", "Tailwind CSS"],
     client_name: "Afrocentricite",
     featured: false,
+    logo: "/images/projects/afrocentricite-logo.webp",
   },
   {
     id: "6",
@@ -68,16 +74,18 @@ const projects = [
     technologies: ["Next.js", "Tailwind CSS", "TypeScript"],
     client_name: "PLISTECH",
     featured: false,
+    logo: "/images/logo-teknopy.png",
   },
   {
     id: "7",
     title: "Open IT 972",
     description: "Site associatif pour la promotion du numerique et de l'informatique en Martinique.",
     category: "Association",
-    url: "https://openit972.org",
+    url: "http://www.openit972.org/",
     technologies: ["Next.js", "Tailwind CSS", "CMS"],
     client_name: "Association Open IT 972",
     featured: false,
+    logo: "/images/projects/openit-logo.jpg",
   },
 ]
 
@@ -91,53 +99,21 @@ const stats = [
 ]
 
 function ProjectCard({ project }: { project: typeof projects[0] }) {
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
-
   return (
     <Card className="group flex flex-col overflow-hidden transition-all hover:shadow-lg">
-      {/* Live preview iframe with loading state */}
-      <div className="relative h-44 overflow-hidden bg-muted">
-        {/* Loading skeleton */}
-        {isLoading && !hasError && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted">
-            <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs text-muted-foreground">Chargement de l&apos;apercu...</span>
-            </div>
-          </div>
-        )}
+      {/* Logo display - fast loading, no iframe */}
+      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
+        <div className="absolute inset-0 flex items-center justify-center p-6">
+          <Image
+            src={project.logo}
+            alt={`Logo ${project.title}`}
+            width={200}
+            height={150}
+            className="max-h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
         
-        {/* Fallback if iframe fails (for HTTP sites or CORS issues) */}
-        {hasError && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-            <div className="text-center px-4">
-              <Globe className="mx-auto h-10 w-10 text-primary/50" />
-              <span className="mt-2 block text-sm font-medium text-foreground">{project.title}</span>
-              <span className="mt-1 block text-xs text-muted-foreground">Cliquez pour visiter</span>
-            </div>
-          </div>
-        )}
-        
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        
-        {/* Iframe with extended loading time for slow sites */}
-        <iframe
-          src={project.url}
-          title={`Apercu de ${project.title}`}
-          className={`h-[440px] w-[200%] origin-top-left scale-50 border-0 pointer-events-none transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-          loading="eager"
-          sandbox="allow-scripts allow-same-origin"
-          referrerPolicy="no-referrer"
-          onLoad={() => {
-            // Extended delay to ensure full page render including images and styles
-            setTimeout(() => setIsLoading(false), 3000)
-          }}
-          onError={() => {
-            setHasError(true)
-            setIsLoading(false)
-          }}
-        />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
         
         {project.featured && (
           <Badge className="absolute left-2 top-2 z-20 bg-primary text-xs">
