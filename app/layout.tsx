@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { headers } from 'next/headers'
 import { Inter, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CookieConsent } from '@/components/cookie-consent'
@@ -191,11 +192,15 @@ const jsonLd = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Get nonce from security headers (set in middleware/proxy)
+  const headersList = await headers()
+  const nonce = headersList.get('x-nonce') || ''
+  
   return (
     <html lang="fr">
       <head>
@@ -217,6 +222,7 @@ export default function RootLayout({
         <meta name="twitter:image:alt" content="TEKNOPY Creation - Agence Web Martinique" />
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
