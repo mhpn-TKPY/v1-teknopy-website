@@ -3,7 +3,6 @@ import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { PromosSection } from "@/components/promos-section"
 import { Footer } from "@/components/footer"
-import { WelcomeModal } from "@/components/welcome-modal"
 
 // Lazy load below-the-fold components to improve initial page load
 const ServicesPreview = dynamic(() => import("@/components/services-preview").then(mod => ({ default: mod.ServicesPreview })), {
@@ -33,8 +32,6 @@ export default function HomePage() {
         <HomepageCTA />
       </main>
       <Footer />
-      {/* Single centered welcome modal with promos and tech logos */}
-      <WelcomeModal />
     </div>
   )
 }

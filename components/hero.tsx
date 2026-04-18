@@ -1,8 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, UserPlus, Zap, Tag, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles } from "lucide-react"
 
 // Official technology logos
 const techLogos = [
@@ -14,12 +12,6 @@ const techLogos = [
   { name: "Supabase", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" },
   { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
   { name: "Vercel", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg" },
-]
-
-const miniPromos = [
-  { label: "Coup de Pouce Associatif", price: "19EUR/an", icon: Users, href: "/promos#association" },
-  { label: "CV Pro Augmente", price: "19EUR/an", icon: Zap, href: "/promos#cv-pro" },
-  { label: "Vitrine Marche FDF", price: "49EUR/an", icon: Tag, href: "/promos#vitrine-marche" },
 ]
 
 export function Hero() {
@@ -40,91 +32,37 @@ export function Hero() {
 
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-4 flex flex-col items-center gap-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
-              <Code2 className="h-4 w-4" />
-              Agence Web en Martinique
-            </div>
-            {/* Logo + TEKNOPY Concept - Mobile first */}
-            <div className="flex items-center gap-2">
-              <Image
-                src="/images/logo-teknopy.png"
-                alt="TEKNOPY Concept"
-                width={32}
-                height={32}
-                className="h-8 w-8 md:h-10 md:w-10 object-contain"
-              />
-              <span className="text-lg md:text-xl font-bold text-foreground tracking-tight">
-                TEKNOPY <span className="text-primary">Concept</span>
-              </span>
-            </div>
+          {/* Animated Promo Banner - Above TEKNOPY Concept */}
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500/90 to-orange-500/90 px-4 py-2 text-white shadow-lg animate-pulse">
+            <Sparkles className="h-4 w-4" />
+            <span className="text-sm font-semibold">Site Vitrine 99EUR | Associatif 19EUR/an | Restaurant 79EUR/an</span>
+            <Link href="/promos" className="ml-1 underline underline-offset-2 hover:no-underline text-sm font-bold">
+              Voir offres
+            </Link>
           </div>
 
-          <h1 className="mb-4 text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+          {/* Logo + TEKNOPY Concept - Bigger than subtitle */}
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <Image
+              src="/images/logo-teknopy.png"
+              alt="TEKNOPY Concept"
+              width={48}
+              height={48}
+              className="h-12 w-12 md:h-14 md:w-14 object-contain"
+            />
+            <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+              TEKNOPY <span className="text-primary">Concept</span>
+            </span>
+          </div>
+
+          <h1 className="mb-4 text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl lg:text-4xl">
             Le Web au Service de{" "}
             <span className="text-primary">l&apos;Innovation</span>
           </h1>
 
-          <p className="mx-auto mb-4 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
+          <p className="mx-auto mb-6 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
             Développement web sur mesure, consulting IT et formations informatiques pour entreprises, associations et particuliers en Martinique.
           </p>
-
-          {/* Mini promos bar - Right after subtitle */}
-          <div className="flex flex-wrap justify-center gap-3 mb-6">
-            {miniPromos.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-lg border-2 border-amber-300/60 hover:border-primary hover:shadow-xl transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 backdrop-blur-sm"
-              >
-                <item.icon className="h-4 w-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item.label}</span>
-                <span className="text-sm font-bold text-primary">{item.price}</span>
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-            <Button size="lg" asChild className="gap-2">
-              <Link href="/contact">
-                Demander un devis gratuit
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" asChild className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl">
-              <Link href="/promos">
-                <Sparkles className="h-4 w-4" />
-                Nos promos
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/projets">Voir nos realisations</Link>
-            </Button>
-          </div>
-
-          {/* Free Registration CTA */}
-          <div className="mt-6">
-            <Link 
-              href="/auth/inscription" 
-              className="group inline-flex items-center gap-3 rounded-2xl border-2 border-primary bg-primary/30 px-6 py-3 shadow-xl transition-all hover:bg-primary/50 hover:shadow-2xl"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-110">
-                <UserPlus className="h-5 w-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-base font-semibold text-foreground">
-                  Espace Client Gratuit
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Suivez vos projets en temps reel
-                </p>
-              </div>
-              <Badge className="ml-2 bg-primary text-primary-foreground shadow-sm">
-                <Sparkles className="mr-1 h-3 w-3" />
-                Nouveau
-              </Badge>
-            </Link>
-          </div>
 
           {/* Contact Card with Profile */}
           <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl border border-white/20 bg-card/95 p-4 shadow-2xl backdrop-blur-md sm:flex-row sm:items-start sm:p-5">
