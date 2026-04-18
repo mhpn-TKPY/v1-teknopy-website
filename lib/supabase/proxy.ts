@@ -2,17 +2,25 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 /**
- * Get security headers
- * Based on security scan recommendations from RedSentinel and SecurityHeaders.com
- * Note: Using unsafe-inline for scripts is required for Next.js compatibility
- * A strict CSP with nonce would require experimental Next.js CSP support
+ * Generate a cryptographically secure nonce for CSP
+ * Uses Web Crypto API which is available in Edge Runtime
  */
-function getSecurityHeaders(): Record<string, string> {
-  // Content Security Policy - balanced for Next.js compatibility
+function generateNonce(): string {
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+  return btoa(String.fromCharCode(...array))
+}
+
+/**
+ * Get security headers with CSP nonce
+ * Based on security scan recommendations from RedSentinel and SecurityHeaders.com
+ */
+function getSecurityHeaders(nonce: string): Record<string, string> {
+  // Content Security Policy with nonce (no unsafe-inline)
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`, // Required for Next.js
-    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, // Required for Tailwind
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://vercel.live https://va.vercel-scripts.com`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, // unsafe-inline needed for inline styles/Tailwind
     `img-src 'self' data: blob: https: http:`,
     `font-src 'self' https://fonts.gstatic.com data:`,
     `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.web3forms.com https://vercel.live https://va.vercel-scripts.com https://*.vercel-storage.com`,
@@ -49,12 +57,18 @@ function getSecurityHeaders(): Record<string, string> {
     // Cross-Origin policies
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
+    
+    // CSP Nonce for scripts
+    'x-nonce': nonce,
   }
 }
 
 export async function updateSession(request: NextRequest) {
+  // Generate nonce for this request
+  const nonce = generateNonce()
+  
   // Get security headers
-  const securityHeaders = getSecurityHeaders()
+  const securityHeaders = getSecurityHeaders(nonce)
   
   let supabaseResponse = NextResponse.next({
     request,

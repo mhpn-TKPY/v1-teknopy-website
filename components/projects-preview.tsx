@@ -1,13 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ExternalLink, ArrowRight, Globe } from "lucide-react"
+import { ExternalLink, ArrowRight, Globe, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-// Real projects data - using logos for fast loading
+// Real projects data - ordered: fullbelly, lakousankofa, goldenstar1919, kantekant first
 const featuredProjects = [
   {
     id: "1",
@@ -16,7 +17,7 @@ const featuredProjects = [
     category: "E-commerce",
     url: "https://fullbelly.fr",
     technologies: ["React", "Node.js", "Stripe"],
-    logo: "/images/projects/fullbelly-logo.jpeg",
+    thumbnail: "/images/projects/fullbelly.jpg",
   },
   {
     id: "2",
@@ -25,7 +26,7 @@ const featuredProjects = [
     category: "Application Web",
     url: "https://lakousankofa.com",
     technologies: ["Next.js", "Supabase"],
-    logo: "/images/projects/lakousankofa-logo.webp",
+    thumbnail: "/images/projects/lakousankofa.jpg",
   },
   {
     id: "3",
@@ -34,35 +35,67 @@ const featuredProjects = [
     category: "Association",
     url: "https://goldenstar1919.org",
     technologies: ["Next.js", "Supabase"],
-    logo: "/images/projects/goldenstar-logo.png",
+    thumbnail: "/images/projects/goldenstar.jpg",
   },
   {
     id: "4",
-    title: "Kant & Kant",
+    title: "Kante Kant",
     description: "Site e-commerce de vente de produits locaux et artisanaux.",
     category: "E-commerce",
     url: "https://kantekant.fr",
     technologies: ["Next.js", "Stripe"],
-    logo: "/images/projects/kantekant-logo.png",
+    thumbnail: "/images/projects/kantekant.jpg",
   },
 ]
 
 function ProjectCard({ project }: { project: typeof featuredProjects[0] }) {
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+
   return (
-    <Card className="group overflow-hidden transition-all hover:shadow-lg">
-      {/* Logo display - fast loading, no iframe */}
-      <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
-        <div className="absolute inset-0 flex items-center justify-center p-4">
-          <Image
-            src={project.logo}
-            alt={`Logo ${project.title}`}
-            width={160}
-            height={120}
-            className="max-h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
+    <Card 
+      className="group overflow-hidden transition-all hover:shadow-lg"
+    >
+      {/* Live preview iframe with loading state */}
+      <div className="relative h-40 overflow-hidden bg-muted">
+        {/* Loading skeleton */}
+        {isLoading && !hasError && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="text-xs text-muted-foreground">Chargement...</span>
+            </div>
+          </div>
+        )}
         
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        {/* Fallback image if iframe fails */}
+        {hasError && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+            <div className="text-center">
+              <Globe className="mx-auto h-8 w-8 text-primary/50" />
+              <span className="mt-2 block text-xs text-muted-foreground">{project.title}</span>
+            </div>
+          </div>
+        )}
+        
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        
+        {/* Iframe with extended loading time */}
+        <iframe
+          src={project.url}
+          title={`Apercu de ${project.title}`}
+          className={`h-[400px] w-[200%] origin-top-left scale-50 border-0 pointer-events-none transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          loading="eager"
+          sandbox="allow-scripts allow-same-origin"
+          onLoad={() => {
+            // Delay to ensure content is fully rendered
+            setTimeout(() => setIsLoading(false), 2000)
+          }}
+          onError={() => {
+            setHasError(true)
+            setIsLoading(false)
+          }}
+        />
         
         <div className="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between opacity-0 transition-opacity group-hover:opacity-100">
           <Badge className="bg-primary/90 text-xs">
