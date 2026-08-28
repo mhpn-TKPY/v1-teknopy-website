@@ -1,6 +1,10 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles } from "lucide-react"
+import { Code2, Laptop, Users, Phone, Mail, MapPin, Sparkles, CarFront, X } from "lucide-react"
+import { SchoolOffers } from "@/components/school-offers"
 
 // Official technology logos
 const techLogos = [
@@ -15,8 +19,20 @@ const techLogos = [
 ]
 
 export function Hero() {
+  const [showAlert, setShowAlert] = useState(true)
+
   return (
     <section className="relative overflow-hidden pb-10 pt-8 md:pb-16 md:pt-12">
+      {showAlert && (
+        <div role="status" aria-live="polite" className="fixed bottom-4 left-4 right-4 z-40 mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-primary/30 bg-card p-3 shadow-2xl md:bottom-6 md:left-auto md:right-6">
+          <div className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <CarFront className="size-6 motion-safe:animate-pulse" aria-hidden="true" />
+            <span className="absolute -right-1 -top-1 size-2.5 motion-safe:animate-ping rounded-full bg-accent" aria-hidden="true" />
+          </div>
+          <p className="flex-1 text-sm leading-5 text-foreground"><span className="font-semibold">Nouvelles offres cours &amp; code</span><br /><span className="text-muted-foreground">Stages vacances et accompagnement Première disponibles.</span></p>
+          <button type="button" onClick={() => setShowAlert(false)} aria-label="Fermer l'alerte" className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"><X className="size-4" /></button>
+        </div>
+      )}
       {/* Sunset Background Image */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -33,9 +49,9 @@ export function Hero() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
           {/* Animated Promo Banner - Above TEKNOPY Concept */}
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500/90 to-orange-500/90 px-4 py-2 text-white shadow-lg animate-pulse">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-primary-foreground shadow-lg motion-safe:animate-pulse">
             <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-semibold">Site Vitrine 99EUR | Associatif 19EUR/an | Restaurant 79EUR/an</span>
+            <span className="text-sm font-semibold">Cours Première &amp; code · dès 25 € · offres vacances</span>
             <Link href="/promos" className="ml-1 underline underline-offset-2 hover:no-underline text-sm font-bold">
               Voir offres
             </Link>
@@ -63,6 +79,8 @@ export function Hero() {
           <p className="mx-auto mb-6 max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
             Développement web sur mesure, consulting IT et formations informatiques pour entreprises, associations et particuliers en Martinique.
           </p>
+
+          <SchoolOffers />
 
           {/* Contact Card with Profile */}
           <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl border border-white/20 bg-card/95 p-4 shadow-2xl backdrop-blur-md sm:flex-row sm:items-start sm:p-5">
