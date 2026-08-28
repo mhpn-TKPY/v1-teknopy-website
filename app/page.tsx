@@ -1,24 +1,14 @@
-import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
+import { Services } from "@/components/services"
+import { AllOffers } from "@/components/all-offers"
 import { PromosSection } from "@/components/promos-section"
+import { ProjectsPreview } from "@/components/projects-preview"
+import { Pricing } from "@/components/pricing"
+import { Trainings } from "@/components/trainings"
+import { Skills } from "@/components/skills"
+import { HomepageCTA } from "@/components/homepage-cta"
 import { Footer } from "@/components/footer"
-
-// Lazy load below-the-fold components to improve initial page load
-const ServicesPreview = dynamic(() => import("@/components/services-preview").then(mod => ({ default: mod.ServicesPreview })), {
-  loading: () => <div className="py-16 animate-pulse bg-slate-50" />,
-  ssr: true
-})
-
-const ProjectsPreview = dynamic(() => import("@/components/projects-preview").then(mod => ({ default: mod.ProjectsPreview })), {
-  loading: () => <div className="py-16 animate-pulse bg-white" />,
-  ssr: true
-})
-
-const HomepageCTA = dynamic(() => import("@/components/homepage-cta").then(mod => ({ default: mod.HomepageCTA })), {
-  loading: () => <div className="py-16 animate-pulse bg-primary/10" />,
-  ssr: true
-})
 
 export default function HomePage() {
   return (
@@ -26,9 +16,13 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <Services />
+        <AllOffers />
         <PromosSection />
-        <ServicesPreview />
         <ProjectsPreview />
+        <Pricing />
+        <Trainings />
+        <Skills />
         <HomepageCTA />
       </main>
       <Footer />
