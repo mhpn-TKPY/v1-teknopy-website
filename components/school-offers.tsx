@@ -7,9 +7,9 @@ import { BookOpen, CalendarDays, ChevronDown, Code2, GraduationCap, Sparkles } f
 const offers = [
   {
     category: "Première générale",
-    title: "Parcours CNED accompagné",
+    title: "Cours particuliers individuels personnalisés",
     price: "à partir de 39 € / séance",
-    details: "Français, enseignement scientifique, histoire-géographie, langues et méthodologie. Accompagnement complémentaire : le CNED reste la référence du programme suivi.",
+    details: "Français, enseignement scientifique, histoire-géographie, langues et méthodologie. Un accompagnement personnalisé, adapté au niveau, aux objectifs et au rythme de chaque élève.",
     period: "Rentrée · Toussaint · préparation bac",
     icon: GraduationCap,
   },
