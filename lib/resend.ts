@@ -1,8 +1,10 @@
 import { Resend } from 'resend'
 
-// Resend instance for Espace Client emails only
-// Web3Forms is used for the Vitrine (contact forms)
-export const resend = new Resend(process.env.RESEND_API_KEY)
+// Resend instance for Espace Client emails only.
+// Keep module evaluation safe when email delivery is not configured in preview/build.
+// Web3Forms is used for the Vitrine (contact forms).
+const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_API_KEY_2
+export const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 // Admin email for notifications
 export const ADMIN_EMAIL = 'manuel.harpon@teknopy.com'
@@ -27,6 +29,11 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions) {
+  if (!resend) {
+    console.warn('[Resend] RESEND_API_KEY is not configured; skipping email delivery')
+    return { success: false, error: new Error('Email delivery is not configured') }
+  }
+
   try {
     // According to Resend docs, 'to' must be an array
     const { data, error } = await resend.emails.send({

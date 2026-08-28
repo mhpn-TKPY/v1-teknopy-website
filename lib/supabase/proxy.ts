@@ -89,9 +89,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /espace-client routes
+  // Protect authenticated workspaces at the edge; admin authorization remains server-side.
   if (
-    request.nextUrl.pathname.startsWith('/espace-client') &&
+    (request.nextUrl.pathname.startsWith('/espace-client') ||
+      request.nextUrl.pathname.startsWith('/admin')) &&
     !user
   ) {
     const url = request.nextUrl.clone()

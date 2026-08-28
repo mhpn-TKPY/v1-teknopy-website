@@ -5,8 +5,6 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
-import { Header } from '@/components/header'
-import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -233,8 +231,6 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-secondary/30">
-      <Header />
-      
       <main className="flex-1 py-8">
         <div className="container mx-auto px-4">
           {/* Welcome Section */}
@@ -549,8 +545,6 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
-      
-      <Footer />
     </div>
   )
 }
