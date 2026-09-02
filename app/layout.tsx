@@ -6,8 +6,16 @@ import { SidebarNav } from '@/components/sidebar-nav'
 import { SocialShare, SocialShareMobile } from '@/components/social-share'
 import './globals.css'
 
-const _inter = Inter({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-geist-mono',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -76,9 +84,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'google-site-verification-code',
-  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
   category: 'technology',
 }
 
@@ -197,7 +205,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${inter.variable} ${geistMono.variable}`}>
       <head>
         {/* Facebook Domain Verification for Meta Business Suite */}
         <meta name="facebook-domain-verification" content="2we9yfp611346knfwwzrop998jpf7q" />

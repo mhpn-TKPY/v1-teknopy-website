@@ -61,7 +61,9 @@ export default function InscriptionPage() {
           },
         },
       })
-      
+      // Captured before the `error` discriminant narrows `data.user` to null.
+      const createdUser = data?.user
+
       if (error) {
         console.log('[v0] Signup error:', error.message)
         // Ignore email sending errors from Supabase - we use Resend instead
@@ -74,7 +76,7 @@ export default function InscriptionPage() {
         } else if (error.message.includes('Database error') || error.message.includes('database')) {
           // Database error during profile creation - try to continue if user was created
           console.log('[v0] Database error, checking if user was created...')
-          if (!data?.user) {
+          if (!createdUser) {
             setError('Erreur lors de la création du compte. Veuillez réessayer.')
             setIsLoading(false)
             return
@@ -83,7 +85,7 @@ export default function InscriptionPage() {
           const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
-              id: data.user.id,
+              id: createdUser.id,
               first_name: firstName,
               last_name: lastName,
               is_admin: email === 'manuel.harpon@teknopy.com',

@@ -97,7 +97,11 @@ function OfferCard({ offer }: { offer: Offer }) {
 
 export function AllOffers() {
   const [activeTab, setActiveTab] = useState("all")
-  const visibleGroups = activeTab === "all" ? Object.entries(offerGroups) : [[activeTab, offerGroups[activeTab]]]
+  type OfferGroup = (typeof offerGroups)[string]
+  const visibleGroups: [string, OfferGroup | undefined][] =
+    activeTab === "all"
+      ? Object.entries(offerGroups)
+      : [[activeTab, offerGroups[activeTab]]]
 
   return (
     <section id="offres" className="bg-secondary/20 py-16 md:py-24">
