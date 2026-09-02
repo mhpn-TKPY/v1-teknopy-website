@@ -19,13 +19,38 @@ import {
   Star,
   Tag,
   TrendingUp,
-  Briefcase
+  Briefcase,
+  type LucideIcon,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
+interface Service {
+  id: string
+  icon: LucideIcon
+  title: string
+  description: string
+  price: number
+  features: string[]
+  unit?: string
+  popular?: boolean
+  addon?: boolean
+  promo?: boolean
+  originalPrice?: number
+  highlight?: boolean
+}
+
+interface ServiceCategory {
+  id: string
+  name: string
+  icon: LucideIcon
+  color: string
+  isPromo?: boolean
+  services: Service[]
+}
+
 // Promos category - FIRST and DEFAULT with special styling
-const promoCategory = {
+const promoCategory: ServiceCategory = {
   id: "promos",
   name: "Offres Promotionnelles",
   icon: Sparkles,
@@ -130,7 +155,7 @@ const promoCategory = {
 }
 
 // Complete pricing data from the tariff grid
-const serviceCategories = [
+const serviceCategories: ServiceCategory[] = [
   promoCategory,
   {
     id: "web",

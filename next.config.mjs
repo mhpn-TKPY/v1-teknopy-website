@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  // Type errors now fail the build (see `npm run typecheck`). Do not re-enable
+  // `ignoreBuildErrors` — fix the types instead so regressions are caught in CI.
   images: {
     remotePatterns: [
       {
@@ -19,28 +18,17 @@ const nextConfig = {
       },
     ],
   },
-  // Security headers (backup - main headers in middleware)
+  // Baseline security headers applied to every response.
+  // The Supabase proxy (proxy.ts) also sets a CSP on dynamic routes.
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
@@ -49,18 +37,10 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
           },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
         ],
       },
     ]
-  },
-  // Experimental features for better security
-  experimental: {
-    // Disable route announcer to avoid CSP inline style issues
-    // This is an accessibility feature but causes CSP violations
   },
 }
 
