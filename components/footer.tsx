@@ -63,6 +63,27 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+              {/*
+                Canal vers Atelier Maths — lien simple en attendant la fusion
+                d'identité (compte partagé), pas encore faite. Pointe vers
+                /code-de-la-route, la seule fonctionnalité réellement active
+                de la bêta (correction-active=false dans lib/flags.ts côté
+                atelier-maths) : le libellé reste honnête sur ce qui marche
+                aujourd'hui plutôt que de promettre la correction de copies.
+                N'apparaît pas si l'URL n'est pas configurée.
+              */}
+              {process.env.NEXT_PUBLIC_ATELIER_MATHS_URL && (
+                <li>
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_ATELIER_MATHS_URL}/code-de-la-route`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    Atelier Maths — Réservation Code de la Route
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
 
