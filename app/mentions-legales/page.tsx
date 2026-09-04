@@ -44,7 +44,7 @@ export default function MentionsLegalesPage() {
                     <p>Adresse : Fort-de-France, Martinique (972)</p>
                     <p>Email : manuel.harpon@teknopy.com</p>
                     <p>Téléphone : +596 696 617 151</p>
-                    <p>SIRET : En cours d&apos;immatriculation</p>
+                    <p>SIRET : 885 185 355 00033</p>
                   </div>
                 </CardContent>
               </Card>
