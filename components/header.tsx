@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X, Phone, Mail, User, UserPlus, Home, Layers, FolderKanban, GraduationCap, Euro, FileText, ChevronUp, Sparkles } from "lucide-react"
+import { Menu, X, Phone, Mail, User, UserPlus, Home, Layers, FolderKanban, GraduationCap, Euro, FileText, ChevronUp, Sparkles, UserCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -16,6 +16,7 @@ const mobileNavLinks = [
   { href: "/tarifs", label: "Tarifs", icon: Euro },
   { href: "/projets", label: "Realisations", icon: FolderKanban },
   { href: "/formations", label: "Formations", icon: GraduationCap },
+  { href: "/a-propos", label: "À propos", icon: UserCircle },
   { href: "/contact", label: "Contact", icon: Mail },
 ]
 
@@ -251,10 +252,10 @@ export function Header() {
                         </Link>
                       </Button>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Link href="/a-propos" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
                       <Sparkles className="h-4 w-4 text-primary/60" />
                       <span className="font-medium">Agence Web en Martinique</span>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </div>
