@@ -81,14 +81,18 @@ export default function InscriptionPage() {
             setIsLoading(false)
             return
           }
-          // User was created but profile might have failed - try to create profile manually
+          // User was created but profile might have failed - try to create profile manually.
+          // is_admin volontairement absent : c'est une colonne protégée côté
+          // base (trigger public.protect_is_admin, scripts/004_secure_is_admin.sql)
+          // — la définir ici depuis le client n'aurait de toute façon aucun effet,
+          // et laisser ce pattern trainer inviterait à le recopier ailleurs sans
+          // la protection.
           const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
               id: createdUser.id,
               first_name: firstName,
               last_name: lastName,
-              is_admin: email === 'manuel.harpon@teknopy.com',
             }, { onConflict: 'id' })
           
           if (profileError) {
